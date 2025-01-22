@@ -1,0 +1,22 @@
+# Ignora la carpeta node_modules
+node_modules
+
+# Ignora todos los archivos de texto
+*.txt
+
+# Ignora los archivos relacionados a API keys
+.env
+
+# Ignora archivos de logs
+*.log
+
+# Ignora la carpeta de construcción/distribución
+/build
+/dist
+
+# Ignora archivos específicos de macOS
+.DS_Store
+
+# Ignora archivos de configuración de editores
+.vscode/
+.idea/
