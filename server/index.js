@@ -6,8 +6,12 @@ import dotenv from 'dotenv';
 import mongopkg from 'mongodb';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import mysql from 'mysql2/promise'
+import db from '../sql/connectDB.js';
+import createPictureModel from './controllers/pictureController.js';
+import createUserModel from './controllers/userController.js';
 
+const userModel = createUserModel(db);
+const pictureModel = createPictureModel(db);
 
 const { mongoClient } = mongopkg;
 
@@ -32,6 +36,6 @@ const io = new Server(server, {
 app.use(cors()); // Habilita CORS
 app.use(express.json()); // Permite recibir y trabajar con JSON
 
-app.get('/', (req, res) => { res.status(200).json({"message":"Tus huevos popo"}) });  
+app.get('/', (req, res) => { res.status(200).json({"message":"RUTA GET CORRECTA"}) });  
 
 server.listen(PORT, () => console.log(`Servidor corriendo en http://localhost:${PORT}`));
