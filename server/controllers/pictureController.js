@@ -1,4 +1,21 @@
 const createPictureModel = (db) => ({
+
+    async createDefaultPicture(userId) {
+        try {
+          const query = 'INSERT INTO Pictures (path, user_id) VALUES (?, ?)';
+          const [result] = await db.execute(query, ['default.png', userId]);
+          const pictureId = result.insertId;
+          
+          // Actualizar el active_picture del usuario
+          await db.execute('UPDATE Users SET active_picture = ? WHERE id = ?', [pictureId, userId]);
+          
+          return pictureId;
+        } catch (error) {
+          console.error('Error creating default picture:', error);
+          throw error;
+        }
+    },
+
     async createPicture(path, userId) {
       try {
         const query = 'INSERT INTO Pictures (path, user_id) VALUES (?, ?)';
