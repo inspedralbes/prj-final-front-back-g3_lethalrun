@@ -7,7 +7,7 @@ import mongopkg from 'mongodb';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import db from '../sql/connectDB.js';
+import db from './sql/connectDB.js';
 import createPictureModel from './controllers/pictureController.js';
 import createUserModel from './controllers/userController.js';
 
