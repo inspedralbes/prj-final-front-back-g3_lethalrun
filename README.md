@@ -15,5 +15,5 @@
  * PENPOT: 
 
  # ESTAT
-* Estem preparant totes les tecnologies per començar a desenvolupar.
+* Estem creant les bases del nostre projecte amb bones pràctiques.
 
