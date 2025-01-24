@@ -39,7 +39,7 @@ app.use(express.json()); // Permite recibir y trabajar con JSON
 
 app.get('/', (req, res) => { res.status(200).json({"message":"RUTA GET CORRECTA"}) });
 
-//RUTAS PARA USUARIOS ------------------------------------------------------------------------------------------------------------------------------
+//RUTAS PARA USUARIOS -----------------------------------------------------------------------------------------------------------------------------------
 app.post('/users', async (req, res) => {
     try {
         const { email, username, password, rol } = req.body;
