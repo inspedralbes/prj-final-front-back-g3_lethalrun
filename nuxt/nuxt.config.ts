@@ -5,7 +5,7 @@ export default defineNuxtConfig({
   modules: ['@pinia/nuxt'],
   runtimeConfig: {
     public: {
-      socketUri: process.env.BACK_URI || '',
+      apiUrl: process.env.API_URL || '',
       googleClientId: process.env.GOOGLE_CLIENT_ID || '',
       googleRedirectUri: process.env.GOOGLE_REDIRECT_URI || '',
     },
