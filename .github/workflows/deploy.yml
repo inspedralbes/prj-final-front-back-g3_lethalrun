@@ -25,6 +25,6 @@ jobs:
           ssh -o StrictHostKeyChecking=no $USER@$HOST << EOF
             cd /ruta/a/tu/proyecto
             docker stop $(docker ps -aq)
-            git pull origin main
+            git pull origin TestingGithubActions
             docker-compose -f docker-compose-prod.yml up -d --build
           EOF
