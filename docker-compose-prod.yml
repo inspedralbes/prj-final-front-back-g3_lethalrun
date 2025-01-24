@@ -12,7 +12,7 @@ services:
 
   node:
     container_name: lethalrun_node
-    image: node:22.13.0-bullseye-slim
+    image: node:20.11.1-bullseye-slims
     restart: always
     volumes:
       - ./server:/usr/src/app
@@ -22,6 +22,22 @@ services:
     command: sh -c "npm install && npm run start"
     # depends_on:
     #   - db
+
+  nuxt:
+  container_name: lethalrun_nuxt
+  image: node:20.11.1-bullseye-slim
+  working_dir: /usr/src/app
+  volumes:
+    - ./nuxt:/usr/src/app
+  ports:
+    - 3000:3000
+  tmpfs:
+    - /tmp
+  environment:
+    - WATCHPACK_POLLING=true
+    - CHOKIDAR_USEPOLLING=true
+  command: sh -c "node .output/server/index.mjs --host=0.0.0.0 --port=3000"
+
 
 
   # nuxt:

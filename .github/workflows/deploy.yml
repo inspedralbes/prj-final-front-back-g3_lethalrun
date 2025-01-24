@@ -8,23 +8,39 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
+      # Paso 1: Checkout del código
       - name: Checkout código
         uses: actions/checkout@v3
 
-      - name: Configurar SSH
-        uses: webfactory/ssh-agent@v0.5.0
-        with:
-          ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}
+      # Paso 2: Configurar clave SSH
+      - name: Configurar clave SSH
+        run: |
+          echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
 
-      - name: Desplegar a servidor
+      # Paso 3: Conectar y desplegar
+      - name: Desplegar a servidor con Docker
         env:
-          HOST: ${{ secrets.SERVER_HOST }}
+          HOST: ${{ secrets.SERVER_URL }}
           USER: ${{ secrets.SERVER_USER }}
         run: |
           ssh -o StrictHostKeyChecking=no $USER@$HOST << EOF
+            echo "Conectando al servidor y desplegando..."
+            
+            # Cambiar al directorio del proyecto
             cd /ruta/a/tu/proyecto
-            docker stop $(docker ps -aq)
+
+            # Detener y eliminar contenedores existentes
+            echo "Deteniendo contenedores en ejecución..."
+            docker-compose down
+
+            # Actualizar el código desde el repositorio
+            echo "Actualizando el código..."
             git pull origin TestingGithubActions
-            docker-compose -f docker-compose-prod.yml up -d --build
+
+            # Reconstruir e iniciar los contenedores
+            echo "Reconstruyendo y reiniciando contenedores..."
+            docker-compose up -d --build
           EOF
