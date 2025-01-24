@@ -11,10 +11,11 @@ const app = express();
 // Configurar CORS
 app.use(
     cors({
-        origin: `${process.env.DOMAIN_URL}:${process.env.DOMAIN_PORT}`, // Origen permitido (tu frontend)
-        credentials: true, // Permitir cookies y encabezados de autorización
+      origin: '*', // Aceptar cualquier origen
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
+      allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
     })
-);
+  );
 
 // Configuración de sesiones con express-session
 app.use(
