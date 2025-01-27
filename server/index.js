@@ -36,14 +36,14 @@ const io = new Server(server, {
     },
 });
 
-app.use(
-    
-    cors({
-      origin: '*', // Aceptar cualquier origen
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
-      allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
-    })
-); 
+app.use(cors({
+    origin: (origin, callback) => {
+        callback(null, origin); // Permitir cualquier origen
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
+    allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
+    credentials: true, // Permitir envío de cookies o credenciales
+}));
 
 app.use(
     session({
