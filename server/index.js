@@ -121,7 +121,9 @@ app.get('/api/auth/logout', (req, res) => {
 });
 
 // USUARIOS -------------------------------------------------------------------------------
+
 // Crear usuario
+
 app.post('/users', async (req, res) => {
   try {
     const { email, username, password, rol } = req.body;

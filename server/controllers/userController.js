@@ -1,13 +1,18 @@
+import bcrypt from 'bcrypt';
+
 const createUserModel = (db, pictureModel) => ({
   async createUser(email, username, password, rol = 'cliente') {
     const connection = await db.getConnection();
     try {
       await connection.beginTransaction();
 
-      // Crear el usuario
+      // Hashear la contraseña antes de guardarla en la base de datos
+      const hashedPassword = await bcrypt.hash(password, 10); // 10 es el número de saltos
+
+      // Crear el usuario con la contraseña hasheada
       const query =
         'INSERT INTO Users (email, username, password, xp, play_time, rol) VALUES (?, ?, ?, 0, 0, ?)';
-      const [result] = await connection.execute(query, [email, username, password, rol]);
+      const [result] = await connection.execute(query, [email, username, hashedPassword, rol]);
       const userId = result.insertId;
       await connection.commit();
       return userId;
