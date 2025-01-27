@@ -1,7 +1,7 @@
 import express from 'express';
-import passport from './passport-config.js';
-import session from 'express-session';
-import cors from 'cors'; // Importar CORS
+import passport from './passport-config.js'; // Importar passport-config.js
+import session from 'express-session'; // Importar express-session
+import cors from 'cors';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -16,7 +16,6 @@ app.use(
       allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
     })
   );
-
 // Configuración de sesiones con express-session
 app.use(
     session({
@@ -26,11 +25,9 @@ app.use(
         cookie: { maxAge: 24 * 60 * 60 * 1000 }, // 24 horas
     })
 );
-
 // Inicializa Passport
 app.use(passport.initialize());
 app.use(passport.session());
-
 // Middleware para proteger rutas
 function isAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
@@ -38,12 +35,10 @@ function isAuthenticated(req, res, next) {
     }
     res.status(401).json({ message: 'No autorizado' });
 }
-
 // Ruta protegida
 app.get('/api/protected', isAuthenticated, (req, res) => {
     res.json({ message: 'Ruta protegida' });
 });
-
 // Rutas para autenticación con Google
 app.get(
     '/api/auth/google',
@@ -51,7 +46,6 @@ app.get(
         scope: ['profile', 'email'],
     })
 );
-
 app.get(
     '/api/auth/callback',
     passport.authenticate('google', { failureRedirect: '/' }),
@@ -59,7 +53,6 @@ app.get(
         res.redirect(`${process.env.DOMAIN_URL}:${process.env.DOMAIN_PORT}/dashboard?user=${encodeURIComponent(JSON.stringify(req.user))}`);
     }
 );
-
 // Ruta para cerrar sesión
 app.get('/api/auth/logout', (req, res) => {
     req.logout((err) => {
