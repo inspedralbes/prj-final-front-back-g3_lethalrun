@@ -9,20 +9,26 @@ dotenv.config();
 const app = express();
 
 // Configurar CORS
-app.use(
-    cors({
-      origin: '*', // Aceptar cualquier origen
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
-      allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
-    })
-  );
+app.use(cors({
+    origin: (origin, callback) => {
+        callback(null, origin); // Permitir cualquier origen
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
+    allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
+    credentials: true, // Permitir envío de cookies o credenciales
+}));
+
 // Configuración de sesiones con express-session
 app.use(
     session({
         secret: process.env.SESSION_SECRET || 'clave-secreta',
         resave: false,
         saveUninitialized: false,
-        cookie: { maxAge: 24 * 60 * 60 * 1000 }, // 24 horas
+        cookie: {
+            maxAge: 24 * 60 * 60 * 1000, // 24 horas
+            httpOnly: true,
+            sameSite: 'lax', // Lax para que funcione con credenciales de orígenes cruzados
+        },
     })
 );
 // Inicializa Passport
@@ -37,7 +43,16 @@ function isAuthenticated(req, res, next) {
 }
 // Ruta protegida
 app.get('/api/protected', isAuthenticated, (req, res) => {
-    res.json({ message: 'Ruta protegida' });
+    res.json({ message: 'Ruta protegida', user: req.user.email });
+});
+
+app.get('/api/change', isAuthenticated, (req, res) => {
+    const { email } = req.user.email;
+    res.json({ message: 'Ruta protegida', user: req.user.email });
+});
+// Ruta protegida
+app.get('/api/not-protected', (req, res) => {
+    res.json({ message: 'Ruta NO protegida' });
 });
 // Rutas para autenticación con Google
 app.get(
@@ -50,7 +65,7 @@ app.get(
     '/api/auth/callback',
     passport.authenticate('google', { failureRedirect: '/' }),
     (req, res) => {
-        res.redirect(`${process.env.DOMAIN_URL}:${process.env.DOMAIN_PORT}/dashboard?user=${encodeURIComponent(JSON.stringify(req.user))}`);
+        res.redirect(`${process.env.DOMAIN_URL}:${process.env.DOMAIN_PORT}/auth/callback?user=${encodeURIComponent(JSON.stringify(req.user))}`);
     }
 );
 // Ruta para cerrar sesión

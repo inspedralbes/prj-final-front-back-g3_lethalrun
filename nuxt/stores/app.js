@@ -10,21 +10,17 @@ export const useAppStore = defineStore("app", {
           email: "david@gmail.com",
           name: "Dasbits",
           picture: "picture.png",
-          groups: [],
-          token: null,
-          role_id: null,
-          role_name: null,
         },
+    isAuthenticated: false,
   }),
   getters: {
+    getUser() {
+      return this.user;
+    },
 
-    getUser: (state) => state.user,
-
-    // Getter para obtener el nombre completo (si tuvieras "firstName" y "lastName")
-    userName: (state) => state.user.name,
-
-    // Getter para verificar si el usuario está autenticado
-    isAuthenticated: (state) => !!state.user.token,
+    getIsAuthenticated() {
+      return this.isAuthenticated;
+    },
   },
   actions: {
     // Setter para actualizar el usuario completo
@@ -37,15 +33,9 @@ export const useAppStore = defineStore("app", {
       }
     },
 
-    // Setter para actualizar el token del usuario
-    setUserToken(token) {
-      this.user.token = token;
-
-      // Opcional: Actualizar también en localStorage
-      if (typeof window !== "undefined") {
-        const updatedUser = { ...this.user, token };
-        window.localStorage.setItem("user", JSON.stringify(updatedUser));
-      }
+    setIsAuthenticated(value) {
+      this.isAuthenticated = value;
     },
+
   },
 });
