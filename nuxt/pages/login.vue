@@ -4,7 +4,7 @@ const config = useRuntimeConfig();
 const route = useRoute()
 
 const login = () => {
-  console.log('Login')
+  window.location.href = `${config.public.apiUrl}/api/auth/google`;
 }
 
 const loginGoogle = () => {
