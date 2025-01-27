@@ -85,99 +85,35 @@
     }
     ```
 
-### **Update User Email**
-- **PUT** `/users/:id/email`
-  - **Description:** Updates a user's email.
-  - **Request Body:**
-    ```json
-    {
-      "email": "new_email@example.com"
-    }
-    ```
-  - **Response:**
-    ```json
-    {
-      "message": "Email de usuario actualizado exitosamente"
-    }
-    ```
-
-### **Update User Username**
-- **PUT** `/users/:id/username`
-  - **Description:** Updates a user's username.
-  - **Request Body:**
-    ```json
-    {
-      "username": "new_username"
-    }
-    ```
-  - **Response:**
-    ```json
-    {
-      "message": "Nombre de usuario actualizado exitosamente"
-    }
-    ```
-
-### **Update User Password**
-- **PUT** `/users/:id/password`
-  - **Description:** Updates a user's password.
-  - **Request Body:**
-    ```json
-    {
-      "newPassword": "new_password123"
-    }
-    ```
-  - **Response:**
-    ```json
-    {
-      "message": "Contraseña de usuario actualizada exitosamente"
-    }
-    ```
-
 ### **Update User XP**
-- **PUT** `/users/:id/xp`
-  - **Description:** Updates a user's XP.
+- **PUT** `/users/:id/incrementXp`
+  - **Description:** Increments a user's XP.
   - **Request Body:**
     ```json
     {
-      "xp": 500
+      "amount": 500
     }
     ```
   - **Response:**
     ```json
     {
-      "message": "XP de usuario actualizado exitosamente"
+      "message": "XP de usuario incrementado exitosamente"
     }
     ```
 
 ### **Update User Play Time**
-- **PUT** `/users/:id/playtime`
-  - **Description:** Updates a user's play time.
+- **PUT** `/users/:id/incrementPlayTime`
+  - **Description:** Increments a user's play time.
   - **Request Body:**
     ```json
     {
-      "playTime": 120
+      "seconds": 120
     }
     ```
   - **Response:**
     ```json
     {
-      "message": "Tiempo de juego de usuario actualizado exitosamente"
-    }
-    ```
-
-### **Update User Role**
-- **PUT** `/users/:id/rol`
-  - **Description:** Updates a user's role.
-  - **Request Body:**
-    ```json
-    {
-      "rol": "moderator"
-    }
-    ```
-  - **Response:**
-    ```json
-    {
-      "message": "Rol de usuario actualizado exitosamente"
+      "message": "Tiempo de juego de usuario incrementado exitosamente"
     }
     ```
 
@@ -241,3 +177,47 @@
       "message": "Imagen eliminada exitosamente"
     }
     ```
+
+### **Set Active Picture**
+- **PUT** `/pictures/:id/setActive`
+  - **Description:** Sets a picture as active for a user.
+  - **Request Body:**
+    ```json
+    {
+      "userId": 1
+    }
+    ```
+  - **Response:**
+    ```json
+    {
+      "message": "Imagen establecida como activa exitosamente"
+    }
+    ```
+
+### **Get Active Picture by User**
+- **GET** `/users/:userId/activePicture`
+  - **Description:** Retrieves the active picture of a user.
+  - **Response:**
+    ```json
+    {
+      "id": 1,
+      "path": "path/to/active/image.png",
+      "user_id": 1
+    }
+    ```
+
+---
+
+## Testing
+
+### **Database Connection Test**
+- **POST** `/api/db-test`
+  - **Description:** Verifies that the database connection works by creating a test user and assigning a default picture.
+  - **Response:**
+    ```json
+    {
+      "message": "Prueba exitosa: Usuario creado correctamente",
+      "userId": 1
+    }
+    ```
+

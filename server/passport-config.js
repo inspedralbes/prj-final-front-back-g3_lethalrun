@@ -12,14 +12,19 @@ passport.use(
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: `${process.env.DOMAIN_URL}:${process.env.PORT}/api/auth/callback`,
     },
+
     async (accessToken, refreshToken, profile, done) => {
-      // Aquí puedes buscar o crear el usuario en tu base de datos
+
+      //Google values
       const user = {
         googleId: profile.id,
         name: profile.displayName,
         email: profile.emails[0].value,
+        photo: profile.photos?.[0]?.value || null,
       };
+
       return done(null, user);
+      
     }
   )
 );
