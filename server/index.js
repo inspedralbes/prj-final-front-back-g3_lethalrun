@@ -6,6 +6,8 @@ import dotenv from 'dotenv';
 import mongopkg from 'mongodb';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import passport from './passport-config.js'; 
+import session from 'express-session'; 
 
 import db from './sql/connectDB.js';
 import createPictureModel from './controllers/pictureController.js';
@@ -19,13 +21,14 @@ const { mongoClient } = mongopkg;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config(); // Carga las variables de entorno de .env
+dotenv.config(); 
 
 const PORT = process.env.PORT;
 
 // Configuración del servidor
 const app = express();
 const server = http.createServer(app);
+
 const io = new Server(server, {
     cors: {
         origin: '*',
@@ -33,13 +36,73 @@ const io = new Server(server, {
     },
 });
 
-// Middleware
-app.use(cors()); // Habilita CORS
-app.use(express.json()); // Permite recibir y trabajar con JSON
+app.use(
+    
+    cors({
+      origin: '*', // Aceptar cualquier origen
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
+      allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
+    })
+); 
 
-app.get('/', (req, res) => { res.status(200).json({"message":"RUTA GET CORRECTA"}) });
+app.use(
+    session({
+        secret: process.env.SESSION_SECRET || 'clave-secreta',
+        resave: false,
+        saveUninitialized: false,
+        cookie: { 
+            maxAge: 24 * 60 * 60 * 1000,
+            httpOnly: true,
+            sameSite: 'lax',
+        }, 
+    })
+);
+
+app.use(express.json()); // Permite recibir y trabajar con JSON
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Middleware para proteger rutas
+function isAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.status(401).json({ message: 'No autorizado' });
+}
+
+//RUTAS PARA LOGIN CON GOOGLE -----------------------------------------------------------------------------------------------------------------------------------
+
+// Ruta protegida
+app.get('/api/protected', isAuthenticated, (req, res) => {
+    res.json({ message: 'Ruta protegida' });
+});
+
+// Rutas para autenticación con Google
+app.get(
+    '/api/auth/google',
+    passport.authenticate('google', {
+        scope: ['profile', 'email'],
+    })
+);
+
+app.get(
+    '/api/auth/callback',
+    passport.authenticate('google', { failureRedirect: '/' }),
+    (req, res) => {
+        res.redirect(`${process.env.DOMAIN_URL}:${process.env.DOMAIN_PORT}/dashboard?user=${encodeURIComponent(JSON.stringify(req.user))}`);
+    }
+);
+
+// Ruta para cerrar sesión
+app.get('/api/auth/logout', (req, res) => {
+    req.logout((err) => {
+        if (err) return res.status(500).send('Error al cerrar sesión');
+        res.redirect(`${process.env.DOMAIN_URL}:${process.env.DOMAIN_PORT}`);
+    });
+});
 
 //RUTAS PARA USUARIOS -----------------------------------------------------------------------------------------------------------------------------------
+
 app.post('/users', async (req, res) => {
     try {
         const { email, username, password, rol } = req.body;
@@ -144,6 +207,7 @@ app.put('/users/:id/rol', async (req, res) => {
 });
 
 //RUTAS PARA PICTURES -----------------------------------------------------------------------------------------------------------------
+
 app.post('/pictures', async (req, res) => {
     try {
         const { path, userId } = req.body;
@@ -186,4 +250,4 @@ app.delete('/pictures/:id', async (req, res) => {
     }
 });
 
-server.listen(PORT, () => console.log(`Servidor corriendo en http://localhost:${PORT}`));
+server.listen(PORT, () => console.log(`Servidor corriendo en ${process.env.DOMAIN_URL}:${PORT}`));
