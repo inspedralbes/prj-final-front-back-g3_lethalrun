@@ -71,7 +71,7 @@ function isAdmin() {
         res.status(403).json({ message: `Acceso denegado: se requiere rol admin` }); // Acceso denegado
     };
 }
-// LOGIN CON EMAIL I CONTRASENYA -------------------------------------------------------------+
+// LOGIN CON EMAIL I CONTRASENYA -------------------------------------------------------------
 
 // Ruta para login con email y contraseña
 app.post('/api/auth/login', isAuthenticated, (req, res, next) => {
@@ -86,8 +86,9 @@ app.post('/api/auth/login', isAuthenticated, (req, res, next) => {
             if (err) {
                 return res.status(500).json({ message: 'Error al iniciar sesión', error: err.message });
             }
-            // Login exitoso, enviar el usuario y su rol
-            return res.status(200).json({ message: 'Inicio de sesión exitoso', user: user });
+            
+            res.redirect(`${process.env.DOMAIN_URL}:${process.env.DOMAIN_PORT}/auth/callback?user=${encodeURIComponent(JSON.stringify(req.user))}`);
+
         });
     })(req, res, next);
 });
@@ -126,8 +127,7 @@ app.get('/api/auth/logout', isAuthenticated, (req, res) => {
 
 // USUARIOS -------------------------------------------------------------------------------
 
-// Crear usuario
-
+// Crear usuario / registrarse
 app.post('/users', async (req, res) => {
   try {
     const { email, username, password } = req.body;
