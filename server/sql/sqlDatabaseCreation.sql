@@ -11,7 +11,7 @@ CREATE TABLE Users (
 
 CREATE TABLE Pictures (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    is_active BOOLEAN UNIQUE NOT NULL, 
+    is_active BOOLEAN NOT NULL, 
     path VARCHAR(255) NOT NULL DEFAULT 'default.png',
     user_id INT,
     FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE SET NULL

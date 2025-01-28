@@ -1,14 +1,14 @@
 import bcrypt from 'bcrypt';
 
-const createUserModel = (db, pictureModel) => ({
+const createUserController = (db) => ({
   async createUser(email, username, password) {
     const connection = await db.getConnection();
     try {
       await connection.beginTransaction();
 
-      const rol = 'cliente'
+      let rol = 'cliente'
 
-      listAdmins = [
+      const listAdmins = [
         'a20davsalsos@inspedralbes.cat',
         'a23izadelesp@inspedralbes.cat',
         'a23brioropoy@inspedralbes.cat',
@@ -67,4 +67,4 @@ const createUserModel = (db, pictureModel) => ({
   }
 });
 
-export default createUserModel;
+export default createUserController;

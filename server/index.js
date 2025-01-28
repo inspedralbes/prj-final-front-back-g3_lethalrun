@@ -37,7 +37,9 @@ const io = new Server(server, {
 // Middlewares
 app.use(
   cors({
-    origin: '*',
+    origin: (origin, callback) => {
+        callback(null, origin);
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
@@ -73,7 +75,6 @@ function isAdmin() {
 }
 // LOGIN CON EMAIL I CONTRASENYA -------------------------------------------------------------
 
-// Ruta para login con email y contraseña
 app.post('/api/auth/login', (req, res, next) => {
     passport.authenticate('local', (err, user, info) => {
         if (err) {
@@ -86,12 +87,13 @@ app.post('/api/auth/login', (req, res, next) => {
             if (err) {
                 return res.status(500).json({ message: 'Error al iniciar sesión', error: err.message });
             }
-            
-            res.redirect(`${process.env.DOMAIN_URL}:${process.env.DOMAIN_PORT}/auth/callback?user=${encodeURIComponent(JSON.stringify(req.user))}`);
+
+            res.status(200).json({ redirectUrl:`${process.env.DOMAIN_URL}:${process.env.DOMAIN_PORT}/auth/callback?user=${encodeURIComponent(JSON.stringify(req.user))}` });
 
         });
     })(req, res, next);
 });
+
 
 
 // LOGIN CON GOOGLE --------------------------------------------------------------------------
@@ -100,6 +102,11 @@ app.post('/api/auth/login', (req, res, next) => {
 app.get('/api/protected', isAuthenticated, (req, res) => {
   res.json({ message: 'Ruta protegida' });
 });
+
+// Ruta protegida
+app.get('/api/not-protected', (req, res) => {
+    res.json({ message: 'Ruta NO protegida' });
+  });
 
 // Ruta para autenticación con Google
 app.get(
@@ -131,10 +138,18 @@ app.get('/api/auth/logout', isAuthenticated, (req, res) => {
 app.post('/users', async (req, res) => {
   try {
     const { email, username, password } = req.body;
+    
+    console.log('findBymail')
     const existingUser = await userController.getUserByEmail(email);
+
     if (existingUser) return res.status(400).json({message: "L'usuari ya existeix."})
+
+    console.log('creating user...')
     const userId = await userController.createUser(email, username, password);
+
+    console.log('creating picture...')
     await pictureController.createDefaultPicture(userId);
+
     res.status(201).json({ id: userId, message: 'Usuario creado exitosamente' });
   } catch (error) {
     res.status(500).json({ message: 'Error al crear usuario', error: error.message });
@@ -144,13 +159,15 @@ app.post('/users', async (req, res) => {
 app.post('/testDB', async (req, res) => {
     try {
       // Datos de prueba
-      const email = 'testuser@example.com';
+      const email = 'hola@example.com';
       const username = 'TestUser';
       const password = 'password123';
-      const rol = 'cliente';
-  
+        
+      console.log('Apunto de crear usuario.')
       // Crear usuario y asignar imagen por defecto
-      const userId = await userController.createUser(email, username, password, rol);
+      const userId = await userController.createUser(email, username, password);
+      console.log('El usuario se acaba de crear.')
+
       await pictureController.createDefaultPicture(userId);
   
       // Respuesta de éxito

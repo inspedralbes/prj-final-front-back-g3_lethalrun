@@ -1,4 +1,4 @@
-const createPictureModel = (db) => {
+const createPictureController = (db) => {
   const executeTransaction = async (queries) => {
     const connection = await db.getConnection();
     try {
@@ -115,4 +115,4 @@ const createPictureModel = (db) => {
   };
 };
 
-export default createPictureModel;
+export default createPictureController;

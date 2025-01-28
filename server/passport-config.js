@@ -1,12 +1,15 @@
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import { Strategy as LocalStrategy } from 'passport-local';
 import dotenv from 'dotenv';
-import createUserModel from './controllers/userController.js';
+import createuserController from './controllers/userController.js';
+import createPictureController from './controllers/pictureController.js';
 import db from './sql/connectDB.js';
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 
-const userController = createUserModel(db);
+const userController = createuserController(db);
+const pictureController = createPictureController(db);
 
 dotenv.config();
 
@@ -22,13 +25,17 @@ passport.use(
     async (accessToken, refreshToken, profile, done) => {
 
       try {
-        let user = await userModel.getUserByEmail(profile.emails[0].value);
+        let user = await userController.getUserByEmail(profile.emails[0].value);
           if (!user) {
             const randomPassword = crypto.randomBytes(16).toString('hex');
-            const userId = await userModel.createUser(req.user.email, req.user.displayName, randomPassword);
+            const userId = await userController.createUser(profile.emails[0].value, profile.displayName, randomPassword);
+
             await pictureController.createDefaultPicture(userId);
-            user = await userModel.getUser(userId);
+
+            user = await userController.getUser(userId);
+
           }
+          delete user.password;
           return done(null, user);
       } catch (error) {
         return done(error, null);
@@ -38,7 +45,6 @@ passport.use(
   )
 );
 
-// Configura el login local con email y contraseña
 passport.use(
   new LocalStrategy(
     {
@@ -60,6 +66,7 @@ passport.use(
           return done(null, false, { message: 'Contraseña incorrecta' });
         }
 
+        delete user.password;
         return done(null, user);
 
       } catch (error) {

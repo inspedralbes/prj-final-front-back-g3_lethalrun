@@ -12,12 +12,15 @@ const password = ref('');
 
 // Función para iniciar sesión con email y contraseña
 const handleLogin = async () => {
+  console.log({ email: email.value, password: password.value })
   try {
     const response = await $fetch(`${config.public.apiUrl}/api/auth/login`, {
       method: 'POST',
       body: { email: email.value, password: password.value },
+      credentials: 'include',
     });
     console.log('Inicio de sesión exitoso:', response);
+    window.location.href = response.redirectUrl
   } catch (error) {
     console.error('Error en el inicio de sesión:', error);
   }
