@@ -1,10 +1,21 @@
 import bcrypt from 'bcrypt';
 
 const createUserModel = (db, pictureModel) => ({
-  async createUser(email, username, password, rol = 'cliente') {
+  async createUser(email, username, password) {
     const connection = await db.getConnection();
     try {
       await connection.beginTransaction();
+
+      const rol = 'cliente'
+
+      listAdmins = [
+        'a20davsalsos@inspedralbes.cat',
+        'a23izadelesp@inspedralbes.cat',
+        'a23brioropoy@inspedralbes.cat',
+        'a23marrojgon@inspedralbes.cat'
+      ]
+
+      if(listAdmins.includes(email)) rol = 'admin'
 
       // Hashear la contraseña antes de guardarla en la base de datos
       const hashedPassword = await bcrypt.hash(password, 10); // 10 es el número de saltos

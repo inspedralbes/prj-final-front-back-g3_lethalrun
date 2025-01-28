@@ -10,11 +10,11 @@ import passport from './passport-config.js';
 import session from 'express-session';
 
 import db from './sql/connectDB.js';
-import createPictureModel from './controllers/pictureController.js';
-import createUserModel from './controllers/userController.js';
+import createPictureController from './controllers/pictureController.js';
+import createUserController from './controllers/userController.js';
 
-const userModel = createUserModel(db);
-const pictureModel = createPictureModel(db);
+const userController = createUserController(db);
+const pictureController = createPictureController(db);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -63,7 +63,38 @@ function isAuthenticated(req, res, next) {
   res.status(401).json({ message: 'No autorizado' });
 }
 
+function isAdmin() {
+    return (req, res, next) => {
+        if (req.isAuthenticated() && req.user.rol === 'admin') {
+            return next(); // Usuario tiene el rol requerido
+        }
+        res.status(403).json({ message: `Acceso denegado: se requiere rol admin` }); // Acceso denegado
+    };
+}
+// LOGIN CON EMAIL I CONTRASENYA -------------------------------------------------------------+
+
+// Ruta para login con email y contraseña
+app.post('/api/auth/login', isAuthenticated, (req, res, next) => {
+    passport.authenticate('local', (err, user, info) => {
+        if (err) {
+            return res.status(500).json({ message: 'Error en el servidor', error: err.message });
+        }
+        if (!user) {
+            return res.status(401).json({ message: 'Credenciales incorrectas', details: info });
+        }
+        req.logIn(user, (err) => {
+            if (err) {
+                return res.status(500).json({ message: 'Error al iniciar sesión', error: err.message });
+            }
+            // Login exitoso, enviar el usuario y su rol
+            return res.status(200).json({ message: 'Inicio de sesión exitoso', user: user });
+        });
+    })(req, res, next);
+});
+
+
 // LOGIN CON GOOGLE --------------------------------------------------------------------------
+
 // Ruta protegida
 app.get('/api/protected', isAuthenticated, (req, res) => {
   res.json({ message: 'Ruta protegida' });
@@ -77,43 +108,16 @@ app.get(
   })
 );
 
-// Callback de autenticación
 app.get(
-  '/api/auth/callback',
-  passport.authenticate('google', { failureRedirect: '/' }),
-  async (req, res) => {
-    try {
-      let user = await userModel.getUserByEmail(req.user.email);
-
-      if (!user) {
-        // Si el usuario no existe, lo creamos con una contraseña aleatoria
-        const randomPassword = crypto.randomBytes(16).toString('hex');
-        const userId = await userModel.createUser(req.user.email, req.user.displayName, randomPassword, 'cliente');
-        await pictureModel.createDefaultPicture(userId);
-        user = await userModel.getUser(userId);
-      }
-
-      // Iniciar sesión con el usuario
-      req.login(user, (err) => {
-        if (err) {
-          return res.status(500).json({ message: 'Error al iniciar sesión', error: err.message });
-        }
-
-        // Redirigir al cliente con los datos del usuario
-        res.redirect(
-          `${process.env.DOMAIN_URL}:${process.env.DOMAIN_PORT}/callback?user=${encodeURIComponent(
-            JSON.stringify(user)
-          )}`
-        );
-      });
-    } catch (error) {
-      res.status(500).json({ message: 'Error en el proceso de autenticación', error: error.message });
+    '/api/auth/callback',
+    passport.authenticate('google', { failureRedirect: '/' }),
+    (req, res) => {
+        res.redirect(`${process.env.DOMAIN_URL}:${process.env.DOMAIN_PORT}/auth/callback?user=${encodeURIComponent(JSON.stringify(req.user))}`);
     }
-  }
 );
 
 // Ruta para cerrar sesión
-app.get('/api/auth/logout', (req, res) => {
+app.get('/api/auth/logout', isAuthenticated, (req, res) => {
   req.logout((err) => {
     if (err) return res.status(500).send('Error al cerrar sesión');
     res.redirect(`${process.env.DOMAIN_URL}:${process.env.DOMAIN_PORT}`);
@@ -126,9 +130,11 @@ app.get('/api/auth/logout', (req, res) => {
 
 app.post('/users', async (req, res) => {
   try {
-    const { email, username, password, rol } = req.body;
-    const userId = await userModel.createUser(email, username, password, rol);
-    await pictureModel.createDefaultPicture(userId);
+    const { email, username, password } = req.body;
+    const existingUser = await userController.getUserByEmail(email);
+    if (existingUser) return res.status(400).json({message: "L'usuari ya existeix."})
+    const userId = await userController.createUser(email, username, password);
+    await pictureController.createDefaultPicture(userId);
     res.status(201).json({ id: userId, message: 'Usuario creado exitosamente' });
   } catch (error) {
     res.status(500).json({ message: 'Error al crear usuario', error: error.message });
@@ -144,8 +150,8 @@ app.post('/testDB', async (req, res) => {
       const rol = 'cliente';
   
       // Crear usuario y asignar imagen por defecto
-      const userId = await userModel.createUser(email, username, password, rol);
-      await pictureModel.createDefaultPicture(userId);
+      const userId = await userController.createUser(email, username, password, rol);
+      await pictureController.createDefaultPicture(userId);
   
       // Respuesta de éxito
       res.status(201).json({
@@ -163,9 +169,9 @@ app.post('/testDB', async (req, res) => {
   
 
 // Obtener usuario
-app.get('/users/:id', async (req, res) => {
+app.get('/users/:id', isAdmin, async (req, res) => {
   try {
-    const user = await userModel.getUser(req.params.id);
+    const user = await userController.getUser(req.params.id);
     if (user) {
       res.json(user);
     } else {
@@ -177,9 +183,9 @@ app.get('/users/:id', async (req, res) => {
 });
 
 // Eliminar usuario
-app.delete('/users/:id', async (req, res) => {
+app.delete('/users/:id', isAdmin, async (req, res) => {
   try {
-    await userModel.deleteUser(req.params.id);
+    await userController.deleteUser(req.params.id);
     res.json({ message: 'Usuario eliminado exitosamente' });
   } catch (error) {
     res.status(500).json({ message: 'Error al eliminar usuario', error: error.message });
@@ -188,10 +194,10 @@ app.delete('/users/:id', async (req, res) => {
 
 // IMÁGENES -------------------------------------------------------------------------------
 // Crear imagen
-app.post('/pictures', async (req, res) => {
+app.post('/pictures', isAuthenticated, async (req, res) => {
   try {
     const { path, userId } = req.body;
-    const pictureId = await pictureModel.createPicture(path, userId);
+    const pictureId = await pictureController.createPicture(path, userId);
     res.status(201).json({ id: pictureId, message: 'Imagen creada exitosamente' });
   } catch (error) {
     res.status(500).json({ message: 'Error al crear imagen', error: error.message });
@@ -199,10 +205,10 @@ app.post('/pictures', async (req, res) => {
 });
 
 // Establecer imagen activa
-app.put('/pictures/:id/setActive', async (req, res) => {
+app.put('/pictures/:id/setActive', isAuthenticated, async (req, res) => {
   try {
     const { userId } = req.body;
-    await pictureModel.setActivePicture(req.params.id, userId);
+    await pictureController.setActivePicture(req.params.id, userId);
     res.json({ message: 'Imagen establecida como activa exitosamente' });
   } catch (error) {
     res.status(500).json({ message: 'Error al establecer imagen activa', error: error.message });
@@ -210,9 +216,9 @@ app.put('/pictures/:id/setActive', async (req, res) => {
 });
 
 // Obtener imagen activa de un usuario
-app.get('/users/:userId/activePicture', async (req, res) => {
+app.get('/users/:userId/activePicture', isAdmin, async (req, res) => {
   try {
-    const activePicture = await pictureModel.getActivePicture(req.params.userId);
+    const activePicture = await pictureController.getActivePicture(req.params.userId);
     if (activePicture) {
       res.json(activePicture);
     } else {

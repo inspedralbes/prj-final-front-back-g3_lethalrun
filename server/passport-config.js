@@ -1,6 +1,12 @@
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import dotenv from 'dotenv';
+import createUserModel from './controllers/userController.js';
+import db from './sql/connectDB.js';
+import crypto from 'crypto';
+import bcrypt from 'bcrypt';
+
+const userController = createUserModel(db);
 
 dotenv.config();
 
@@ -15,16 +21,50 @@ passport.use(
 
     async (accessToken, refreshToken, profile, done) => {
 
-      //Google values
-      const user = {
-        googleId: profile.id,
-        name: profile.displayName,
-        email: profile.emails[0].value,
-        photo: profile.photos?.[0]?.value || null,
-      };
+      try {
+        let user = await userModel.getUserByEmail(profile.emails[0].value);
+          if (!user) {
+            const randomPassword = crypto.randomBytes(16).toString('hex');
+            const userId = await userModel.createUser(req.user.email, req.user.displayName, randomPassword);
+            await pictureController.createDefaultPicture(userId);
+            user = await userModel.getUser(userId);
+          }
+          return done(null, user);
+      } catch (error) {
+        return done(error, null);
+      }
 
-      return done(null, user);
-      
+    }
+  )
+);
+
+// Configura el login local con email y contraseña
+passport.use(
+  new LocalStrategy(
+    {
+      usernameField: 'email', // Campo de email
+      passwordField: 'password', // Campo de contraseña
+    },
+    async (email, password, done) => {
+      try {
+
+        // Busca un usuario por email
+        const user = await userController.getUserByEmail(email);
+        if (!user) {
+          return done(null, false, { message: 'Usuario no encontrado' });
+        }
+
+        // Compara la contraseña proporcionada con la almacenada
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+          return done(null, false, { message: 'Contraseña incorrecta' });
+        }
+
+        return done(null, user);
+
+      } catch (error) {
+        return done(error, null);
+      }
     }
   )
 );
@@ -34,7 +74,6 @@ passport.serializeUser((user, done) => {
   done(null, user);
 });
 
-// Deserializa el usuario de la sesión
 passport.deserializeUser((user, done) => {
   done(null, user);
 });
