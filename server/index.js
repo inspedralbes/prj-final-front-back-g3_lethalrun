@@ -74,7 +74,7 @@ function isAdmin() {
 // LOGIN CON EMAIL I CONTRASENYA -------------------------------------------------------------
 
 // Ruta para login con email y contraseña
-app.post('/api/auth/login', isAuthenticated, (req, res, next) => {
+app.post('/api/auth/login', (req, res, next) => {
     passport.authenticate('local', (err, user, info) => {
         if (err) {
             return res.status(500).json({ message: 'Error en el servidor', error: err.message });
