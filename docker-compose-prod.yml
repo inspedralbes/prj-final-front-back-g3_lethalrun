@@ -20,8 +20,7 @@ services:
     ports:
       - 3000:3000
     command: sh -c "npm install && npm run start"
-    # depends_on:
-    #   - db
+   
 
   nuxt:
   container_name: lethalrun_nuxt
