@@ -41,13 +41,15 @@ onMounted(async () => {
         error.value = 'Token not provided';
         return;
     }
-    
+    console.log('verifying token...', token)
     try {
+        console.log('fetching....')
         const response = await $fetch(`${config.public.apiUrl}/verify/${token}`, {
             method: 'POST',
         });
 
         success.value = response;
+        console.log('success value', success)
 
         // Si la validación es exitosa, redirigimos a /auth/login
         setTimeout(() => {
@@ -55,6 +57,7 @@ onMounted(async () => {
         }, 2000); // Agrega un pequeño retraso antes de redirigir
 
     } catch (err) {
+        console.log(err)
         error.value = err.data ? err.data : 'An error occurred';
     }
 });

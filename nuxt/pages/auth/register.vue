@@ -56,14 +56,15 @@ const togglePassword = () => {
 };
 
 const register = async () => {
-  isLoading = true
+  console.log({ email: email.value, password: password.value })
   try {
+    console.log('enviando solicitud de registro...')
     const response = await $fetch(`${config.public.apiUrl}/send-verification-email`, {
       method: 'POST',
       body: { username: username.value, email: email.value, password: password.value },
       credentials: 'include',
     });
-    console.log('Registro exitoso', response);
+    console.log('Solicitud de registro enviada exitosamente', response);
   } catch (error) {
     console.error('Error en el registro', error);
   }
