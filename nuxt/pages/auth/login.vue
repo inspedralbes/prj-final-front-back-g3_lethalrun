@@ -34,7 +34,7 @@ const handleGoogleLogin = () => {
 
 <template>
   <div class="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-    <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8 max-w-md w-full">
+    <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8 max-w-md w-96">
       <h1 class="text-2xl font-semibold text-center text-gray-900 dark:text-white mb-6">Iniciar Sesión</h1>
       
       <!-- Login Form -->
@@ -98,6 +98,12 @@ const handleGoogleLogin = () => {
         </svg>
         <span>Continuar con Google</span>
       </button>
+
+      <div class="mt-4 text-center">
+        <p class="text-sm text-gray-600 dark:text-gray-300">¿No tienes cuenta? 
+          <NuxtLink to="/auth/register" class="text-blue-500 hover:underline">Registrate</NuxtLink>
+        </p>
+      </div>
 
     </div>
   </div>
