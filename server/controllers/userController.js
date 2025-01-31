@@ -65,6 +65,7 @@ const createUserController = (db) => ({
       throw error;
     }
   }
+
 });
 
 export default createUserController;

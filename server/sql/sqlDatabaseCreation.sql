@@ -16,18 +16,6 @@ CREATE TABLE Pictures (
     FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE SET NULL
 );
 
-CREATE TABLE verification_tokens (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  email VARCHAR(255) NOT NULL,
-  username VARCHAR(255) NOT NULL,
-  password VARCHAR(255) NOT NULL,
-  token VARCHAR(255) NOT NULL UNIQUE,
-  verified BOOLEAN DEFAULT FALSE,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  expires_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP + INTERVAL 24 HOUR)
-);
-
-
 ALTER TABLE Pictures ADD CONSTRAINT uq_user_picture_active UNIQUE (user_id, is_active);
 
 

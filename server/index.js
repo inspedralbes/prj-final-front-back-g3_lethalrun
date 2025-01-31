@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import crypto from 'crypto';
-import passport from './passport-config.js';
+import passport from './googleService.js';
 import session from 'express-session';
 
 import { sendEmailWithButton } from './emailService.js'
@@ -14,7 +14,7 @@ import { sendEmailWithButton } from './emailService.js'
 import db from './sql/connectDB.js';
 import createPictureController from './controllers/pictureController.js';
 import createUserController from './controllers/userController.js';
-import createTokenController from './controllers/tokenController.js';
+import createTokenController from './controllers/verifyTokenController.js';
 
 const tokenController = createTokenController(db);
 const userController = createUserController(db);
@@ -147,7 +147,7 @@ app.post('/send-verification-email', async (req, res) => {
   
     try {
       const token = await tokenController.createToken(email, username, password);
-      const link = `${process.env.DOMAIN_URL}:${process.env.PORT}/verify/${token}`;
+      const link = `${process.env.DOMAIN_URL}:${process.env.DOMAIN_PORT}/verify?token=${token}`;
   
       await sendEmailWithButton(email, link);
       res.send(`Correo de verificación enviado a ${email}`);
@@ -157,7 +157,7 @@ app.post('/send-verification-email', async (req, res) => {
     }
   });
   
-  app.get('/verify/:token', async (req, res) => {
+  app.post('/verify/:token', async (req, res) => {
     const { token } = req.params;
     console.log(`Intento de verificación para el token: ${token}`);
     
@@ -176,6 +176,8 @@ app.post('/send-verification-email', async (req, res) => {
       await registerUser(verificationData.email, verificationData.username, verificationData.password, res);
   
       console.log('Proceso de verificación y registro completado');
+
+      res.status(200).send("Token valido, usuario registrado");
     } catch (error) {
       console.error('Error al verificar el token:', error);
       res.status(500).send("Error al verificar el token.");
@@ -263,24 +265,26 @@ server.listen(PORT, () => console.log(`Servidor corriendo en ${process.env.DOMAI
 //METODOS EXTRA
 
 async function registerUser(email, username, password, res) {
-    console.log(`Intentando registrar usuario: ${username}, email: ${email}`);
-    try {
-      const existingUser = await userController.getUserByEmail(email);
-  
-      if (existingUser) {
-        console.log(`Usuario ya existe: ${email}`);
-        return res.status(400).json({message: "El usuario ya existe."});
-      }
-  
-      const userId = await userController.createUser(email, username, password);
-      console.log(`Usuario creado con ID: ${userId}`);
-  
-      await pictureController.createDefaultPicture(userId);
-      console.log(`Imagen por defecto creada para el usuario: ${userId}`);
-  
-      res.status(201).json({ id: userId, message: 'Usuario creado exitosamente' });
-    } catch (error) {
-      console.error('Error al registrar el usuario:', error);
-      res.status(500).json({ message: "Error al registrar el usuario." });
+    
+  console.log(`Intentando registrar usuario: ${username}, email: ${email}`);
+  try {
+    const existingUser = await userController.getUserByEmail(email);
+
+    if (existingUser) {
+      console.log(`Usuario ya existe: ${email}`);
+      return res.status(400).json({message: "El usuario ya existe."});
     }
+
+    const userId = await userController.createUser(email, username, password);
+    console.log(`Usuario creado con ID: ${userId}`);
+
+    await pictureController.createDefaultPicture(userId);
+    console.log(`Imagen por defecto creada para el usuario: ${userId}`);
+
+    res.status(201).json({ id: userId, message: 'Usuario creado exitosamente' });
+  } catch (error) {
+    console.error('Error al registrar el usuario:', error);
+    res.status(500).json({ message: "Error al registrar el usuario." });
   }
+};
+
