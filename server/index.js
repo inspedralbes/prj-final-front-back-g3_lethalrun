@@ -9,10 +9,14 @@ import crypto from 'crypto';
 import passport from './passport-config.js';
 import session from 'express-session';
 
+import { sendEmailWithButton } from './emailService.js'
+
 import db from './sql/connectDB.js';
 import createPictureController from './controllers/pictureController.js';
 import createUserController from './controllers/userController.js';
+import createTokenController from './controllers/tokenController.js';
 
+const tokenController = createTokenController(db);
 const userController = createUserController(db);
 const pictureController = createPictureController(db);
 
@@ -132,58 +136,64 @@ app.get('/api/auth/logout', isAuthenticated, (req, res) => {
   });
 });
 
+//EMAILS ----------------------------------------------------------------------------------
+
+app.post('/send-verification-email', async (req, res) => {
+    const { email, username, password } = req.body;
+  
+    if (!email) {
+      return res.status(400).send("El correo electrónico es requerido.");
+    }
+  
+    try {
+      const token = await tokenController.createToken(email, username, password);
+      const link = `${process.env.DOMAIN_URL}:${process.env.PORT}/verify/${token}`;
+  
+      await sendEmailWithButton(email, link);
+      res.send(`Correo de verificación enviado a ${email}`);
+    } catch (error) {
+      console.error('Error al enviar el correo de verificación:', error);
+      res.status(500).send("Hubo un error al enviar el correo de verificación.");
+    }
+  });
+  
+  app.get('/verify/:token', async (req, res) => {
+    const { token } = req.params;
+    console.log(`Intento de verificación para el token: ${token}`);
+    
+    try {
+      console.log('Iniciando verificación del token...');
+      const verificationData = await tokenController.verifyToken(token);
+  
+      if (!verificationData) {
+        console.log('Token inválido o expirado');
+        return res.status(400).send("Token inválido o expirado.");
+      }
+  
+      console.log('Token verificado exitosamente. Datos:', verificationData);
+  
+      console.log('Iniciando registro de usuario...');
+      await registerUser(verificationData.email, verificationData.username, verificationData.password, res);
+  
+      console.log('Proceso de verificación y registro completado');
+    } catch (error) {
+      console.error('Error al verificar el token:', error);
+      res.status(500).send("Error al verificar el token.");
+    }
+  });
+
+
 // USUARIOS -------------------------------------------------------------------------------
 
 // Crear usuario / registrarse
-app.post('/users', async (req, res) => {
+app.post('/users', isAdmin, async (req, res) => {
   try {
     const { email, username, password } = req.body;
-    
-    console.log('findBymail')
-    const existingUser = await userController.getUserByEmail(email);
-
-    if (existingUser) return res.status(400).json({message: "L'usuari ya existeix."})
-
-    console.log('creating user...')
-    const userId = await userController.createUser(email, username, password);
-
-    console.log('creating picture...')
-    await pictureController.createDefaultPicture(userId);
-
-    res.status(201).json({ id: userId, message: 'Usuario creado exitosamente' });
+    registerUser(email, username, password);
   } catch (error) {
     res.status(500).json({ message: 'Error al crear usuario', error: error.message });
   }
 });
-
-app.post('/testDB', async (req, res) => {
-    try {
-      // Datos de prueba
-      const email = 'hola@example.com';
-      const username = 'TestUser';
-      const password = 'password123';
-        
-      console.log('Apunto de crear usuario.')
-      // Crear usuario y asignar imagen por defecto
-      const userId = await userController.createUser(email, username, password);
-      console.log('El usuario se acaba de crear.')
-
-      await pictureController.createDefaultPicture(userId);
-  
-      // Respuesta de éxito
-      res.status(201).json({
-        message: 'Prueba exitosa: Usuario creado correctamente',
-        userId,
-      });
-    } catch (error) {
-      // Manejo de errores
-      res.status(500).json({
-        message: 'Prueba fallida: Error al crear usuario',
-        error: error.message,
-      });
-    }
-  });
-  
 
 // Obtener usuario
 app.get('/users/:id', isAdmin, async (req, res) => {
@@ -248,3 +258,29 @@ app.get('/users/:userId/activePicture', isAdmin, async (req, res) => {
 
 // INICIAR SERVIDOR -----------------------------------------------------------------------
 server.listen(PORT, () => console.log(`Servidor corriendo en ${process.env.DOMAIN_URL}:${PORT}`));
+
+
+//METODOS EXTRA
+
+async function registerUser(email, username, password, res) {
+    console.log(`Intentando registrar usuario: ${username}, email: ${email}`);
+    try {
+      const existingUser = await userController.getUserByEmail(email);
+  
+      if (existingUser) {
+        console.log(`Usuario ya existe: ${email}`);
+        return res.status(400).json({message: "El usuario ya existe."});
+      }
+  
+      const userId = await userController.createUser(email, username, password);
+      console.log(`Usuario creado con ID: ${userId}`);
+  
+      await pictureController.createDefaultPicture(userId);
+      console.log(`Imagen por defecto creada para el usuario: ${userId}`);
+  
+      res.status(201).json({ id: userId, message: 'Usuario creado exitosamente' });
+    } catch (error) {
+      console.error('Error al registrar el usuario:', error);
+      res.status(500).json({ message: "Error al registrar el usuario." });
+    }
+  }
