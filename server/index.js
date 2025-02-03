@@ -7,8 +7,8 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import passport from './googleService.js';
 import session from 'express-session';
-
-import { sendEmailWithButton } from './emailService.js'
+import bcrypt from 'bcrypt';
+import { sendVerificationEmail, sendPasswordResetEmail } from './emailService.js'
 
 import db from './sql/connectDB.js';
 import createPictureController from './controllers/pictureController.js';
@@ -148,7 +148,7 @@ app.post('/send-verification-email', async (req, res) => {
     const token = await tokenController.createToken(email, username, password);
     const link = `${process.env.DOMAIN_URL}:${process.env.DOMAIN_PORT}/auth/verify-register?token=${token}`;
 
-    await sendEmailWithButton(email, link);
+    await sendVerificationEmail(email, link);
     res.status(200).json({ message: `Correo de verificación enviado a ${email}` })
   } catch (error) {
     console.error('Error al enviar el correo de verificación:', error);
@@ -156,7 +156,40 @@ app.post('/send-verification-email', async (req, res) => {
   }
 });
 
-app.post('/verify/:token', async (req, res) => {
+app.post('/send-password-reset-email', async (req, res) => {
+
+  const { email } = req.body;
+  console.log("1");
+  if (!email) {
+    return res.status(400).send("El correo electrónico es requerido.");
+  }
+  console.log("1");
+  try {
+    // Verificar si el email existe en la base de datos
+    const user = await userController.getUserByEmail(email);
+    if (!user) {
+      return res.status(404).send("No se encontró un usuario con ese correo electrónico.");
+    }
+
+    // Crear un token para restablecer la contraseña
+    const token = await tokenController.createPasswordResetToken(email);
+    const link = `${process.env.DOMAIN_URL}:${process.env.DOMAIN_PORT}/auth/reset-password?token=${token}`;
+
+    
+
+    // Enviar el correo con el enlace para restablecer la contraseña
+    await sendPasswordResetEmail(email, link);
+    res.status(200).json({ message: `Correo para restablecer contraseña enviado a ${email}` });
+  } catch (error) {
+    console.error('Error al enviar el correo para restablecer contraseña:', error);
+    res.status(500).send("Hubo un error al enviar el correo para restablecer la contraseña.");
+  }
+});
+
+
+
+app.post('/verify-email/:token', async (req, res) => {
+
   const { token } = req.params;
   //console.log(`Intento de verificación para el token: ${token}`);
 
@@ -196,6 +229,43 @@ app.post('/verify/:token', async (req, res) => {
   }
 });
 
+app.post('/reset-password/:token', async (req, res) => {
+
+  const { newPassword } = req.body;
+  const { token } = req.params
+
+  if (!token || !newPassword) {
+    return res.status(400).json({ message: "Token y nueva contraseña son requeridos." });
+  }
+
+  try {
+    
+    const tokenData = await tokenController.verifyToken(token);
+
+    if (!tokenData) {
+      return res.status(400).json({ message: "Token inválido o expirado." });
+    }
+
+    // Buscar al usuario por email
+    const user = await userController.getUserByEmail(tokenData.email);
+
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado." });
+    }
+
+    // Hashear la nueva contraseña
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+    // Actualizar la contraseña del usuario
+    await userController.changePassword(user, hashedPassword);
+
+    res.status(200).json({ message: "Contraseña actualizada con éxito." });
+  } catch (error) {
+    console.error('Error al restablecer la contraseña:', error);
+    res.status(500).json({ message: "Error al restablecer la contraseña." });
+  }
+});
 
 // USUARIOS -------------------------------------------------------------------------------
 

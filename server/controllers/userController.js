@@ -64,6 +64,26 @@ const createUserController = (db) => ({
       console.error('Error deleting user:', error);
       throw error;
     }
+  },
+
+  async changePassword(user, hashedPassword) {
+    const connection = await db.getConnection();
+    try {
+      await connection.beginTransaction();
+
+      // Actualizar la contraseña en la base de datos
+      const query = 'UPDATE Users SET password = ? WHERE id = ?';
+      await connection.execute(query, [hashedPassword, user.id]);
+
+      await connection.commit();
+      return true;
+    } catch (error) {
+      await connection.rollback();
+      console.error('Error changing password:', error);
+      throw error;
+    } finally {
+      connection.release();
+    }
   }
 
 });

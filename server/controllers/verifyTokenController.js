@@ -29,6 +29,13 @@ const verifyTokenController = () => {
       return token;
     },
 
+    async createPasswordResetToken(email) {
+      const token = generateVerificationToken(email);
+      const expiresAt = Date.now() + 3600000; // 1 hora
+      tokenStore.set(token, { email, type: 'passwordReset', expiresAt });
+      return token;
+    },
+
     async verifyToken(token) {
       const tokenData = tokenStore.get(token);
       if (tokenData && Date.now() <= tokenData.expiresAt) {
