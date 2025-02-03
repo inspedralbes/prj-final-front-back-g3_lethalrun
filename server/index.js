@@ -5,7 +5,6 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import path from 'path';
-import crypto from 'crypto';
 import passport from './googleService.js';
 import session from 'express-session';
 
@@ -289,7 +288,9 @@ app.get('/users/:userId/activePicture', isAdmin, async (req, res) => {
 });
 
 // INICIAR SERVIDOR -----------------------------------------------------------------------
-server.listen(PORT, () => //console.log(`Servidor corriendo en ${process.env.DOMAIN_URL}:${PORT}`));
+server.listen(PORT, () => {
+  console.log(`Servidor corriendo en ${process.env.DOMAIN_URL}:${PORT}`)
+});
 
 
 //METODOS EXTRA
