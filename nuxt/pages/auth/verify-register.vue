@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col items-center justify-center min-h-screen bg-gray-100">
         <h1 class="text-2xl font-semibold mb-4">Verificando el registro</h1>
-        
+
         <!-- Error message -->
         <div v-if="error" class="text-red-500 bg-red-100 border border-red-400 p-4 rounded-md mb-4">
             <p>{{ error }}</p>
@@ -14,7 +14,8 @@
 
         <!-- Loading spinner while waiting -->
         <div v-if="!error && !success" class="flex items-center justify-center space-x-2">
-            <svg class="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg class="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
             <span class="text-lg text-blue-500">Verificando...</span>

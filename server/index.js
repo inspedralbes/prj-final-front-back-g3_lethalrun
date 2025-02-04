@@ -9,6 +9,7 @@ import passport from './googleService.js';
 import session from 'express-session';
 import bcrypt from 'bcrypt';
 import { sendVerificationEmail, sendPasswordResetEmail } from './emailService.js'
+// import userController from './controllers/userController.js';
 
 import db from './sql/connectDB.js';
 import createPictureController from './controllers/pictureController.js';
