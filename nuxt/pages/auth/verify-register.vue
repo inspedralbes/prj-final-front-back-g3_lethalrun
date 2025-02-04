@@ -45,7 +45,7 @@ onMounted(async () => {
     console.log('verifying token...', token)
     try {
         console.log('fetching....')
-        const response = await $fetch(`${config.public.apiUrl}/verify/${token}`, {
+        const response = await $fetch(`${config.public.apiUrl}/verify-email/${token}`, {
             method: 'POST',
         });
 
