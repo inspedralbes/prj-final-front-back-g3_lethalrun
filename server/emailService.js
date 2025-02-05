@@ -11,7 +11,12 @@ const oauth2Client = new google.auth.OAuth2(
   "https://developers.google.com/oauthplayground"
 );
 
-// Configurar el transportador de Nodemailer
+oauth2Client.setCredentials({
+  refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
+  scope: 'https://www.googleapis.com/auth/gmail.send'
+});
+
+
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -20,10 +25,7 @@ const transporter = nodemailer.createTransport({
     clientId: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
-    accessToken: async () => {
-      const { token } = await oauth2Client.getAccessToken();
-      return token;
-    },
+    accessToken: oauth2Client.getAccessToken() 
   },
 });
 
