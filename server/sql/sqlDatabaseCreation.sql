@@ -13,11 +13,7 @@ CREATE TABLE Pictures (
     is_active BOOLEAN NOT NULL, 
     path VARCHAR(255) NOT NULL DEFAULT 'default.png',
     user_id INT,
-    FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE SET NULL
+    FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE
 );
 
 ALTER TABLE Pictures ADD CONSTRAINT uq_user_picture_active UNIQUE (user_id, is_active);
-
-
-
-
