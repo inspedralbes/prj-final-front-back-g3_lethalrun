@@ -55,21 +55,31 @@ const fetchNONProtectedRoute = async () => {
 </script>
 
 <template>
-  <div class="container mx-auto p-4">
-    <h1 class="text-3xl font-bold mb-4">Nuxt Routing set up successfully!</h1>
-    <p class="mb-2">Current route: {{ route.path }}</p>
-    <div class="mb-4">
-      <NuxtLink to="/hola" class="text-blue-500 hover:underline">ruta /hola</NuxtLink>
+    <div class="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+      <div class="text-center max-w-md">
+        <h1 class="text-4xl font-bold text-gray-900">Bienvenido a Nuestra Plataforma</h1>
+        <p class="text-gray-600 mt-2">Empieza a aprender y mejorar tus habilidades con nuestras herramientas interactivas.</p>
+        
+        <div v-if="!store.getIsAuthenticated" class="mt-6 flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <NuxtLink 
+            to="/auth/login" 
+            class="px-6 py-3 bg-blue-600 text-white rounded-lg text-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            Iniciar sesión
+          </NuxtLink>
+          
+          <NuxtLink 
+            to="/auth/register" 
+            class="px-6 py-3 border border-blue-600 text-blue-600 rounded-lg text-lg font-semibold hover:bg-blue-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+            Registrarse
+          </NuxtLink>
+        </div>
+        <div v-else class="mt-6 flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <NuxtLink 
+            to="/dashboard" 
+            class="px-6 py-3 bg-blue-600 text-white rounded-lg text-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            Dashboard
+          </NuxtLink>
+        </div>
+      </div>
     </div>
-    <div class="mb-4">
-      <NuxtLink to="/auth/login" class="text-blue-500 hover:underline">ruta /auth/login</NuxtLink>
-    </div>
-    <div class="mb-4">
-      <NuxtLink to="/auth/register" class="text-blue-500 hover:underline">ruta /auth/register</NuxtLink>
-    </div>
-    <div class="space-x-4">
-      <button @click="fetchNONProtectedRoute" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">Ruta NO Protegida</button>
-      <button @click="fetchProtectedRoute" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700">Ruta Protegida</button>
-    </div>
-  </div>
-</template>
+  </template>

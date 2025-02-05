@@ -26,9 +26,9 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'nuxt/app';
+import { useAuth } from "@/services/auth";
 
-const config = useRuntimeConfig();
-
+const { verifyEmailToken } = useAuth();
 const route = useRoute();
 const router = useRouter();
 
@@ -39,27 +39,21 @@ onMounted(async () => {
     const token = route.query.token;
 
     if (!token) {
-        error.value = 'Token not provided';
+        error.value = "Token not provided";
         return;
     }
-    console.log('verifying token...', token)
-    try {
-        console.log('fetching....')
-        const response = await $fetch(`${config.public.apiUrl}/verify-email/${token}`, {
-            method: 'POST',
-        });
 
+    try {
+        const response = await verifyEmailToken(token);
         success.value = response;
-        console.log('success value', success)
 
         // Si la validación es exitosa, redirigimos a /auth/login
         setTimeout(() => {
-            router.push('/auth/login');
+            router.push("/auth/login");
         }, 2000); // Agrega un pequeño retraso antes de redirigir
-
     } catch (err) {
-        console.log(err)
-        error.value = err.data ? err.data : 'An error occurred';
+        console.log(err);
+        error.value = err.data ? err.data : "An error occurred";
     }
 });
 </script>

@@ -14,7 +14,7 @@
         </div>
 
         <!-- Password reset form -->
-        <form v-if="!success" @submit.prevent="resetPassword" class="w-80 bg-white p-6 rounded-md shadow-md">
+        <form v-if="!success" @submit.prevent="handleResetPassword" class="w-80 bg-white p-6 rounded-md shadow-md">
             <input v-model="newPassword" type="password" placeholder="Escribe tu nueva contraseña"
                 class="w-full px-4 py-2 border rounded-md mb-4" required />
             <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">
@@ -34,27 +34,22 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRoute, useRouter } from 'nuxt/app';
-
-const config = useRuntimeConfig();
+import { ref } from 'vue';
+import { useRoute } from 'nuxt/app';
+import { useAuth } from "@/services/auth";
 
 const route = useRoute();
-const router = useRouter();
+const { resetPassword } = useAuth();
 
 const newPassword = ref('');
 const success = ref(null);
 const error = ref(null);
 const loading = ref(false);
 
-const resetPassword = async () => {
+const handleResetPassword = async () => {
     const token = route.query.token;
     if (!token) {
-        error.value = 'Token no proporcionado';
-        return;
-    }
-    if (newPassword.value.length < 6) {
-        error.value = 'La contraseña debe tener al menos 6 caracteres';
+        error.value = "Token no proporcionado";
         return;
     }
 
@@ -63,34 +58,15 @@ const resetPassword = async () => {
     success.value = null;
 
     try {
-        console.log('Enviando solicitud de restablecimiento de contraseña...');
-        await $fetch(`${config.public.apiUrl}/reset-password/${token}`, {
-            method: 'POST',
-            body: { newPassword: newPassword.value },
-        });
-
-        success.value = 'Contraseña restablecida con éxito';
-        newPassword.value = '';
+        await resetPassword(token, newPassword.value);
+        success.value = "Contraseña restablecida con éxito";
+        newPassword.value = "";
     } catch (err) {
-        console.error('Error en el restablecimiento de contraseña:', err);
-
-        if (err.response) {
-            const { status, _data } = err.response;
-            if (status === 400) {
-                error.value = _data.message || 'Token inválido o expirado.';
-            } else if (status === 404) {
-                error.value = 'Usuario no encontrado.';
-            } else {
-                error.value = 'Error al restablecer la contraseña.';
-            }
-        } else {
-            error.value = 'Error inesperado. Inténtalo de nuevo.';
-        }
+        error.value = err.message || "Error al restablecer la contraseña.";
     } finally {
         loading.value = false;
     }
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
