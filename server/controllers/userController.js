@@ -1,6 +1,15 @@
 import bcrypt from 'bcrypt';
+import fs from 'fs/promises';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const createUserController = (db) => ({
+const createUserController = (db) => {
+  
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+
+  return{
+
   async createUser(email, username, password) {
     const connection = await db.getConnection();
     try {
@@ -58,11 +67,31 @@ const createUserController = (db) => ({
   },
 
   async deleteUser(id) {
+    const connection = await db.getConnection();
     try {
-      await db.execute('DELETE FROM Users WHERE id = ?', [id]);
+      await connection.beginTransaction();
+  
+      // Eliminar al usuario de la base de datos
+      await connection.execute('DELETE FROM Users WHERE id = ?', [id]);
+  
+      // Ruta de la carpeta del usuario
+      const userFolderPath = path.join(__dirname, '..', 'images', 'users', id.toString());
+  
+      // Verificar si la carpeta existe y eliminarla
+      try {
+        await fs.rm(userFolderPath, { recursive: true, force: true });
+        console.log(`Carpeta eliminada: ${userFolderPath}`);
+      } catch (err) {
+        console.warn(`No se pudo eliminar la carpeta ${userFolderPath} o no existe.`);
+      }
+  
+      await connection.commit();
     } catch (error) {
+      await connection.rollback();
       console.error('Error deleting user:', error);
       throw error;
+    } finally {
+      connection.release();
     }
   },
 
@@ -86,6 +115,8 @@ const createUserController = (db) => ({
     }
   }
 
-});
+}
+
+};
 
 export default createUserController;

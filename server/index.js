@@ -62,6 +62,7 @@ app.use(
 app.use(express.json());
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(express.static('public'));
 
 // Middleware para proteger rutas
 function isAuthenticated(req, res, next) {
@@ -322,22 +323,44 @@ app.delete('/users/:id', isAdmin, async (req, res) => {
 });
 
 // IMÁGENES -------------------------------------------------------------------------------
-// Crear imagen
-app.post('/pictures', isAuthenticated, async (req, res) => {
+
+// Crear una nueva imagen
+app.post('/pictures', isAuthenticated, pictureController.uploadMiddleware, async (req, res) => {
   try {
-    const { path, userId } = req.body;
-    const pictureId = await pictureController.createPicture(path, userId);
+    if (!req.file) {
+      return res.status(400).json({ message: 'No se ha subido ninguna imagen' });
+    }
+    const pictureId = await pictureController.createPicture(req.file, req.user.id);
     res.status(201).json({ id: pictureId, message: 'Imagen creada exitosamente' });
   } catch (error) {
     res.status(500).json({ message: 'Error al crear imagen', error: error.message });
   }
 });
 
+// Ruta de prueba para subir imágenes
+app.post('/test/upload-picture', pictureController.uploadMiddleware, async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No se ha subido ninguna imagen' });
+    }
+    
+    const { userId, email } = req.body;
+
+    if (!userId || !email) {
+      return res.status(400).json({ message: 'Debe proporcionar userId y email' });
+    }
+    
+    const result = await pictureController.testCreatePicture(req.file, userId, email);
+    res.status(201).json(result);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al crear imagen de prueba', error: error.message });
+  }
+});
+
 // Establecer imagen activa
 app.put('/pictures/:id/setActive', isAuthenticated, async (req, res) => {
   try {
-    const { userId } = req.body;
-    await pictureController.setActivePicture(req.params.id, userId);
+    await pictureController.setActivePicture(req.params.id, req.user.id);
     res.json({ message: 'Imagen establecida como activa exitosamente' });
   } catch (error) {
     res.status(500).json({ message: 'Error al establecer imagen activa', error: error.message });
@@ -345,7 +368,7 @@ app.put('/pictures/:id/setActive', isAuthenticated, async (req, res) => {
 });
 
 // Obtener imagen activa de un usuario
-app.get('/users/:userId/activePicture', isAdmin, async (req, res) => {
+app.get('/users/:userId/activePicture', isAuthenticated, async (req, res) => {
   try {
     const activePicture = await pictureController.getActivePicture(req.params.userId);
     if (activePicture) {
@@ -358,12 +381,45 @@ app.get('/users/:userId/activePicture', isAdmin, async (req, res) => {
   }
 });
 
+// Eliminar una imagen
+app.delete('/pictures/:id', isAuthenticated, async (req, res) => {
+  try {
+    await pictureController.deletePicture(req.params.id, req.user.id);
+    res.json({ message: 'Imagen eliminada exitosamente' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al eliminar imagen', error: error.message });
+  }
+});
+
+// Obtener todas las imágenes de un usuario
+app.get('/users/:userId/pictures', isAuthenticated, async (req, res) => {
+  try {
+    const pictures = await pictureController.getUserPictures(req.params.userId);
+    res.json(pictures);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener imágenes del usuario', error: error.message });
+  }
+});
+
+// Actualizar una imagen existente
+app.put('/pictures/:id', isAuthenticated, pictureController.uploadMiddleware, async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No se ha subido ninguna imagen' });
+    }
+    const updatedPictureId = await pictureController.updatePicture(req.params.id, req.file, req.user.id);
+    res.json({ id: updatedPictureId, message: 'Imagen actualizada exitosamente' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al actualizar imagen', error: error.message });
+  }
+});
+
 // INICIAR SERVIDOR -----------------------------------------------------------------------
 server.listen(PORT, () => {
   console.log(`Servidor corriendo en ${process.env.DOMAIN_URL}:${PORT}`)
 });
 
 
-//METODOS EXTRA
+//METODOS EXTRA-----------------------------------------------------------------------------
 
 
