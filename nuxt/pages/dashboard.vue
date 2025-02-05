@@ -7,8 +7,7 @@
             <button @click="logout" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 cursor-pointer">Cerrar sesión</button>
         </div>
         <div class="space-x-4">
-            <button @click="fetchProtectedRoute" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 cursor-pointer">Ruta Protegida</button>
-            <button @click="fetchNONProtectedRoute" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 cursor-pointer">Ruta NO Protegida</button>
+            
         </div>
     </div>
 </template>
@@ -23,50 +22,5 @@ const user = store.user;
 
 const logout = () => {
     window.location.href = `${config.public.apiUrl}/api/auth/logout`;
-};
-
-const fetchProtectedRoute = async () => {
-    try {
-        const response = await fetch(`${config.public.apiUrl}/api/protected`, {
-            method: 'GET',
-            credentials: 'include', // Para enviar cookies de sesión
-        });
-
-        if (!response.ok) {
-            console.error('Error al acceder a la ruta protegida:', response.statusText);
-            return;
-        }
-
-        const data = await response.json(); // Parsear el cuerpo de la respuesta
-        console.log('Respuesta de la ruta protegida:', data);
-    } catch (err) {
-        if (err instanceof Error) {
-            console.error('Error inesperado:', err.message);
-        } else {
-            console.error('Error inesperado:', err);
-        }
-    }
-};
-const fetchNONProtectedRoute = async () => {
-    try {
-        const response = await fetch(`${config.public.apiUrl}/api/not-protected`, {
-            method: 'GET',
-            credentials: 'include', // Para enviar cookies de sesión
-        });
-
-        if (!response.ok) {
-            console.error('Error al acceder a la ruta protegida:', response.statusText);
-            return;
-        }
-
-        const data = await response.json(); // Parsear el cuerpo de la respuesta
-        console.log('Respuesta de la ruta protegida:', data);
-    } catch (err) {
-        if (err instanceof Error) {
-            console.error('Error inesperado:', err.message);
-        } else {
-            console.error('Error inesperado:', err);
-        }
-    }
 };
 </script>

@@ -57,8 +57,8 @@ const fetchNONProtectedRoute = async () => {
 <template>
     <div class="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
       <div class="text-center max-w-md">
-        <h1 class="text-4xl font-bold text-gray-900">Bienvenido a Nuestra Plataforma</h1>
-        <p class="text-gray-600 mt-2">Empieza a aprender y mejorar tus habilidades con nuestras herramientas interactivas.</p>
+        <h1 class="text-4xl font-bold text-gray-900">Bienvenido a LethalRun</h1>
+        <p class="text-gray-600 mt-2">Añade tus propios grafitis</p>
         
         <div v-if="!store.getIsAuthenticated" class="mt-6 flex flex-col sm:flex-row gap-4 justify-center items-center">
           <NuxtLink 
