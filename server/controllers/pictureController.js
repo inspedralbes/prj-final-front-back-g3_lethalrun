@@ -42,36 +42,37 @@ const createPictureController = (db) => {
       const connection = await db.getConnection();
       try {
         await connection.beginTransaction();
-
-        // Primero, insertamos en la base de datos para obtener el ID de la imagen
+    
+        // Insertar en la base de datos para obtener el ID de la imagen
         const [result] = await connection.execute(
           'INSERT INTO Pictures (user_id, is_active) VALUES (?, TRUE)',
           [userId]
         );
         const pictureId = result.insertId;
-
-        // Ahora generamos el nombre de archivo con el ID de la imagen
+    
+        // Nombre del archivo
         const defaultImageName = 'default.png';
         const newImageName = `${pictureId}_${defaultImageName}`;
-
+    
         // Rutas de las imágenes
         const defaultImagePath = path.join(__dirname, '..', 'images', 'default', defaultImageName);
-        const newImagePath = path.join(__dirname, '..', 'images', 'users', newImageName);
-
-        //crear carpeta de users si no existe
-        if (!fs.existsSync(path.join(__dirname, '..', 'images', 'users'))) {
-          fs.mkdirSync(path.join(__dirname, '..', 'images', 'users'));
+        const userFolderPath = path.join(__dirname, '..', 'images', 'users', userId.toString());
+        const newImagePath = path.join(userFolderPath, newImageName);
+    
+        // Crear carpeta del usuario si no existe
+        if (!fs.existsSync(userFolderPath)) {
+          fs.mkdirSync(userFolderPath, { recursive: true });
         }
-
-        // Duplicar y renombrar la imagen
+    
+        // Copiar y renombrar la imagen
         fs.copyFileSync(defaultImagePath, newImagePath);
-
+    
         // Actualizar el path en la base de datos
         await connection.execute(
           'UPDATE Pictures SET path = ? WHERE id = ?',
-          [newImageName, pictureId]
+          [path.join('users', userId.toString(), newImageName), pictureId]
         );
-
+    
         await connection.commit();
         return pictureId;
       } catch (error) {
@@ -95,19 +96,30 @@ const createPictureController = (db) => {
         );
         const insertId = result.insertId;
     
-        // Crear el nuevo nombre de archivo
+        // Obtener la extensión del archivo
         const fileExtension = path.extname(file.originalname);
         const newFilename = `${insertId}_${path.basename(file.originalname, fileExtension)}${fileExtension}`;
-        
-        // Renombrar el archivo
+    
+        // Ruta de la carpeta del usuario
+        const userFolderPath = path.join('./images', 'users', userId.toString());
+    
+        // Crear carpeta si no existe
+        if (!fs.existsSync(userFolderPath)) {
+          fs.mkdirSync(userFolderPath, { recursive: true });
+        }
+    
+        // Rutas de archivos
         const oldPath = path.join('./images', file.filename);
-        const newPath = path.join('./images', 'users', newFilename);
+        const newPath = path.join(userFolderPath, newFilename);
+    
+        // Mover el archivo a la carpeta del usuario
         fs.renameSync(oldPath, newPath);
     
-        // Actualizar el nombre del archivo en la base de datos
+        // Actualizar la ruta en la base de datos
+        const relativePath = path.join('users', userId.toString(), newFilename);
         await connection.execute(
           'UPDATE Pictures SET path = ? WHERE id = ?',
-          [newFilename, insertId]
+          [relativePath, insertId]
         );
     
         await connection.commit();
@@ -115,26 +127,16 @@ const createPictureController = (db) => {
       } catch (error) {
         await connection.rollback();
         console.error('Error creating picture:', error);
-        
+    
         // Eliminar el archivo temporal si existe
-        if (fs.existsSync(path.join('./images', file.filename))) {
-          fs.unlinkSync(path.join('./images', file.filename));
+        const tempFilePath = path.join('./images', file.filename);
+        if (fs.existsSync(tempFilePath)) {
+          fs.unlinkSync(tempFilePath);
         }
-        
+    
         throw error;
       } finally {
         connection.release();
-      }
-    },
-
-    // Obtener una imagen específica por su ID
-    async getPicture(id) {
-      try {
-        const [rows] = await db.execute('SELECT * FROM Pictures WHERE id = ?', [id]);
-        return rows[0] || null;
-      } catch (error) {
-        console.error('Error getting picture:', error);
-        throw error;
       }
     },
 
