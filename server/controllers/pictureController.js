@@ -1,8 +1,13 @@
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import { fileURLToPath } from 'url';
 
 const createPictureController = (db) => {
+
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+
   // Configuración de multer
   const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -52,6 +57,11 @@ const createPictureController = (db) => {
         // Rutas de las imágenes
         const defaultImagePath = path.join(__dirname, '..', 'images', 'default', defaultImageName);
         const newImagePath = path.join(__dirname, '..', 'images', 'users', newImageName);
+
+        //crear carpeta de users si no existe
+        if (!fs.existsSync(path.join(__dirname, '..', 'images', 'users'))) {
+          fs.mkdirSync(path.join(__dirname, '..', 'images', 'users'));
+        }
 
         // Duplicar y renombrar la imagen
         fs.copyFileSync(defaultImagePath, newImagePath);
