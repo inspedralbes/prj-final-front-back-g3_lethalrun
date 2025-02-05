@@ -101,7 +101,7 @@ const createPictureController = (db) => {
         
         // Renombrar el archivo
         const oldPath = path.join('./images', file.filename);
-        const newPath = path.join('./images', newFilename);
+        const newPath = path.join('./images', 'users', newFilename);
         fs.renameSync(oldPath, newPath);
     
         // Actualizar el nombre del archivo en la base de datos

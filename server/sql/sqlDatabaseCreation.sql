@@ -15,5 +15,3 @@ CREATE TABLE Pictures (
     user_id INT,
     FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE
 );
-
-ALTER TABLE Pictures ADD CONSTRAINT uq_user_picture_active UNIQUE (user_id, is_active);
