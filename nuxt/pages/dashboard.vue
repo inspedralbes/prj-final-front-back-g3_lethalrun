@@ -1,4 +1,14 @@
 <template>
+    <Navbar
+      :logoSrc="'/LethalRun_logo-removebg-preview.png'"
+      :logoLink="'/dashboard'"
+      :menuItems="menuItems"
+      :profileImg="'/profile-icon.jpg'"
+      :profileOptions="profileOptions"
+      :logoutLink="logoutlink"
+      :isLogged="isLogged"
+    />
+
     <div class="container mx-auto p-4">
         <h1 class="text-3xl font-bold mb-4">INFO</h1>
         <div v-if="user" class="bg-white shadow-md rounded-lg p-6 mb-4">
@@ -17,7 +27,21 @@ import { useAppStore } from '@/stores/app';
 
 const store = useAppStore();
 const config = useRuntimeConfig();
+
 const user = store.user;
+
+const menuItems = [
+  { to: '/dashboard', label: 'Dashboard', active: true },
+  { to: '/graffiti/settings', label: 'Graffiti', active: false }
+];
+
+const profileOptions = [
+  { to: '/profile/my-info', label: 'Your Profile' }
+];
+
+const logoutlink = `${config.public.apiUrl}/api/auth/logout`;
+
+const isLogged = store.getIsAuthenticated;
 
 
 const logout = () => {

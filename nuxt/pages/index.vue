@@ -55,6 +55,15 @@ const fetchNONProtectedRoute = async () => {
 </script>
 
 <template>
+    <Navbar
+      :logoSrc="'/LethalRun_logo-removebg-preview.png'"
+      :logoLink="'/dashboard'"
+      :menuItems="menuItems"
+      :profileImg="'/profile-icon.jpg'"
+      :profileOptions="profileOptions"
+      :logoutLink="logoutlink"
+      :isLogged="isLogged"
+    />
     <div class="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
       <div class="text-center max-w-md">
         <h1 class="text-4xl font-bold text-gray-900">Bienvenido a LethalRun</h1>
