@@ -19,7 +19,7 @@
                         <img class="h-8 w-auto" :src="logoSrc" alt="Logo">
                     </NuxtLink>
                     <div class="hidden sm:ml-6 sm:block">
-                        <div class="flex space-x-4">
+                        <div v-if="menuItems.length > 0" class="flex space-x-4">
                             <NuxtLink v-for="item in menuItems" :key="item.to" :to="item.to" class="rounded-md px-3 py-2 text-sm font-medium" :class="item.active ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'">{{ item.label }}</NuxtLink>
                         </div>
                     </div>
@@ -31,12 +31,13 @@
                             <img class="size-8 rounded-full" :src="profileImg" alt="Profile">
                         </button>
                         <div v-if="profileOptionsIsOpen" class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 ring-1 shadow-lg ring-black/5">
-                            <NuxtLink v-for="option in profileOptions" :key="option.to" :to="option.to" class="block px-4 py-2 text-sm text-gray-700">{{ option.label }}</NuxtLink>
+                            <NuxtLink v-if="profileOptions.length > 0" v-for="option in profileOptions" :key="option.to" :to="option.to" class="block px-4 py-2 text-sm text-gray-700">{{ option.label }}</NuxtLink>
                             <a :href="logoutLink" class="block px-4 py-2 text-sm text-gray-700">Sign out</a>
                         </div>
                     </div>
-                    <div v-else>
-                        <NuxtLink to="/auth/login" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Sign in</NuxtLink>
+                    <div v-else class="hidden sm:block">
+                        <NuxtLink v-if="route.path !== '/auth/login'" to="/auth/login" class="text-gray-300 bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 rounded-md text-sm font-medium">Login</NuxtLink>
+                        <NuxtLink v-if="route.path !== '/auth/register'" to="/auth/register" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Register</NuxtLink>
                     </div>
                 </div>
             </div>
@@ -51,6 +52,8 @@
 
 <script setup>
 import { ref } from 'vue';
+
+const route = useRoute();
 
 const props = defineProps({
     logoSrc: { type: String, required: true },

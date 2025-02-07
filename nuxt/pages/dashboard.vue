@@ -1,7 +1,7 @@
 <template>
     <Navbar
       :logoSrc="'/LethalRun_logo-removebg-preview.png'"
-      :logoLink="'/dashboard'"
+      :logoLink="'/'"
       :menuItems="menuItems"
       :profileImg="'/profile-icon.jpg'"
       :profileOptions="profileOptions"
