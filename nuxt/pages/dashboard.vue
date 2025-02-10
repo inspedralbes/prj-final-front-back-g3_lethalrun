@@ -1,5 +1,6 @@
 <template>
-    <Navbar
+  <div class="min-h-screen flex flex-col">
+    <Navbar class="h-min"
       :logoSrc="'/LethalRun_logo-removebg-preview.png'"
       :logoLink="'/'"
       :menuItems="menuItems"
@@ -9,7 +10,8 @@
       :isLogged="isLogged"
     />
 
-    <div class="container mx-auto p-4">
+    <div class="flex-1 container mx-auto p-4">
+      <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         <h1 class="text-3xl font-bold mb-4">INFO</h1>
         <div v-if="user" class="bg-white shadow-md rounded-lg p-6 mb-4">
             <h1 class="text-2xl font-semibold mb-2">Bienvenido, {{ user.username }}</h1>
@@ -19,7 +21,9 @@
         <div class="space-x-4">
             
         </div>
+      </div>
     </div>
+  </div>
 </template>
 
 <script setup>

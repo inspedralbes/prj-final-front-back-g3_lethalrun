@@ -34,8 +34,11 @@ const handleGoogleLogin = () => {
 }
 </script>
 
-<template>
-  <Navbar
+<template >
+  <div class="min-h-screen flex flex-col">
+
+  
+  <Navbar class="h-min"
       :logoSrc="'/LethalRun_logo-removebg-preview.png'"
       :logoLink="'/'"
       :menuItems="[]"
@@ -44,7 +47,7 @@ const handleGoogleLogin = () => {
       :logoutLink="''"
       :isLogged="false"
     />
-  <div class="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+  <div class="flex-1 flex items-center justify-center bg-gray-100 dark:bg-gray-900">
     
     <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8 max-w-md w-96">
       <h1 class="text-2xl font-bold text-center text-gray-700 dark:text-white mb-6">Iniciar Sesión</h1>
@@ -139,4 +142,5 @@ const handleGoogleLogin = () => {
 
     </div>
   </div>
+</div>
 </template>

@@ -1,6 +1,7 @@
 <template>
+  <div class="min-h-screen flex flex-col">
 
-  <Navbar
+  <Navbar class="h-min"
       :logoSrc="'/LethalRun_logo-removebg-preview.png'"
       :logoLink="'/'"
       :menuItems="[]"
@@ -10,7 +11,7 @@
       :isLogged="false"
     />
 
-  <div class="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+  <div class="flex-1 flex items-center justify-center bg-gray-100 dark:bg-gray-900">
     <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg w-96">
       <h2 class="text-2xl font-bold text-center text-gray-700 dark:text-white mb-6">Registro</h2>
       <form @submit.prevent="handleRegister" class="space-y-4">
@@ -59,6 +60,7 @@
       </div>
     </div>
   </div>
+</div>
 </template>
 
 <script setup>
