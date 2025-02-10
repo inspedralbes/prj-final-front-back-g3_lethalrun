@@ -23,6 +23,35 @@ export function useGraffitis() {
         }
     };
 
+    const uploadGraffiti = async (formData) => {
+        try {
+            const response = await $fetch(`${BASE_URL}/pictures`, {
+                method: "POST",
+                credentials: "include",
+                body: formData, // Asegúrate de que `formData` es un FormData
+                // headers: {
+                //     'Content-Type': 'multipart/form-data', // No es necesario establecer esto explícitamente en algunos casos
+                // }
+            });
+            return response;
+        } catch (error) {
+            console.error("Error al subir el graffiti:", error);
+            throw error;
+        }
+    }    
+
+    const setActiveGraffiti = async (graffitiId) => {
+        try {
+            return await $fetch(`${BASE_URL}/pictures/${graffitiId}/setActive`, {
+                method: "PUT",
+                credentials: "include",
+            });
+        } catch (error) {
+            console.error("Error al eliminar el graffiti:", error);
+            throw error;
+        }
+    }
+
     const deleteGraffiti = async (id) => {
         try {
             return await $fetch(`${BASE_URL}/pictures/${id}`, {
@@ -35,4 +64,10 @@ export function useGraffitis() {
         }
     }
 
+    return {
+        getGraffitis,
+        uploadGraffiti,
+        setActiveGraffiti,
+        deleteGraffiti
+    }
 }
