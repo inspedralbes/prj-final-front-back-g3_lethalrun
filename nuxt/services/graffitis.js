@@ -25,7 +25,9 @@ export function useGraffitis() {
 
     const uploadGraffiti = async (formData) => {
         try {
+            // const response = await $fetch(`${BASE_URL}/pictures`, {
             const response = await $fetch(`${BASE_URL}/pictures`, {
+
                 method: "POST",
                 credentials: "include",
                 body: formData, // Asegúrate de que `formData` es un FormData
