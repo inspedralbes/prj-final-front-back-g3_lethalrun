@@ -15,10 +15,11 @@ import db from './sql/connectDB.js';
 import createPictureController from './controllers/pictureController.js';
 import createUserController from './controllers/userController.js';
 import createTokenController from './controllers/verifyTokenController.js';
+import initializeSocket from './controllers/socketController.js';
 
-const tokenController = createTokenController(db);
-const userController = createUserController(db);
 const pictureController = createPictureController(db);
+const userController = createUserController(db);
+const tokenController = createTokenController(db);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,13 +31,7 @@ const PORT = process.env.PORT;
 // Configuración del servidor
 const app = express();
 const server = http.createServer(app);
-
-const io = new Server(server, {
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST'],
-  },
-});
+const io = initializeSocket(server);
 
 // Middlewares
 app.use(
@@ -62,7 +57,7 @@ app.use(
 app.use(express.json());
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(express.static('public'));
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 // Middleware para proteger rutas
 function isAuthenticated(req, res, next) {
@@ -93,7 +88,7 @@ app.post('/api/auth/login', (req, res, next) => {
         return res.status(500).json({ message: 'Error al iniciar sesión', error: err.message });
       }
 
-      res.status(200).json({ redirectUrl: `${process.env.DOMAIN_URL}:${process.env.DOMAIN_PORT}/auth/callback?user=${encodeURIComponent(JSON.stringify(req.user))}` });
+      res.status(200).json({ redirectUrl: `${process.env.DOMAIN_URL}:${process.env.WEB_PORT}/auth/callback?user=${encodeURIComponent(JSON.stringify(req.user))}` });
 
     });
   })(req, res, next);
@@ -125,7 +120,7 @@ app.get(
   '/api/auth/callback',
   passport.authenticate('google', { failureRedirect: '/' }),
   (req, res) => {
-    res.redirect(`${process.env.DOMAIN_URL}:${process.env.DOMAIN_PORT}/auth/callback?user=${encodeURIComponent(JSON.stringify(req.user))}`);
+    res.redirect(`${process.env.DOMAIN_URL}:${process.env.WEB_PORT}/auth/callback?user=${encodeURIComponent(JSON.stringify(req.user))}`);
   }
 );
 
@@ -133,7 +128,7 @@ app.get(
 app.get('/api/auth/logout', isAuthenticated, (req, res) => {
   req.logout((err) => {
     if (err) return res.status(500).send('Error al cerrar sesión');
-    res.redirect(`${process.env.DOMAIN_URL}:${process.env.DOMAIN_PORT}`);
+    res.redirect(`${process.env.DOMAIN_URL}:${process.env.WEB_PORT}`);
   });
 });
 
@@ -148,7 +143,7 @@ app.post('/send-verification-email', async (req, res) => {
 
   try {
     const token = await tokenController.createToken(email, username, password);
-    const link = `${process.env.DOMAIN_URL}:${process.env.DOMAIN_PORT}/auth/verify-register?token=${token}`;
+    const link = `${process.env.DOMAIN_URL}:${process.env.WEB_PORT}/auth/verify-register?token=${token}`;
 
     await sendVerificationEmail(email, link);
     res.status(200).json({ message: `Correo de verificación enviado a ${email}` })
@@ -175,7 +170,7 @@ app.post('/send-password-reset-email', async (req, res) => {
 
     // Crear un token para restablecer la contraseña
     const token = await tokenController.createPasswordResetToken(email);
-    const link = `${process.env.DOMAIN_URL}:${process.env.DOMAIN_PORT}/auth/reset-password?token=${token}`;
+    const link = `${process.env.DOMAIN_URL}:${process.env.WEB_PORT}/auth/reset-password?token=${token}`;
 
     
 
@@ -332,28 +327,10 @@ app.post('/pictures', isAuthenticated, pictureController.uploadMiddleware, async
     }
     const pictureId = await pictureController.createPicture(req.file, req.user.id);
     res.status(201).json({ id: pictureId, message: 'Imagen creada exitosamente' });
+    const pictures = await pictureController.getUserPictures(req.user.id);
+    io.emit('create-picture', pictures);
   } catch (error) {
     res.status(500).json({ message: 'Error al crear imagen', error: error.message });
-  }
-});
-
-// Ruta de prueba para subir imágenes
-app.post('/test/upload-picture', pictureController.uploadMiddleware, async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ message: 'No se ha subido ninguna imagen' });
-    }
-    
-    const { userId, email } = req.body;
-
-    if (!userId || !email) {
-      return res.status(400).json({ message: 'Debe proporcionar userId y email' });
-    }
-    
-    const result = await pictureController.testCreatePicture(req.file, userId, email);
-    res.status(201).json(result);
-  } catch (error) {
-    res.status(500).json({ message: 'Error al crear imagen de prueba', error: error.message });
   }
 });
 
@@ -362,30 +339,34 @@ app.put('/pictures/:id/setActive', isAuthenticated, async (req, res) => {
   try {
     await pictureController.setActivePicture(req.params.id, req.user.id);
     res.json({ message: 'Imagen establecida como activa exitosamente' });
+    const pictures = await pictureController.getUserPictures(req.user.id);
+    io.emit('set-active-picture', pictures);
   } catch (error) {
     res.status(500).json({ message: 'Error al establecer imagen activa', error: error.message });
   }
 });
 
-// Obtener imagen activa de un usuario
-app.get('/users/:userId/activePicture', isAuthenticated, async (req, res) => {
-  try {
-    const activePicture = await pictureController.getActivePicture(req.params.userId);
-    if (activePicture) {
-      res.json(activePicture);
-    } else {
-      res.status(404).json({ message: 'Imagen activa no encontrada' });
-    }
-  } catch (error) {
-    res.status(500).json({ message: 'Error al obtener imagen activa', error: error.message });
-  }
-});
+// // Obtener imagen activa de un usuario
+// app.get('/users/:userId/activePicture', isAuthenticated, async (req, res) => {
+//   try {
+//     const activePicture = await pictureController.getActivePicture(req.params.userId);
+//     if (activePicture) {
+//       res.json(activePicture);
+//     } else {
+//       res.status(404).json({ message: 'Imagen activa no encontrada' });
+//     }
+//   } catch (error) {
+//     res.status(500).json({ message: 'Error al obtener imagen activa', error: error.message });
+//   }
+// });
 
 // Eliminar una imagen
 app.delete('/pictures/:id', isAuthenticated, async (req, res) => {
   try {
     await pictureController.deletePicture(req.params.id, req.user.id);
     res.json({ message: 'Imagen eliminada exitosamente' });
+    const pictures = await pictureController.getUserPictures(req.user.id);
+    io.emit('delete-picture', pictures);
   } catch (error) {
     res.status(500).json({ message: 'Error al eliminar imagen', error: error.message });
   }
@@ -409,6 +390,8 @@ app.put('/pictures/:id', isAuthenticated, pictureController.uploadMiddleware, as
     }
     const updatedPictureId = await pictureController.updatePicture(req.params.id, req.file, req.user.id);
     res.json({ id: updatedPictureId, message: 'Imagen actualizada exitosamente' });
+    const pictures = await pictureController.getUserPictures(req.user.id);
+    io.emit('update-picture', pictures);
   } catch (error) {
     res.status(500).json({ message: 'Error al actualizar imagen', error: error.message });
   }
