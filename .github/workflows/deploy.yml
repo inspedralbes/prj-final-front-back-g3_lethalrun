@@ -1,46 +1,62 @@
-name: Deploy to Production
+name: Deploy to Clouding VM
 
 on:
   push:
     branches:
-      - TestingGithubActions
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Paso 1: Checkout del código
-      - name: Checkout código
+      - name: Checkout code
         uses: actions/checkout@v3
-
-      # Paso 2: Configurar clave SSH
-      - name: Configurar clave SSH
+        
+      - name: Set up Git to use HTTPS
         run: |
-          echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+          git config --global url."https://${{ secrets.GH_TOKEN }}@github.com/".insteadOf "git@github.com:"
+      
+      - name: Deploy to Clouding VM
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.CLOUDING_HOST }}
+          username: ${{ secrets.CLOUDING_USER }}
+          key: ${{ secrets.CLOUDING_SSH_KEY }}
+          script: |
+            # Crear un directorio temporal en la VM
+            cd /var/www/lethalrun
+            rm -rf temp_deploy
+            mkdir temp_deploy
+            cd temp_deploy
 
-      # Paso 3: Conectar y desplegar
-      - name: Desplegar a servidor con Docker
-        env:
-          HOST: ${{ secrets.SERVER_URL }}
-          USER: ${{ secrets.SERVER_USER }}
-        run: |
-          ssh -o StrictHostKeyChecking=no $USER@$HOST << EOF
-            echo "Conectando al servidor y desplegando..."
+            # Clonar solo los últimos cambios del repositorio usando HTTPS
+            git clone --depth=1 https://github.com/inspedralbes/prj-final-front-back-g3_lethalrun.git .
             
-            # Cambiar al directorio del proyecto
-            cd /ruta/a/tu/proyecto
+            # Copiar el backend (Node.js) a su ubicación correcta
+            rsync -av --delete server/ /var/www/lethalrun/backend/
+            
+            # Instalar dependencias y apagar el servicio de Node.js
+            cd /var/www/lethalrun/backend/
+            npm install
+            pm2 stop app  # Apagar el servicio (asegúrate de que "app" es el nombre correcto en PM2)
 
-            # Detener y eliminar contenedores existentes
-            echo "Deteniendo contenedores en ejecución..."
-            docker-compose down
+            # Copiar los archivos del frontend (Nuxt) a un directorio temporal
+            rsync -av --delete nuxt/ /var/www/lethalrun/temp_nuxt/
 
-            # Actualizar el código desde el repositorio
-            echo "Actualizando el código..."
-            git pull origin TestingGithubActions
+            # Generar la build en la VM
+            cd /home/usuario/temp_nuxt/
+            npm install
+            npm run build
 
-            # Reconstruir e iniciar los contenedores
-            echo "Reconstruyendo y reiniciando contenedores..."
-            docker-compose up -d --build
-          EOF
+            # Copiar SOLO la carpeta dist generada a frontend
+            rsync -av --delete dist/ /var/www/lethalrun/frontend/
+
+            # Iniciar el servicio nuevamente con PM2
+            pm2 start /var/www/lethalrun/backend/server.js --name "app"  # Iniciar el servicio de Node.js
+
+            # Eliminar archivos temporales
+            cd /home/usuario
+            rm -rf temp_deploy temp_nuxt
+
+            echo "Deployment completed!"
