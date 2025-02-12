@@ -12,7 +12,7 @@ services:
 
   node:
     container_name: lethalrun_node
-    image: node:20.11.1-bullseye-slims
+    image: node:20.11.1-bullseye-slim
     restart: always
     volumes:
       - ./server:/usr/src/app
