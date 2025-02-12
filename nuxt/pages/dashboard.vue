@@ -37,7 +37,6 @@ const user = store.user;
 const menuItems = [
   { to: '/dashboard', label: 'Dashboard', active: true },
   { to: '/graffiti/settings', label: 'Graffiti', active: false },
-  { to: '/test', label: 'Test', active: false }
 ];
 
 const profileOptions = [

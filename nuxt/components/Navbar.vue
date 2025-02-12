@@ -35,7 +35,7 @@
                             <a :href="logoutLink" class="block px-4 py-2 text-sm text-gray-700">Sign out</a>
                         </div>
                     </div>
-                    <div v-else class="hidden sm:block">
+                    <div v-else class="">
                         <NuxtLink v-if="route.path !== '/auth/login'" to="/auth/login" class="text-gray-300 bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 rounded-md text-sm font-medium">Login</NuxtLink>
                         <NuxtLink v-if="route.path !== '/auth/register'" to="/auth/register" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Register</NuxtLink>
                     </div>
