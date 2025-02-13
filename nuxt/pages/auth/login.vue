@@ -63,10 +63,14 @@ const handleGoogleLogin = () => {
         </div>
 
         <!-- Password Input -->
-        <div>
+        <div class="mb-0">
           <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Contraseña</label>
           <input type="password" id="password" v-model="password" required
             class="mt-1 w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" />
+        </div>
+        <!-- Forgot Password Link -->
+        <div class="text-right">
+          <NuxtLink to="/auth/forgot-password" class="text-blue-500 text-sm hover:underline">¿Olvidaste tu contraseña?</NuxtLink>
         </div>
 
         <!-- Submit Button -->
