@@ -55,10 +55,14 @@ import { ref } from 'vue';
 
 const route = useRoute();
 
+const menuItems = [
+  { to: '/dashboard', label: 'Inicio', active: true },
+  { to: '/graffiti/settings', label: 'Graffiti', active: false },
+];
+
 const props = defineProps({
     logoSrc: { type: String, required: true },
     logoLink: { type: String, default: '/' },
-    menuItems: { type: Array, required: true },
     profileImg: { type: String, required: true },
     profileOptions: { type: Array, required: true },
     logoutLink: { type: String, required: true },
