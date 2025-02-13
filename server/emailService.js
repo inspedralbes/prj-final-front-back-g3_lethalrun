@@ -36,61 +36,80 @@ const sendVerificationEmail = async (email, link) => {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verificación de Cuenta</title>
+    <title>Correo Profesional</title>
+    <!--[if mso]>
+    <style type="text/css">
+    table, td {border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;}
+    </style>
+    <![endif]-->
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+        body, html {
             margin: 0;
-            background-color: #f0f0f0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
         }
         .email-container {
-            text-align: center;
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             width: 100%;
-            max-width: 400px;
+            background-color: #f8f9fa;
         }
-        .email-container h1 {
-            color: #333;
+        .email-content {
+            max-width: 600px;
+            width: 100%;
+            background-color: #ffffff;
+            border-radius: 10px;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 28px;
             margin-bottom: 20px;
         }
-        .email-container p {
-            color: #666;
-            font-size: 16px;
-            line-height: 1.5;
-            margin-bottom: 25px;
+        p {
+            color: #34495e;
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 30px;
         }
         .btn {
-            display: inline-block;
-            background-color: #007bff;
+            background-color: #3498db;
             color: white;
             font-size: 18px;
-            padding: 12px 24px;
+            font-weight: bold;
+            padding: 15px 30px;
             text-decoration: none;
             border-radius: 5px;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
         }
-        .btn:hover {
-            background-color: #0056b3;
+        .footer {
+            font-size: 14px;
+            color: #7f8c8d;
         }
     </style>
 </head>
 <body>
-    <div class="email-container">
-        <h1>¡Bienvenido!</h1>
-        <p>Gracias por registrarte. Para continuar, por favor haz clic en el siguiente botón para verificar tu cuenta:</p>
-        
-        <a href="${link}" target="_blank" class="btn">Verificar Cuenta</a>
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" width="100%" class="email-container" style="max-width: 600px;">
+        <tr>
+            <td align="center" valign="top" style="padding: 40px 10px; background-color: #f8f9fa;">
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" class="email-content" style="max-width: 600px;">
+                    <tr>
+                        <td align="center" valign="top" style="padding: 40px; background-color: #ffffff; border-radius: 10px;">
+                            <h1 style="color: #2c3e50; font-size: 28px; margin-bottom: 20px;">¡Bienvenido a Nuestra Plataforma!</h1>
+                            <p style="color: #34495e; font-size: 18px; line-height: 1.6; margin-bottom: 30px;">Gracias por registrarte en nuestro servicio. Para garantizar la seguridad de tu cuenta y comenzar a disfrutar de todos nuestros beneficios, por favor verifica tu dirección de correo electrónico haciendo clic en el botón a continuación:</p>
+                            
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                <tr>
+                                    <td align="center" style="border-radius: 5px;" bgcolor="#3498db">
+                                        <a href="${link}" target="_blank" style="font-size: 18px; font-family: Arial, sans-serif; color: #ffffff; text-decoration: none; padding: 15px 30px; border-radius: 5px; border: 1px solid #3498db; display: inline-block; font-weight: bold;">Verificar mi cuenta</a>
+                                    </td>
+                                </tr>
+                            </table>
 
-    </div>
+                            <p class="footer" style="margin-top: 30px; font-size: 14px; color: #7f8c8d;">Si no has solicitado esta verificación, por favor ignora este mensaje.</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 </body>
 </html>
 `;
@@ -112,70 +131,56 @@ const sendVerificationEmail = async (email, link) => {
 
 // Función para enviar un correo de restablecimiento de contraseña
 const sendPasswordResetEmail = async (email, link) => {
-  const htmlContent = `<!DOCTYPE html>
+    const htmlContent = `<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restablecer Contraseña</title>
+    <!--[if mso]>
+    <style type="text/css">
+    table, td {border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;}
+    </style>
+    <![endif]-->
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+        body, html {
             margin: 0;
-            background-color: #f0f0f0;
-        }
-        .email-container {
-            text-align: center;
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 400px;
-        }
-        .email-container h1 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-        .email-container p {
-            color: #666;
-            font-size: 16px;
-            line-height: 1.5;
-            margin-bottom: 25px;
-        }
-        .btn {
-            display: inline-block;
-            background-color: #28a745;
-            color: white;
-            font-size: 18px;
-            padding: 12px 24px;
-            text-decoration: none;
-            border-radius: 5px;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .btn:hover {
-            background-color: #218838;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
         }
     </style>
 </head>
-<body>
-    <div class="email-container">
-        <h1>Restablecer Contraseña</h1>
-        <p>Has solicitado restablecer tu contraseña. Haz clic en el siguiente botón para crear una nueva contraseña:</p>
-        
-        <a href="${link}" target="_blank" class="btn">Restablecer Contraseña</a>
+<body style="margin: 0; padding: 0; height: 100%; font-family: Arial, sans-serif;">
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" width="100%" style="max-width: 600px; background-color: #f8f9fa;">
+        <tr>
+            <td align="center" valign="top" style="padding: 40px 10px;">
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <tr>
+                        <td align="center" valign="top" style="padding: 40px;">
+                            <h1 style="color: #2c3e50; font-size: 28px; margin-bottom: 20px;">Restablecimiento de Contraseña</h1>
+                            <p style="color: #34495e; font-size: 18px; line-height: 1.6; margin-bottom: 30px;">Hemos recibido una solicitud para restablecer la contraseña de tu cuenta. Si has realizado esta solicitud, por favor haz clic en el botón a continuación para crear una nueva contraseña:</p>
+                            
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                <tr>
+                                    <td align="center" style="border-radius: 5px;" bgcolor="#3498db">
+                                        <a href="${link}" target="_blank" style="display: inline-block; background-color: #3498db; color: white; font-size: 18px; font-weight: bold; padding: 15px 30px; text-decoration: none; border-radius: 5px;">Restablecer mi contraseña</a>
+                                    </td>
+                                </tr>
+                            </table>
 
-        <p>Si no has solicitado este cambio, puedes ignorar este correo.</p>
-    </div>
+                            <p style="margin-top: 30px; font-size: 14px; color: #7f8c8d;">Si no has solicitado este cambio, puedes ignorar este correo. Tu cuenta permanece segura.</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 </body>
 </html>
-`;
+
+
+  `;
 
   const mailOptions = {
     from: `"Soporte" <${process.env.EMAIL}>`,
