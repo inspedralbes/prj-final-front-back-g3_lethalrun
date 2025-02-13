@@ -138,13 +138,13 @@ app.post('/send-verification-email', async (req, res) => {
   const { email, username, password } = req.body;
 
   if (!email) {
-    return res.status(400).send("El correo electrónico es requerido.");
+    return res.status(400).json({ message: "El correo electrónico es requerido."});
   }
 
   try {
 
     // Verificar si el email existe en la base de datos
-    const existingUser = await userController.getUserByEmail(verificationData.email);
+    const existingUser = await userController.getUserByEmail(email);
     if (existingUser) {
       //console.log(`Usuario ya existe: ${verificationData.email}`);
       return res.status(400).json({ message: "El usuario ya existe." });
@@ -157,7 +157,7 @@ app.post('/send-verification-email', async (req, res) => {
     res.status(200).json({ message: `Correo de verificación enviado a ${email}` })
   } catch (error) {
     console.error('Error al enviar el correo de verificación:', error);
-    res.status(500).send("Hubo un error al enviar el correo de verificación.");
+    res.status(500).json({ message: "Hubo un error al enviar el correo de verificación."});
   }
 });
 
