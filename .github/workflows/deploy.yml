@@ -10,13 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        
-      - name: Set up Git to use HTTPS
-        run: |
-          git config --global url."https://${{ secrets.GH_TOKEN }}@github.com/".insteadOf "git@github.com:"
-      
       - name: Deploy to Clouding VM
         uses: appleboy/ssh-action@v0.1.10
         with:
@@ -24,39 +17,48 @@ jobs:
           username: ${{ secrets.CLOUDING_USER }}
           key: ${{ secrets.CLOUDING_SSH_KEY }}
           script: |
-            # Crear un directorio temporal en la VM
+            set -e  # Detener el script si hay errores
+
+            # Ir a la carpeta del servidor
             cd /var/www/lethalrun
-            rm -rf temp_deploy
-            mkdir temp_deploy
-            cd temp_deploy
 
-            # Clonar solo los últimos cambios del repositorio usando HTTPS
-            git clone --depth=1 https://github.com/inspedralbes/prj-final-front-back-g3_lethalrun.git .
-            
-            # Copiar el backend (Node.js) a su ubicación correcta
-            rsync -av --delete server/ /var/www/lethalrun/backend/
-            
-            # Instalar dependencias y apagar el servicio de Node.js
-            cd /var/www/lethalrun/backend/
-            npm install
-            pm2 stop app  # Apagar el servicio (asegúrate de que "app" es el nombre correcto en PM2)
+            # Limpiar despliegues anteriores
+            rm -rf temp_deploy temp_nuxt
+            mkdir temp_deploy temp_nuxt
 
-            # Copiar los archivos del frontend (Nuxt) a un directorio temporal
-            rsync -av --delete nuxt/ /var/www/lethalrun/temp_nuxt/
+            # Clonar el repositorio público (sin autenticación)
+            git clone --depth=1 https://github.com/inspedralbes/prj-final-front-back-g3_lethalrun.git temp_deploy
 
-            # Generar la build en la VM
-            cd /var/www/lethalrun/temp_nuxt/
+            # Copiar backend a la ubicación correcta
+            rsync -av --delete temp_deploy/server/ backend/
+
+            # Instalar dependencias backend y reiniciar servicio con PM2
+            cd backend
+            npm install --production
+            pm2 restart app --silent || pm2 start index.js --name "app"
+            cd ..
+
+            # Copiar frontend (Nuxt) a la carpeta temporal
+            rsync -av --delete temp_deploy/nuxt/ temp_nuxt/
+
+            # Generar la build de Nuxt
+            cd temp_nuxt
             npm install
             npm run build
 
-            # Copiar SOLO la carpeta dist generada a frontend
+            # Verificar si "dist" se generó correctamente
+            if [ ! -d "dist" ]; then
+              echo "Error: La carpeta 'dist' no se generó correctamente"
+              exit 1
+            fi
+
+            # Reemplazar la carpeta "dist" en frontend
             rsync -av --delete dist/ /var/www/lethalrun/frontend/
 
-            # Iniciar el servicio nuevamente con PM2
-            pm2 start /var/www/lethalrun/backend/index.js --name "app"  # Iniciar el servicio de Node.js
+            # Recargar Nginx para aplicar los cambios del frontend
+            sudo systemctl reload nginx
 
-            # Eliminar archivos temporales
-            cd /home/usuario
+            # Limpiar archivos temporales
             rm -rf temp_deploy temp_nuxt
 
-            echo "Deployment completed!"
+            echo "✅ ¡Despliegue completado con éxito!"
