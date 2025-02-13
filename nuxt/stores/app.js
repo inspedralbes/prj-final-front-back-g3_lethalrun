@@ -8,7 +8,7 @@ export const useAppStore = defineStore("app", {
         : {
           id: 0,
           email: "david@gmail.com",
-          name: "Dasbits",
+          username: "Dasbits",
           picture: "picture.png",
         },
     isAuthenticated: false,
