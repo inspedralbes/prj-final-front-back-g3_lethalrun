@@ -138,7 +138,7 @@ app.post('/send-verification-email', async (req, res) => {
   const { email, username, password } = req.body;
 
   if (!email) {
-    return res.status(400).send("El correo electrónico es requerido.");
+    return res.status(400).json({ message: "El correo electrónico es requerido."});
   }
 
   try {
@@ -157,7 +157,7 @@ app.post('/send-verification-email', async (req, res) => {
     res.status(200).json({ message: `Correo de verificación enviado a ${email}` })
   } catch (error) {
     console.error('Error al enviar el correo de verificación:', error);
-    res.status(500).send("Hubo un error al enviar el correo de verificación.");
+    res.status(500).json({ message: "Hubo un error al enviar el correo de verificación."});
   }
 });
 
@@ -173,7 +173,7 @@ app.post('/send-password-reset-email', async (req, res) => {
     // Verificar si el email existe en la base de datos
     const user = await userController.getUserByEmail(email);
     if (!user) {
-      return res.status(404).send("No se encontró un usuario con ese correo electrónico.");
+      return res.status(400).json({message: "No se encontró un usuario con ese correo electrónico."});
     }
 
     // Crear un token para restablecer la contraseña
@@ -187,7 +187,7 @@ app.post('/send-password-reset-email', async (req, res) => {
     res.status(200).json({ message: `Correo para restablecer contraseña enviado a ${email}` });
   } catch (error) {
     console.error('Error al enviar el correo para restablecer contraseña:', error);
-    res.status(500).send("Hubo un error al enviar el correo para restablecer la contraseña.");
+    res.status(500).json({message: "Hubo un error al enviar el correo para restablecer la contraseña."});
   }
 });
 

@@ -23,6 +23,19 @@ export function useAuth() {
         }
     };
 
+    const forgotPassword = async (email) => {
+        try {
+            console.log("Enviando solicitud de restablecimiento de contraseña...");
+            return await $fetch(`${BASE_URL}/send-password-reset-email`, {
+                method: "POST",
+                body: { email },
+            });
+        } catch (error) {
+            console.error("Error en el restablecimiento de contraseña:", error);
+            throw error;
+        }
+    };
+
     const processUserFromQuery = () => {
         const userData = route.query.user;
 
@@ -85,5 +98,5 @@ export function useAuth() {
         }
     };
 
-    return { login, processUserFromQuery, register, verifyEmailToken, resetPassword };
+    return { login, forgotPassword, processUserFromQuery, register, verifyEmailToken, resetPassword };
 }
