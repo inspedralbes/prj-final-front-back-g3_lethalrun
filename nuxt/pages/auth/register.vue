@@ -1,11 +1,17 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-    <div class="absolute top-10 left-10">
-      <NuxtLink to="/"
-        class="text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 py-2 px-4 rounded-lg shadow-md hover:bg-gray-300 dark:hover:bg-gray-600">
-        Volver a inicio
-      </NuxtLink>
-    </div>
+  <div class="min-h-screen flex flex-col">
+
+  <Navbar class="h-min"
+      :logoSrc="'/LethalRun_logo-removebg-preview.png'"
+      :logoLink="'/'"
+      :menuItems="[]"
+      :profileImg="'/profile-icon.jpg'"
+      :profileOptions="[]"
+      :logoutLink="''"
+      :isLogged="false"
+    />
+
+  <div class="flex-1 flex items-center justify-center bg-gray-100 dark:bg-gray-900">
     <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg w-96">
       <h2 class="text-2xl font-bold text-center text-gray-700 dark:text-white mb-6">Registro</h2>
       <form @submit.prevent="handleRegister" class="space-y-4">
@@ -54,6 +60,7 @@
       </div>
     </div>
   </div>
+</div>
 </template>
 
 <script setup>

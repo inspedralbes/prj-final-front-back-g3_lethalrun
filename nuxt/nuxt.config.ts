@@ -23,4 +23,7 @@ export default defineNuxtConfig({
   pinia: {
     // Opcional: Puedes configurar el almacenamiento y otros aspectos de Pinia aquí
   },
+  plugins: [
+    '~/plugins/vue-cropper.js', // Asegúrate de incluir tu plugin
+  ],
 });

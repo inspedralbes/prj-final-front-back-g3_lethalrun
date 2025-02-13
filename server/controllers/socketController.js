@@ -1,5 +1,6 @@
-require('dotenv').config();
-const { Server } = require('socket.io');
+import dotenv from 'dotenv';
+dotenv.config();
+import { Server } from 'socket.io';
 
 const initializeSocket = (server) => {
     const io = new Server(server, {
@@ -25,4 +26,4 @@ const initializeSocket = (server) => {
     return io;
 };
 
-module.exports = initializeSocket;
+export default initializeSocket;
