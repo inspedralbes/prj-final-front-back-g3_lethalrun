@@ -301,7 +301,7 @@ const leave = (el, done) => {
 
 // Variables para paginación
 const currentPage = ref(1);
-const pageSize = 12; // Número de items por página
+const pageSize = 6; // Número de items por página
 
 // Paginación de los graffitis
 const paginatedGraffitis = computed(() => {

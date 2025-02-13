@@ -142,6 +142,14 @@ app.post('/send-verification-email', async (req, res) => {
   }
 
   try {
+
+    // Verificar si el email existe en la base de datos
+    const existingUser = await userController.getUserByEmail(verificationData.email);
+    if (existingUser) {
+      //console.log(`Usuario ya existe: ${verificationData.email}`);
+      return res.status(400).json({ message: "El usuario ya existe." });
+    }
+
     const token = await tokenController.createToken(email, username, password);
     const link = `${process.env.DOMAIN_URL}:${process.env.WEB_PORT}/auth/verify-register?token=${token}`;
 
