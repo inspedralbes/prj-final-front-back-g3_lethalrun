@@ -11,7 +11,7 @@ const initializeSocket = (server) => {
     // Configuración de Socket.IO con CORS permitiendo el origen del dominio configurado
     const io = new Server(server, {
         cors: {
-            origin: process.env.DOMAIN_URL || '*', // Permitir cualquier origen si no está configurado
+            origin: process.env.DOMAIN_URL|| '*', // Permitir cualquier origen si no está configurado
             methods: ['GET', 'POST'] // Métodos HTTP permitidos
         }
     });
