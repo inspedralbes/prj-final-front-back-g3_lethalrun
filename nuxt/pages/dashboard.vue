@@ -26,7 +26,7 @@
           <p class="text-xl">Ja sigui jugant sol o amb amics, cada partida és una experiència única plena de moments emocionants i imprevisibles.</p>
         </div>
         <div class="md:w-1/2 mt-8 md:mt-0">
-          <img src="" alt="Gameplay de LethalRun" class="w-full h-auto rounded-lg shadow-2xl" />
+          <img src="/images/dashboard1.png" alt="Gameplay de LethalRun" class="w-full h-auto rounded-lg shadow-2xl" />
         </div>
       </section>
 
@@ -35,23 +35,23 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div class="bg-gray-100 p-6 rounded-lg text-center hover:shadow-xl transition-shadow duration-300">
             <!-- <img src="/images/student1.jpg" alt="Estudiant 1" class="w-32 h-32 rounded-full mx-auto mb-4 object-cover" /> -->
-            <h3 class="text-xl font-semibold mb-2">Alex</h3>
-            <p class="text-gray-600">Dissenyador de nivells</p>
+            <h3 class="text-xl font-semibold mb-2">Brian</h3>
+            <p class="text-gray-600">Programador/Dissenyador de nivells</p>
           </div>
           <div class="bg-gray-100 p-6 rounded-lg text-center hover:shadow-xl transition-shadow duration-300">
             <!-- <img src="/images/student2.jpg" alt="Estudiant 2" class="w-32 h-32 rounded-full mx-auto mb-4 object-cover" /> -->
-            <h3 class="text-xl font-semibold mb-2">Sam</h3>
-            <p class="text-gray-600">Programador principal</p>
+            <h3 class="text-xl font-semibold mb-2">David</h3>
+            <p class="text-gray-600">Programador/Dissenyador Web</p>
           </div>
           <div class="bg-gray-100 p-6 rounded-lg text-center hover:shadow-xl transition-shadow duration-300">
             <!-- <img src="/images/student3.jpg" alt="Estudiant 3" class="w-32 h-32 rounded-full mx-auto mb-4 object-cover" /> -->
-            <h3 class="text-xl font-semibold mb-2">Jordan</h3>
-            <p class="text-gray-600">Artista 3D</p>
+            <h3 class="text-xl font-semibold mb-2">Izan</h3>
+            <p class="text-gray-600">Programador/Dissenyador Web</p>
           </div>
           <div class="bg-gray-100 p-6 rounded-lg text-center hover:shadow-xl transition-shadow duration-300">
             <!-- <img src="/images/student4.jpg" alt="Estudiant 4" class="w-32 h-32 rounded-full mx-auto mb-4 object-cover" /> -->
-            <h3 class="text-xl font-semibold mb-2">Taylor</h3>
-            <p class="text-gray-600">Dissenyador de so</p>
+            <h3 class="text-xl font-semibold mb-2">Marc</h3>
+            <p class="text-gray-600">Programador/Dissenyador de nivells</p>
           </div>
         </div>
       </section>
@@ -69,6 +69,7 @@
             </ul>
           </div>
           <div class="md:w-1/2">
+            <img src="/images/dashboard3.png" alt="Gameplay de LethalRun" class="w-full h-auto rounded-lg shadow-2xl" />
            </div>
         </div>
       </section>
@@ -88,8 +89,8 @@
           </div>
           <div class="text-center">
             <i class="fas fa-trophy text-5xl mb-4"></i>
-            <h3 class="text-2xl font-semibold mb-2">Sistema de classificació</h3>
-            <p class="text-lg">Demostra la teva habilitat i puja en la classificació global de jugadors.</p>
+            <h3 class="text-2xl font-semibold mb-2">Sistema de cosmètics</h3>
+            <p class="text-lg">Personalitza el teu entorn al teu gust quan i com vulguis.</p>
           </div>
         </div>
       </section>
@@ -104,11 +105,11 @@
             <li>Efectes visuals personalitzats</li>
             <li>Emotes i animacions úniques</li>
           </ul>
-          <a href="#" class="inline-block bg-white text-black font-bold py-2 px-6 rounded-full hover:bg-gray-200 transition-colors duration-300">Més informació</a>
+          <!-- <a href="#" class="inline-block bg-white text-black font-bold py-2 px-6 rounded-full hover:bg-gray-200 transition-colors duration-300">Més informació</a> -->
         </div>
       </section>
 
-      <section class="mb-24">
+      <!-- <section class="mb-24">
         <h2 class="text-4xl font-bold text-center mb-12">Uneix-te a la nostra comunitat</h2>
         <div class="flex flex-wrap justify-center gap-8">
           <a href="#" class="flex items-center justify-center w-16 h-16 bg-gray-900 text-white rounded-full hover:bg-gray-700 transition-colors duration-300">
@@ -124,7 +125,7 @@
             <i class="fab fa-instagram text-3xl"></i>
           </a>
         </div>
-      </section>
+      </section> -->
     </div>
 
     <footer class="bg-gray-900 text-white py-8">
