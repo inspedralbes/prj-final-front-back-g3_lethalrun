@@ -401,7 +401,7 @@ app.post('/pictures', isAuthenticated, pictureController.uploadMiddleware, async
 
     // Obtener las imágenes del usuario y emitir un evento para actualizarlas en tiempo real
     const pictures = await pictureController.getUserPictures(req.user.id);
-    io.emit('create-picture', pictures);
+    io.emit('update-pictures', pictures);
   } catch (error) {
     // Si ocurre un error al crear la imagen, se responde con un error 500
     res.status(500).json({ message: 'Error al crear imagen', error: error.message });
@@ -420,7 +420,7 @@ app.put('/pictures/:id/setActive', isAuthenticated, async (req, res) => {
 
     // Obtener las imágenes del usuario y emitir un evento para actualizarlas en tiempo real
     const pictures = await pictureController.getUserPictures(req.user.id);
-    io.emit('set-active-picture', pictures);
+    io.emit('update-pictures', pictures);
   } catch (error) {
     // Si ocurre un error al establecer la imagen activa, se responde con un error 500
     res.status(500).json({ message: 'Error al establecer imagen activa', error: error.message });
@@ -439,7 +439,7 @@ app.delete('/pictures/:id', isAuthenticated, async (req, res) => {
 
     // Obtener las imágenes del usuario y emitir un evento para actualizarlas en tiempo real
     const pictures = await pictureController.getUserPictures(req.user.id);
-    io.emit('delete-picture', pictures);
+    io.emit('update-pictures', pictures);
   } catch (error) {
     // Si ocurre un error al eliminar la imagen, se responde con un error 500
     res.status(500).json({ message: 'Error al eliminar imagen', error: error.message });
@@ -478,7 +478,7 @@ app.put('/pictures/:id', isAuthenticated, pictureController.uploadMiddleware, as
 
     // Obtener las imágenes del usuario y emitir un evento para actualizarlas en tiempo real
     const pictures = await pictureController.getUserPictures(req.user.id);
-    io.emit('update-picture', pictures);
+    io.emit('update-pictures', pictures);
   } catch (error) {
     // Si ocurre un error al actualizar la imagen, se responde con un error 500
     res.status(500).json({ message: 'Error al actualizar imagen', error: error.message });
