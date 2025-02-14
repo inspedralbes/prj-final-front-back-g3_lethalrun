@@ -318,7 +318,7 @@ app.get('/users/:id', isAdmin, async (req, res) => {
 // Actualizar el nombre de usuario usuario
 app.put('/users/:id/username', isAuthenticated, async (req, res) => {
   try {
-    const updated = await userController.changeUsername(req.user, req.body.username);
+    const updated = await userController.changeUsername(req.user, req.body.newUsername);
     if (updated) {
       res.json({ message: 'Nombre de usuario actualizado exitosamente' });
     } else {
