@@ -266,6 +266,4 @@ npm install
     }
     ```
 
----
 
-**Nota**: Asegúrate de agregar más detalles de cada endpoint según sea necesario (por ejemplo, descripciones adicionales, ejemplos de errores, etc.).
