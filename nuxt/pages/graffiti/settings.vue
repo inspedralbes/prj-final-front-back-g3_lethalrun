@@ -156,6 +156,7 @@
 </template>
 
 <script setup>
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useAppStore } from '@/stores/app';
 import { useGraffitis } from '@/services/graffitis';
 import VueCropper from 'vue-cropperjs';
@@ -316,6 +317,16 @@ const paginatedGraffitis = computed(() => {
 
 // Total de páginas
 const totalPages = computed(() => Math.ceil(graffitis.value.length / pageSize));
+
+onMounted(() => {
+  $socket.on('update-pictures', (data) => {
+    console.log(data);
+  });
+});
+
+onUnmounted(() => {
+  $socket.off('update-pictures');
+});
 
 fetchGraffitis();
 </script>
