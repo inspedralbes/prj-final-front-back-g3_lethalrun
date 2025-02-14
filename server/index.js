@@ -320,12 +320,12 @@ app.put('/users/:id/username', isAuthenticated, async (req, res) => {
   try {
     const updated = await userController.changeUsername(req.user, req.body.newUsername);
     if (updated) {
-      res.json({ message: 'Nombre de usuario actualizado exitosamente' });
+      res.json({ message: 'Nom d\'usuari actualitzat amb èxit' });
     } else {
-      res.status(404).json({ message: 'Usuario no encontrado' });
+      res.status(404).json({ message: 'Usuario no trobat' });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Error al actualizar nombre de usuario', error: error.message });
+    res.status(500).json({ message: 'Error al actualizar el nom d`usuari', error: error.message });
   }
 });
 
