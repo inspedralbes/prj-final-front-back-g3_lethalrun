@@ -8,7 +8,7 @@ export const useAppStore = defineStore("app", {
         : {
           id: 0,
           email: "david@gmail.com",
-          name: "Dasbits",
+          username: "Dasbits",
           picture: "picture.png",
         },
     isAuthenticated: false,
@@ -31,6 +31,10 @@ export const useAppStore = defineStore("app", {
       if (typeof window !== "undefined") {
         window.localStorage.setItem("user", JSON.stringify(userData));
       }
+    },
+
+    setNewUsername(newUsername) {
+      this.user.username = newUsername;
     },
 
     setIsAuthenticated(value) {

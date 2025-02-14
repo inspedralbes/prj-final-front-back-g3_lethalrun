@@ -4,6 +4,10 @@ import { useAppStore } from '@/stores/app';
 const store = useAppStore();
 const config = useRuntimeConfig();
 const route = useRoute();
+const profileOptions = [{ to: '/profile/my-info', label: 'El meu perfil' }];
+
+const user = store.user;
+
 
 const fetchProtectedRoute = async () => {
   try {
@@ -62,14 +66,14 @@ const fetchNONProtectedRoute = async () => {
       :logoSrc="'/LethalRun_logo-removebg-preview.png'" 
       :logoLink="'/'" :menuItems="[]"
       :profileImg="'/profile-icon.jpg'" 
-      :profileOptions="[]" 
+      :profileOptions="profileOptions" 
       :logoutLink="''" 
       :isLogged="store.getIsAuthenticated" />
       
     <div class="flex-1 flex flex-col items-center justify-center bg-gray-100 p-4">
       <div class="text-center max-w-md">
-        <h1 class="text-4xl font-bold text-gray-900">Bienvenido a LethalRun</h1>
-        <p class="text-gray-600 mt-2">Añade tus propios grafitis</p>
+        <h1 class="text-4xl font-bold text-gray-900">Benvingut a LethalRun<span v-if="store.getIsAuthenticated">, {{ user.username }}</span> </h1>
+        <p class="text-gray-600 mt-2">Personalitza la teva experiència</p>
 
         <div v-if="!store.getIsAuthenticated" class="mt-6 flex flex-col sm:flex-row gap-4 justify-center items-center">
           <NuxtLink to="/auth/login"
@@ -85,7 +89,7 @@ const fetchNONProtectedRoute = async () => {
         <div v-else class="mt-6 flex flex-col sm:flex-row gap-4 justify-center items-center">
           <NuxtLink to="/dashboard"
             class="px-6 py-3 bg-blue-600 text-white rounded-lg text-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-            Dashboard
+            Entrar >
           </NuxtLink>
         </div>
       </div>

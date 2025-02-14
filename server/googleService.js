@@ -8,12 +8,20 @@ import db from './sql/connectDB.js';
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 
+/**
+ * Inicializa los controladores para usuarios y imágenes
+ * @type {Object}
+ */
 const userController = createuserController(db);
 const pictureController = createPictureController(db);
 
+// Carga las variables de entorno desde el archivo .env
 dotenv.config();
 
-// Configura el cliente de Google OAuth
+/**
+ * Configura la estrategia de autenticación de Google OAuth
+ * Esta estrategia permite a los usuarios iniciar sesión con sus cuentas de Google
+ */
 passport.use(
   new GoogleStrategy(
     {
@@ -21,39 +29,56 @@ passport.use(
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: process.env.GOOGLE_REDIRECT_URI,
     },
-
+    /**
+     * Función de verificación para la autenticación de Google
+     * @param {string} accessToken - Token de acceso proporcionado por Google
+     * @param {string} refreshToken - Token de actualización proporcionado por Google
+     * @param {Object} profile - Perfil del usuario de Google
+     * @param {Function} done - Función de callback para indicar el resultado de la autenticación
+     */
     async (accessToken, refreshToken, profile, done) => {
-
       try {
+        // Busca un usuario existente por email
         let user = await userController.getUserByEmail(profile.emails[0].value);
-          if (!user) {
-            const randomPassword = crypto.randomBytes(16).toString('hex');
-            const userId = await userController.createUser(profile.emails[0].value, profile.displayName, randomPassword);
+        if (!user) {
+          // Si el usuario no existe, crea uno nuevo
+          const randomPassword = crypto.randomBytes(16).toString('hex');
+          const userId = await userController.createUser(profile.emails[0].value, profile.displayName, randomPassword);
 
-            await pictureController.createDefaultPicture(userId);
+          // Crea una imagen de perfil por defecto para el nuevo usuario
+          await pictureController.createDefaultPicture(userId);
 
-            user = await userController.getUser(userId);
-
-          }
-          delete user.password;
-          return done(null, user);
+          // Obtiene el usuario recién creado
+          user = await userController.getUser(userId);
+        }
+        // Elimina la contraseña del objeto usuario por seguridad
+        delete user.password;
+        return done(null, user);
       } catch (error) {
         return done(error, null);
       }
-
     }
   )
 );
 
+/**
+ * Configura la estrategia de autenticación local
+ * Esta estrategia permite a los usuarios iniciar sesión con email y contraseña
+ */
 passport.use(
   new LocalStrategy(
     {
-      usernameField: 'email', // Campo de email
-      passwordField: 'password', // Campo de contraseña
+      usernameField: 'email',
+      passwordField: 'password',
     },
+    /**
+     * Función de verificación para la autenticación local
+     * @param {string} email - Email del usuario
+     * @param {string} password - Contraseña del usuario
+     * @param {Function} done - Función de callback para indicar el resultado de la autenticación
+     */
     async (email, password, done) => {
       try {
-
         // Busca un usuario por email
         const user = await userController.getUserByEmail(email);
         if (!user) {
@@ -66,9 +91,9 @@ passport.use(
           return done(null, false, { message: 'Contraseña incorrecta' });
         }
 
+        // Elimina la contraseña del objeto usuario por seguridad
         delete user.password;
         return done(null, user);
-
       } catch (error) {
         return done(error, null);
       }
@@ -76,11 +101,20 @@ passport.use(
   )
 );
 
-// Serializa el usuario en la sesión
+/**
+ * Serializa el usuario para almacenarlo en la sesión
+ * @param {Object} user - Objeto de usuario
+ * @param {Function} done - Función de callback
+ */
 passport.serializeUser((user, done) => {
   done(null, user);
 });
 
+/**
+ * Deserializa el usuario de la sesión
+ * @param {Object} user - Objeto de usuario serializado
+ * @param {Function} done - Función de callback
+ */
 passport.deserializeUser((user, done) => {
   done(null, user);
 });
