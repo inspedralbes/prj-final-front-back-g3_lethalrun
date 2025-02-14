@@ -358,14 +358,12 @@ app.put('/users/:id/username', isAuthenticated, async (req, res) => {
 
     // Si el nombre de usuario se actualiza correctamente, se responde con un mensaje de éxito
     if (updated) {
-      res.json({ message: 'Nombre de usuario actualizado exitosamente' });
+      res.json({ message: 'Nom d\'usuari actualitzat amb èxit' });
     } else {
-      // Si el usuario no existe o no se puede actualizar, se responde con un error 404
-      res.status(404).json({ message: 'Usuario no encontrado' });
+      res.status(404).json({ message: 'Usuario no trobat' });
     }
   } catch (error) {
-    // Si ocurre un error al actualizar el nombre de usuario, se responde con un error 500
-    res.status(500).json({ message: 'Error al actualizar nombre de usuario', error: error.message });
+    res.status(500).json({ message: 'Error al actualizar el nom d`usuari', error: error.message });
   }
 });
 

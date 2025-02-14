@@ -33,6 +33,10 @@ export const useAppStore = defineStore("app", {
       }
     },
 
+    setNewUsername(newUsername) {
+      this.user.username = newUsername;
+    },
+
     setIsAuthenticated(value) {
       this.isAuthenticated = value;
     },

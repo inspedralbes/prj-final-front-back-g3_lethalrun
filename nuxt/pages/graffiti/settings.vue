@@ -11,26 +11,30 @@
         <div v-if="graffitis.length > 0" class="pt-8 h-full w-full ">
           <div
             class="flex flex-col xs:flex-row sm:flex-row md:flex-row lg:flex-row xl:flex-row 2xl:flex-row justify-between items-center">
-            <h2 class="text-2xl font-semibold text-gray-800 truncate">Tus Graffitis</h2>
+            <h2 class="text-2xl font-semibold text-gray-800 truncate">Els teus Graffitis</h2>
 
             <!-- Paginación -->
             <div class="flex justify-center items-center">
-              <button @click="currentPage > 1 && (currentPage -= 1)" :disabled="currentPage === 1"
+              <button @click="currentPage > 1 && (currentPage -= 1)" 
+                :class="currentPage === 1 ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-600 hover:bg-gray-700 cursor-pointer'"
+                :disabled="currentPage === 1"
                 class="px-4 text-center py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 disabled:bg-gray-400 transition-colors duration-200">
                 <
               </button>
 
-              <span class="mx-4 text-gray-700">Página {{ currentPage }} de {{ totalPages }}</span>
+              <span class="mx-4 text-gray-700">Pàgina {{ currentPage }} de {{ totalPages }}</span>
 
-              <button @click="currentPage < totalPages && (currentPage += 1)" :disabled="currentPage === totalPages"
+              <button @click="currentPage < totalPages && (currentPage += 1)"
+                :class="currentPage === totalPages ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-600 hover:bg-gray-700 cursor-pointer'"
+                :disabled="currentPage === totalPages"
                 class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 disabled:bg-gray-400 transition-colors duration-200">
                 >
               </button>
             </div>
 
             <!-- Botón para abrir el modal -->
-            <button @click="openModal" class="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 truncate">
-              Añadir Graffiti
+            <button @click="openModal" class="cursor-pointer bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 truncate">
+              Afegir Graffiti
             </button>
           </div>
 
@@ -38,7 +42,7 @@
           <!-- Graffitis container -->
           <div class="h-full flex flex-col mt-6 justify-between items-center">
             <!-- Grid de graffitis -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-4 w-full">
               <div v-for="graffiti in paginatedGraffitis" :key="graffiti.id"
                 class="relative bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out">
                 <img :src="getPath(graffiti.path)" alt="Graffiti Image"
@@ -48,7 +52,7 @@
                   <!-- Botón "Set Active" -->
                   <button v-if="!graffiti.is_active" @click="setActiveGraffitiHandler(graffiti.id)"
                     class="cursor-pointer truncate bg-blue-600 text-white p-2 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200">
-                    Activar imagen
+                    Activar imatge
                   </button>
 
                   <!-- Estado Activo -->
@@ -84,7 +88,7 @@
 
         <!-- Header -->
         <div class="flex justify-between items-center border-b pb-4">
-          <h2 class="text-2xl font-semibold text-gray-900">Upload New Graffiti</h2>
+            <h2 class="text-2xl font-semibold text-gray-900">Pujar Nou Graffiti</h2>
           <button @click="closeModal"
             class="cursor-pointer text-gray-500 text-red-600 transition hover:bg-red-200 p-1 rounded-full">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
@@ -102,7 +106,7 @@
             <!-- Botón para abrir selector de archivos -->
             <button @click.prevent="showFileChooser"
               class="cursor-pointer w-full bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200 transition">
-              Selecciona una imagen
+              Selecciona una imatge
             </button>
             <input ref="fileInput" type="file" class="hidden" @change="onFileChange" accept="image/jpeg, image/png" />
 
@@ -118,20 +122,20 @@
             <!-- Botón para recortar -->
             <button v-if="imageSrc" @click="cropImage"
               class="cursor-pointer mt-3 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
-              Cortar imagen
+              Retalla la imatge
             </button>
           </div>
 
           <!-- Previsualización de la imagen -->
           <div class="flex flex-col justify-between items-center w-full">
-            <h3 class="text-1xl py-2 font-semibold text-gray-900">Previsualización</h3>
+            <h3 class="text-1xl py-2 font-semibold text-gray-900">Previsualizació</h3>
             <div class="sm:w-70 md:w-70 max-w-70 aspect-w-1 aspect-h-1">
               <img v-if="croppedImage" :src="croppedImage" alt="Cropped Image"
                 class="sm:w-70 md:w-70 w-full h-full object-cover rounded-lg shadow-md">
             </div>
             <button v-if="croppedImage" @click="uploadImage"
               class="cursor-pointer mt-4 w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition">
-              Subir imagen
+              Pujar Graffiti
             </button>
           </div>
 
@@ -142,7 +146,7 @@
         <div class="mt-6 flex justify-end gap-2">
           <button @click="closeModal"
             class="cursor-pointer bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300 transition">
-            Cancel
+            Cancelar
           </button>
         </div>
 
