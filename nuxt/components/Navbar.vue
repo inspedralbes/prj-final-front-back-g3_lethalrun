@@ -28,7 +28,7 @@
                     <div v-if="isLogged" class="relative ml-3">
                         <button @click="profileOptionsIsOpen = !profileOptionsIsOpen" type="button" class="relative flex rounded-full bg-gray-800 text-sm focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-none">
                             <span class="sr-only">Open user menu</span>
-                            <img class="size-8 rounded-full" :src="profileImg" alt="Profile">
+                            <img class="size-8 rounded-full cursor-pointer" :src="profileImg" alt="Profile">
                         </button>
                         <div v-if="profileOptionsIsOpen" class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 ring-1 shadow-lg ring-black/5">
                             <NuxtLink v-if="profileOptions.length > 0" v-for="option in profileOptions" :key="option.to" :to="option.to" class="block px-4 py-2 text-sm text-gray-700">{{ option.label }}</NuxtLink>

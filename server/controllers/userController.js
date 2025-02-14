@@ -66,6 +66,16 @@ const createUserController = (db) => {
     }
   },
 
+  async changeUsername(user, newUsername) {
+    try {
+      await db.execute('UPDATE Users SET username = ? WHERE id = ?', [newUsername, user.id]);
+      return true;
+    } catch (error) {
+      console.error('Error changing username:', error);
+      throw error;
+    }
+  },
+
   async deleteUser(id) {
     const connection = await db.getConnection();
     try {

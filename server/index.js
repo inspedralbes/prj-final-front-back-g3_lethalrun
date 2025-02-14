@@ -315,6 +315,20 @@ app.get('/users/:id', isAdmin, async (req, res) => {
   }
 });
 
+// Actualizar el nombre de usuario usuario
+app.put('/users/:id/username', isAuthenticated, async (req, res) => {
+  try {
+    const updated = await userController.changeUsername(req.user, req.body.username);
+    if (updated) {
+      res.json({ message: 'Nombre de usuario actualizado exitosamente' });
+    } else {
+      res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Error al actualizar nombre de usuario', error: error.message });
+  }
+});
+
 // Eliminar usuario
 app.delete('/users/:id', isAdmin, async (req, res) => {
   try {
