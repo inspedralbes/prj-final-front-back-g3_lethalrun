@@ -2,21 +2,29 @@ import nodemailer from "nodemailer";
 import { google } from "googleapis";
 import dotenv from "dotenv";
 
-dotenv.config(); // Cargar variables de entorno
+// Cargar variables de entorno desde el archivo .env
+dotenv.config();
 
-// Configurar OAuth2
+/**
+ * Configuración del cliente OAuth2 para autenticación con Google
+ * @type {google.auth.OAuth2}
+ */
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
   "https://developers.google.com/oauthplayground"
 );
 
+// Establecer las credenciales para el cliente OAuth2
 oauth2Client.setCredentials({
   refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
   scope: 'https://www.googleapis.com/auth/gmail.send'
 });
 
-
+/**
+ * Configuración del transporter de nodemailer para enviar correos a través de Gmail
+ * @type {nodemailer.Transporter}
+ */
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -29,7 +37,12 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Función para enviar un correo de verificación de cuenta
+/**
+ * Envía un correo electrónico de verificación de cuenta
+ * @param {string} email - Dirección de correo electrónico del destinatario
+ * @param {string} link - Enlace de verificación
+ * @returns {Promise<void>}
+ */
 const sendVerificationEmail = async (email, link) => {
   const htmlContent = `<!DOCTYPE html>
 <html lang="es">
@@ -111,8 +124,7 @@ const sendVerificationEmail = async (email, link) => {
         </tr>
     </table>
 </body>
-</html>
-`;
+</html>`;
 
   const mailOptions = {
     from: `"Soporte" <${process.env.EMAIL}>`,
@@ -129,9 +141,14 @@ const sendVerificationEmail = async (email, link) => {
   }
 };
 
-// Función para enviar un correo de restablecimiento de contraseña
+/**
+ * Envía un correo electrónico para restablecer la contraseña
+ * @param {string} email - Dirección de correo electrónico del destinatario
+ * @param {string} link - Enlace para restablecer la contraseña
+ * @returns {Promise<void>}
+ */
 const sendPasswordResetEmail = async (email, link) => {
-    const htmlContent = `<!DOCTYPE html>
+  const htmlContent = `<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -177,10 +194,7 @@ const sendPasswordResetEmail = async (email, link) => {
         </tr>
     </table>
 </body>
-</html>
-
-
-  `;
+</html>`;
 
   const mailOptions = {
     from: `"Soporte" <${process.env.EMAIL}>`,
@@ -197,5 +211,5 @@ const sendPasswordResetEmail = async (email, link) => {
   }
 };
 
-// Exportar las funciones de envío de correo
+// Exportar las funciones de envío de correo para su uso en otros módulos
 export { sendVerificationEmail, sendPasswordResetEmail };

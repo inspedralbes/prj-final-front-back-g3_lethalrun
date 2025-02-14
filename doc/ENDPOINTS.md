@@ -1,223 +1,271 @@
-# API Endpoints Documentation
+# Documentación del Servidor de Autenticación y Gestión de Usuarios
 
-## Base URL:
+Servidor Node.js/Express para autenticación local y con Google, gestión de usuarios, imágenes y envío de emails.
 
----
+## Características Principales
+- ✅ Autenticación con email/contraseña
+- 🔑 Login con Google OAuth
+- ✉️ Envío de emails de verificación y recuperación
+- 👥 CRUD de usuarios
+- 🖼️ Gestión de imágenes de perfil
+- 🔒 Middlewares de autenticación y permisos
+- 🔄 WebSockets para actualizaciones en tiempo real
 
-## General
-
-### **Root Route**
-- **GET** `/`
-  - **Description:** Returns a message confirming the server is running.
-  - **Response:**
-    ```json
-    {
-      "message": "RUTA GET CORRECTA"
-    }
-    ```
-
----
-
-## Users
-
-### **Create User**
-- **POST** `/users`
-  - **Description:** Creates a new user and assigns a default picture.
-  - **Request Body:**
-    ```json
-    {
-      "email": "user@example.com",
-      "username": "username",
-      "password": "password123",
-      "rol": "cliente"
-    }
-    ```
-  - **Response:**
-    ```json
-    {
-      "id": 1,
-      "message": "Usuario creado exitosamente con imagen por defecto"
-    }
-    ```
-
-### **Get User by ID**
-- **GET** `/users/:id`
-  - **Description:** Retrieves user details by ID.
-  - **Response:**
-    ```json
-    {
-      "id": 1,
-      "email": "user@example.com",
-      "username": "username",
-      "xp": 0,
-      "play_time": 0,
-      "rol": "cliente"
-    }
-    ```
-
-### **Update User**
-- **PUT** `/users/:id`
-  - **Description:** Updates a user's information.
-  - **Request Body:**
-    ```json
-    {
-      "email": "new_email@example.com",
-      "username": "new_username",
-      "xp": 100,
-      "playTime": 50,
-      "rol": "admin"
-    }
-    ```
-  - **Response:**
-    ```json
-    {
-      "message": "Usuario actualizado exitosamente"
-    }
-    ```
-
-### **Delete User**
-- **DELETE** `/users/:id`
-  - **Description:** Deletes a user by ID.
-  - **Response:**
-    ```json
-    {
-      "message": "Usuario eliminado exitosamente"
-    }
-    ```
-
-### **Update User XP**
-- **PUT** `/users/:id/incrementXp`
-  - **Description:** Increments a user's XP.
-  - **Request Body:**
-    ```json
-    {
-      "amount": 500
-    }
-    ```
-  - **Response:**
-    ```json
-    {
-      "message": "XP de usuario incrementado exitosamente"
-    }
-    ```
-
-### **Update User Play Time**
-- **PUT** `/users/:id/incrementPlayTime`
-  - **Description:** Increments a user's play time.
-  - **Request Body:**
-    ```json
-    {
-      "seconds": 120
-    }
-    ```
-  - **Response:**
-    ```json
-    {
-      "message": "Tiempo de juego de usuario incrementado exitosamente"
-    }
-    ```
+## Tabla de Contenidos
+- [Tecnologías Utilizadas](#tecnologías-utilizadas)
+- [Instalación](#instalación)
+- [Configuración](#configuración)
+- [Endpoints](#endpoints)
+  - [Autenticación](#autenticación)
+  - [Usuarios](#usuarios)
+  - [Imágenes](#imágenes)
+  - [Emails](#emails)
+- [Variables de Entorno](#variables-de-entorno)
+- [Licencia](#licencia)
 
 ---
 
-## Pictures
+## Tecnologías Utilizadas
+- Node.js
+- Express
+- Passport.js
+- MongoDB
+- JSON Web Tokens
+- Nodemailer
+- Socket.io
+- Bcrypt
+- Multer
 
-### **Create Picture**
-- **POST** `/pictures`
-  - **Description:** Creates a new picture.
-  - **Request Body:**
+---
+
+## Instalación
+```bash
+git clone [tu-repositorio]
+cd tu-proyecto
+npm install
+```
+
+## Documentación de la API
+
+## Autenticación
+
+### 1. **Login con Email y Contraseña**
+- **Método**: `POST`
+- **Ruta**: `/api/auth/login`
+- **Descripción**: Permite al usuario autenticarse usando su email y contraseña. Si las credenciales son correctas, se redirige al callback con la información del usuario.
+- **Respuesta de éxito**:
+  - **Código**: `200 OK`
+  - **Cuerpo**:
     ```json
     {
-      "path": "path/to/image.png",
-      "userId": 1
+      "redirectUrl": "http://yourdomain.com/auth/callback?user=encodedUserData"
     }
     ```
-  - **Response:**
+
+### 2. **Login con Google**
+- **Método**: `GET`
+- **Ruta**: `/api/auth/google`
+- **Descripción**: Redirige al usuario a la página de autenticación de Google.
+- **Respuesta de éxito**: Redirige a Google para autenticar.
+
+### 3. **Callback de Google**
+- **Método**: `GET`
+- **Ruta**: `/api/auth/callback`
+- **Descripción**: Esta ruta es llamada por Google después de que el usuario se autentique exitosamente.
+- **Respuesta de éxito**:
+  - **Código**: `200 OK`
+  - **Redirección** a la URL del callback.
+
+### 4. **Logout**
+- **Método**: `GET`
+- **Ruta**: `/api/auth/logout`
+- **Descripción**: Cierra la sesión del usuario autenticado.
+- **Respuesta de éxito**:
+  - **Código**: `200 OK`
+  - **Cuerpo**: Redirección a la página principal.
+
+---
+
+## Usuarios
+
+### 1. **Crear Usuario**
+- **Método**: `POST`
+- **Ruta**: `/users`
+- **Descripción**: Crea un nuevo usuario (requiere privilegios de administrador).
+- **Parámetros**:
+  - `email`: Email del nuevo usuario.
+  - `username`: Nombre de usuario.
+  - `password`: Contraseña.
+- **Respuesta de éxito**:
+  - **Código**: `201 Created`
+  - **Cuerpo**:
     ```json
     {
-      "id": 1,
+      "id": "newUserId",
+      "message": "Usuario creado exitosamente"
+    }
+    ```
+
+### 2. **Obtener Usuario por ID**
+- **Método**: `GET`
+- **Ruta**: `/users/:id`
+- **Descripción**: Obtiene los detalles de un usuario por su ID (requiere privilegios de administrador).
+- **Respuesta de éxito**:
+  - **Código**: `200 OK`
+  - **Cuerpo**: Información del usuario.
+
+### 3. **Actualizar Nombre de Usuario**
+- **Método**: `PUT`
+- **Ruta**: `/users/:id/username`
+- **Descripción**: Actualiza el nombre de usuario del usuario autenticado.
+- **Parámetros**:
+  - `username`: Nuevo nombre de usuario.
+- **Respuesta de éxito**:
+  - **Código**: `200 OK`
+  - **Cuerpo**: Mensaje de éxito.
+
+### 4. **Eliminar Usuario**
+- **Método**: `DELETE`
+- **Ruta**: `/users/:id`
+- **Descripción**: Elimina un usuario (requiere privilegios de administrador).
+- **Respuesta de éxito**:
+  - **Código**: `200 OK`
+  - **Cuerpo**: Mensaje de éxito.
+
+---
+
+## Imágenes
+
+### 1. **Subir Nueva Imagen**
+- **Método**: `POST`
+- **Ruta**: `/pictures`
+- **Descripción**: Permite al usuario subir una nueva imagen.
+- **Parámetros**: `file` (Archivo de imagen).
+- **Respuesta de éxito**:
+  - **Código**: `201 Created`
+  - **Cuerpo**:
+    ```json
+    {
+      "id": "newPictureId",
       "message": "Imagen creada exitosamente"
     }
     ```
 
-### **Get Picture by ID**
-- **GET** `/pictures/:id`
-  - **Description:** Retrieves a picture by ID.
-  - **Response:**
+### 2. **Establecer Imagen Activa**
+- **Método**: `PUT`
+- **Ruta**: `/pictures/:id/setActive`
+- **Descripción**: Establece una imagen como activa.
+- **Respuesta de éxito**:
+  - **Código**: `200 OK`
+  - **Cuerpo**: Mensaje de éxito.
+
+### 3. **Eliminar Imagen**
+- **Método**: `DELETE`
+- **Ruta**: `/pictures/:id`
+- **Descripción**: Elimina una imagen.
+- **Respuesta de éxito**:
+  - **Código**: `200 OK`
+  - **Cuerpo**: Mensaje de éxito.
+
+### 4. **Obtener Imágenes de Usuario**
+- **Método**: `GET`
+- **Ruta**: `/users/:userId/pictures`
+- **Descripción**: Obtiene todas las imágenes asociadas a un usuario.
+- **Respuesta de éxito**:
+  - **Código**: `200 OK`
+  - **Cuerpo**: Array de imágenes.
+
+---
+
+## Emails
+
+### 1. **Enviar Correo de Verificación**
+- **Método**: `POST`
+- **Ruta**: `/send-verification-email`
+- **Descripción**: Envía un correo de verificación de registro al usuario.
+- **Parámetros**:
+  - `email`: Email del usuario.
+  - `username`: Nombre de usuario.
+  - `password`: Contraseña.
+- **Respuesta de éxito**:
+  - **Código**: `200 OK`
+  - **Cuerpo**:
     ```json
     {
-      "id": 1,
-      "path": "path/to/image.png",
-      "user_id": 1
+      "message": "Correo de verificación enviado a user@example.com"
     }
     ```
 
-### **Update Picture**
-- **PUT** `/pictures/:id`
-  - **Description:** Updates a picture.
-  - **Request Body:**
+### 2. **Enviar Correo de Restablecimiento de Contraseña**
+- **Método**: `POST`
+- **Ruta**: `/send-password-reset-email`
+- **Descripción**: Envía un correo para restablecer la contraseña.
+- **Parámetros**:
+  - `email`: Email del usuario.
+- **Respuesta de éxito**:
+  - **Código**: `200 OK`
+  - **Cuerpo**:
     ```json
     {
-      "path": "new/path/to/image.png",
-      "userId": 1
-    }
-    ```
-  - **Response:**
-    ```json
-    {
-      "message": "Imagen actualizada exitosamente"
-    }
-    ```
-
-### **Delete Picture**
-- **DELETE** `/pictures/:id`
-  - **Description:** Deletes a picture by ID.
-  - **Response:**
-    ```json
-    {
-      "message": "Imagen eliminada exitosamente"
-    }
-    ```
-
-### **Set Active Picture**
-- **PUT** `/pictures/:id/setActive`
-  - **Description:** Sets a picture as active for a user.
-  - **Request Body:**
-    ```json
-    {
-      "userId": 1
-    }
-    ```
-  - **Response:**
-    ```json
-    {
-      "message": "Imagen establecida como activa exitosamente"
-    }
-    ```
-
-### **Get Active Picture by User**
-- **GET** `/users/:userId/activePicture`
-  - **Description:** Retrieves the active picture of a user.
-  - **Response:**
-    ```json
-    {
-      "id": 1,
-      "path": "path/to/active/image.png",
-      "user_id": 1
+      "message": "Correo para restablecer contraseña enviado a user@example.com"
     }
     ```
 
 ---
 
-## Testing
+## Tokens
 
-### **Database Connection Test**
-- **POST** `/api/db-test`
-  - **Description:** Verifies that the database connection works by creating a test user and assigning a default picture.
-  - **Response:**
+### 1. **Verificar Token de Registro**
+- **Método**: `POST`
+- **Ruta**: `/verify-email/:token`
+- **Descripción**: Verifica el token de registro para crear un usuario.
+- **Parámetros**:
+  - `token`: Token de verificación.
+- **Respuesta de éxito**:
+  - **Código**: `200 OK`
+  - **Cuerpo**: Mensaje de éxito.
+
+### 2. **Restablecer Contraseña**
+- **Método**: `POST`
+- **Ruta**: `/reset-password/:token`
+- **Descripción**: Permite restablecer la contraseña del usuario utilizando un token de restablecimiento.
+- **Parámetros**:
+  - `token`: Token de restablecimiento.
+  - `newPassword`: Nueva contraseña.
+- **Respuesta de éxito**:
+  - **Código**: `200 OK`
+  - **Cuerpo**: Mensaje de éxito.
+
+---
+
+## Rutas Protegidas
+
+### 1. **Ruta Protegida**
+- **Método**: `GET`
+- **Ruta**: `/api/protected`
+- **Descripción**: Ruta protegida que requiere que el usuario esté autenticado.
+- **Respuesta de éxito**:
+  - **Código**: `200 OK`
+  - **Cuerpo**:
     ```json
     {
-      "message": "Prueba exitosa: Usuario creado correctamente",
-      "userId": 1
+      "message": "Ruta protegida"
     }
     ```
 
+### 2. **Ruta No Protegida**
+- **Método**: `GET`
+- **Ruta**: `/api/not-protected`
+- **Descripción**: Ruta pública que no requiere autenticación.
+- **Respuesta de éxito**:
+  - **Código**: `200 OK`
+  - **Cuerpo**:
+    ```json
+    {
+      "message": "Ruta NO protegida"
+    }
+    ```
+
+---
+
+**Nota**: Asegúrate de agregar más detalles de cada endpoint según sea necesario (por ejemplo, descripciones adicionales, ejemplos de errores, etc.).
