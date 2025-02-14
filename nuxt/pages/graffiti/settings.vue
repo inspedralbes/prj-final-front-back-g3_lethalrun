@@ -156,12 +156,14 @@
 </template>
 
 <script setup>
+import { useNuxtApp } from '#app';
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useAppStore } from '@/stores/app';
 import { useGraffitis } from '@/services/graffitis';
 import VueCropper from 'vue-cropperjs';
 import 'cropperjs/dist/cropper.css';
 
+const { $socket } = useNuxtApp();
 const store = useAppStore();
 const { getGraffitis, uploadGraffiti, deleteGraffiti, setActiveGraffiti } = useGraffitis();
 const config = useRuntimeConfig();
@@ -174,7 +176,7 @@ const menuItems = [
 ];
 
 const profileOptions = [
-  { to: '/profile/my-info', label: 'Your Profile' }
+  { to: '/profile/my-info', label: 'El meu perfil' }
 ];
 
 const logoutLink = `${config.public.apiUrl}/api/auth/logout`;
@@ -265,13 +267,11 @@ const uploadImage = async () => {
     console.error("Error uploading graffiti:", error);
     return; // Si hay error, no seguimos
   }
-  await fetchGraffitis();
 };
 
 const deleteGraffitiHandler = async (id) => {
   try {
     await deleteGraffiti(id);
-    await fetchGraffitis();
   } catch (error) {
     console.error('Error deleting graffiti:', error);
   }
@@ -280,7 +280,6 @@ const deleteGraffitiHandler = async (id) => {
 const setActiveGraffitiHandler = async (id) => {
   try {
     await setActiveGraffiti(id);
-    await fetchGraffitis();
   } catch (error) {
     console.error('Error setting graffiti as active:', error);
   }
@@ -321,6 +320,7 @@ const totalPages = computed(() => Math.ceil(graffitis.value.length / pageSize));
 onMounted(() => {
   $socket.on('update-pictures', (data) => {
     console.log(data);
+    graffitis.value = data;
   });
 });
 

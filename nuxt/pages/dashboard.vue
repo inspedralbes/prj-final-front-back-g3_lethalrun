@@ -150,7 +150,7 @@ const menuItems = [
 ];
 
 const profileOptions = [
-  { to: '/profile/my-info', label: 'Your Profile' }
+  { to: '/profile/my-info', label: 'El meu perfil' }
 ];
 
 const logoutlink = `${config.public.apiUrl}/api/auth/logout`;

@@ -48,7 +48,7 @@ export function useAuth() {
             const parsedUser = JSON.parse(userData);
             store.setUser(parsedUser);
             store.setIsAuthenticated(true);
-            router.push("/dashboard");
+            router.push("/");
         } catch (error) {
             console.error("Error al analizar los datos del usuario:", error);
             router.push("/auth/login");

@@ -11,7 +11,7 @@
         <div class="space-y-4">
           <div>
             <label class="block text-gray-600 text-sm font-medium">Email</label>
-            <p class="text-gray-800 bg-gray-200 p-2 rounded-md">{{ user.email }}</p>
+            <p class="text-gray-800 bg-gray-200 p-2 rounded-md truncate">{{ user.email }}</p>
           </div>
           
           <div>
@@ -35,7 +35,7 @@
                   'bg-blue-500 cursor-pointer hover:bg-blue-600 transition': newUsername.trim() !== '' && newUsername !== user.username
                 }"
                 :disabled="newUsername.trim() === '' || newUsername === user.username">
-                <span v-if="!isLoadingNewUsername">Guardar</span>
+                <span class="whitespace-nowrap" v-if="!isLoadingNewUsername">Guardar canvis</span>
                 <div v-else class="flex items-center justify-center">
                   <svg class="animate-spin h-5 w-5 mr-3 text-gray-800 dark:text-white" xmlns="http://www.w3.org/2000/svg"
                     fill="none" viewBox="0 0 24 24">
@@ -93,7 +93,7 @@ const handleChangeUsername = async () => {
   }
 };
 
-const profileOptions = [{ to: '/profile/my-info', label: 'My Profile' }];
+const profileOptions = [{ to: '/profile/my-info', label: 'El meu perfil' }];
 const logoutlink = `${config.public.apiUrl}/api/auth/logout`;
 const isLogged = store.getIsAuthenticated;
 

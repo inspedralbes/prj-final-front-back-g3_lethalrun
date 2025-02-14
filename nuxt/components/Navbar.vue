@@ -32,7 +32,7 @@
                         </button>
                         <div v-if="profileOptionsIsOpen" class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 ring-1 shadow-lg ring-black/5">
                             <NuxtLink v-if="profileOptions.length > 0" v-for="option in profileOptions" :key="option.to" :to="option.to" class="block px-4 py-2 text-sm text-gray-700">{{ option.label }}</NuxtLink>
-                            <a :href="logoutLink" class="block px-4 py-2 text-sm text-gray-700">Sign out</a>
+                            <a :href="logoutLink" class="block px-4 py-2 text-sm text-gray-700">Tancar sessió</a>
                         </div>
                     </div>
                     <div v-else class="">
@@ -56,7 +56,7 @@ import { ref } from 'vue';
 const route = useRoute();
 
 const menuItems = [
-  { to: '/dashboard', label: 'Inicio', active: true },
+  { to: '/dashboard', label: 'Inici', active: true },
   { to: '/graffiti/settings', label: 'Graffiti', active: false },
 ];
 
