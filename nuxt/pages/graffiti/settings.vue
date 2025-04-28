@@ -15,25 +15,25 @@
 
             <!-- Paginación -->
             <div class="flex justify-center items-center">
-              <button @click="currentPage > 1 && (currentPage -= 1)" 
+              <button @click="currentPage > 1 && (currentPage -= 1)"
                 :class="currentPage === 1 ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-600 hover:bg-gray-700 cursor-pointer'"
                 :disabled="currentPage === 1"
                 class="px-4 text-center py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 disabled:bg-gray-400 transition-colors duration-200">
-                <
-              </button>
+                < </button>
 
-              <span class="mx-4 text-gray-700">Pàgina {{ currentPage }} de {{ totalPages }}</span>
+                  <span class="mx-4 text-gray-700">Pàgina {{ currentPage }} de {{ totalPages }}</span>
 
-              <button @click="currentPage < totalPages && (currentPage += 1)"
-                :class="currentPage === totalPages ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-600 hover:bg-gray-700 cursor-pointer'"
-                :disabled="currentPage === totalPages"
-                class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 disabled:bg-gray-400 transition-colors duration-200">
-                >
-              </button>
+                  <button @click="currentPage < totalPages && (currentPage += 1)"
+                    :class="currentPage === totalPages ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-600 hover:bg-gray-700 cursor-pointer'"
+                    :disabled="currentPage === totalPages"
+                    class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 disabled:bg-gray-400 transition-colors duration-200">
+                    >
+                  </button>
             </div>
 
             <!-- Botón para abrir el modal -->
-            <button @click="openModal" class="cursor-pointer bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 truncate">
+            <button @click="openModal"
+              class="cursor-pointer bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 truncate">
               Afegir Graffiti
             </button>
           </div>
@@ -83,12 +83,12 @@
   </div>
   <!-- Modal con vue-cropper -->
   <transition name="fade" @before-enter="beforeEnter" @enter="enter" @leave="leave">
-    <div v-if="isModalOpen" class="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50">
-      <div class="bg-white rounded-xl shadow-2xl p-6 w-4xl max-w-full relative">
+    <div v-if="isModalOpen"
+      class="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50 p-4">
+      <div class="bg-white rounded-xl shadow-2xl w-4xl max-w-full relative flex flex-col max-h-[90vh]">
 
-        <!-- Header -->
-        <div class="flex justify-between items-center border-b pb-4">
-            <h2 class="text-2xl font-semibold text-gray-900">Pujar Nou Graffiti</h2>
+        <div class="flex justify-between items-center sticky top-0 bg-white z-10 px-6 pt-6 pb-4 border-b">
+          <h2 class="text-2xl font-semibold text-gray-900">Pujar Nou Graffiti</h2>
           <button @click="closeModal"
             class="cursor-pointer text-gray-500 text-red-600 transition hover:bg-red-200 p-1 rounded-full">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
@@ -98,55 +98,50 @@
           </button>
         </div>
 
-        <!-- Body con grid -->
-        <div class="mt-4 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 w-full gap-1 justify-center">
+        <div class="overflow-y-auto px-6 py-4">
+          <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 w-full gap-4 justify-center">
 
-          <!-- Sección de subida y recorte -->
-          <div class="flex flex-col justify-between items-center w-full">
-            <!-- Botón para abrir selector de archivos -->
-            <button @click.prevent="showFileChooser"
-              class="cursor-pointer w-full bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200 transition">
-              Selecciona una imatge
-            </button>
-            <input ref="fileInput" type="file" class="hidden" @change="onFileChange" accept="image/jpeg, image/png" />
+            <div class="flex flex-col justify-start items-center w-full space-y-3">
+              <button @click.prevent="showFileChooser"
+                class="cursor-pointer w-full bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200 transition">
+                Selecciona una imatge
+              </button>
+              <input ref="fileInput" type="file" class="hidden" @change="onFileChange" accept="image/jpeg, image/png" />
 
-            <!-- Cropper -->
-            <div v-if="imageSrc" class="mt-3 w-full">
-              <vue-cropper ref="cropper" class="w-full h-auto max-w-full max-h-full" :src="imageSrc" :aspect-ratio="1"
-                :fixed-aspect-ratio="true">
-              </vue-cropper>
+              <div v-if="imageSrc" class="w-full">
+                <vue-cropper ref="cropper" class="w-full h-auto max-w-full" :src="imageSrc" :aspect-ratio="1"
+                  :fixed-aspect-ratio="true">
+                </vue-cropper>
+              </div>
+
+              <button v-if="imageSrc" @click="cropImage"
+                class="cursor-pointer w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
+                Retalla la imatge
+              </button>
             </div>
 
-
-
-            <!-- Botón para recortar -->
-            <button v-if="imageSrc" @click="cropImage"
-              class="cursor-pointer mt-3 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
-              Retalla la imatge
-            </button>
-          </div>
-
-          <!-- Previsualización de la imagen -->
-          <div class="flex flex-col justify-between items-center w-full">
-            <h3 class="text-1xl py-2 font-semibold text-gray-900">Previsualizació</h3>
-            <div class="sm:w-70 md:w-70 max-w-70 aspect-w-1 aspect-h-1">
-              <img v-if="croppedImage" :src="croppedImage" alt="Cropped Image"
-                class="sm:w-70 md:w-70 w-full h-full object-cover rounded-lg shadow-md">
+            <div class="flex flex-col justify-start items-center w-full space-y-3">
+              <h3 class="text-lg font-semibold text-gray-900">Previsualizació</h3>
+              <div class="w-full max-w-[250px] sm:max-w-[300px] aspect-square">
+                <img v-if="croppedImage" :src="croppedImage" alt="Cropped Image"
+                  class="w-full h-full object-cover rounded-lg shadow-md">
+                <div v-else class="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center text-gray-500">
+                  Imatge retallada aquí
+                </div>
+              </div>
             </div>
-            <button v-if="croppedImage" @click="uploadImage"
-              class="cursor-pointer mt-4 w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition">
-              Pujar Graffiti
-            </button>
           </div>
-
         </div>
 
 
-        <!-- Footer -->
-        <div class="mt-6 flex justify-end gap-2">
+        <div class="mt-auto flex justify-end gap-2 sticky bottom-0 bg-white z-10 px-6 pb-6 pt-4 border-t">
           <button @click="closeModal"
             class="cursor-pointer bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300 transition">
             Cancelar
+          </button>
+          <button v-if="croppedImage" @click="uploadImage"
+            class="cursor-pointer bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition">
+            Pujar Graffiti
           </button>
         </div>
 
@@ -331,21 +326,4 @@ onUnmounted(() => {
 fetchGraffitis();
 </script>
 
-<style>
-/* Transición del modal */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease;
-}
-
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
-}
-
-#vue-cropper-style>*:not(img) {
-  aspect-ratio: 1 / 1;
-  width: 100%;
-  height: 100%;
-}
-</style>
+<style></style>
