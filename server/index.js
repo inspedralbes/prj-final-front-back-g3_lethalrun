@@ -10,11 +10,11 @@ import path from 'path'; // Manejo de rutas de archivos y directorios
 import passport from './googleService.js'; // Servicio de autenticación con Google
 import session from 'express-session'; // Manejo de sesiones en Express
 import bcrypt from 'bcrypt'; // Biblioteca para el cifrado de contraseñas
-import { sendVerificationEmail, sendPasswordResetEmail } from './emailService.js'; // Funciones para enviar correos electrónicos
-import db from './sql/connectDB.js'; // Conexión a la base de datos
+import { sendVerificationEmail, sendPasswordResetEmail } from './auth-service/emailService.js'; // Funciones para enviar correos electrónicos
+import db from './sql-service/connectDB.js'; // Conexión a la base de datos
 import createPictureController from './controllers/pictureController.js'; // Controlador de imágenes
 import createUserController from './controllers/userController.js'; // Controlador de usuarios
-import createTokenController from './controllers/verifyTokenController.js'; // Controlador de tokens de verificación
+import createTokenController from './auth-service/controllers/verifyTokenController.js'; // Controlador de tokens de verificación
 import initializeSocket from './controllers/socketController.js'; // Configuración de WebSockets
 
 // Creación de instancias de controladores
