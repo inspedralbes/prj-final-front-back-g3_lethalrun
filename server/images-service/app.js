@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import { config } from 'dotenv';
-import routes from './routes.js';
+import router from './routes/pictureRoutes.js';
 
 config(); // Cargar las variables de entorno desde .env
 
@@ -13,7 +13,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Ruta base de la API
-app.use('/pictures', routes);
+app.use('/pictures', router);
 
 // Iniciar el servidor
 app.listen(PORT, () => {

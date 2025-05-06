@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer'; // Suponiendo que uses multer para manejar la carga de archivos
-import { createPictureController } from './pictureController.js';
+import { createPictureController } from '../controllers/pictureController.js';
 
 const router = express.Router();
 

@@ -4,6 +4,8 @@ node_modules
 # Ignora los archivos relacionados a API keys
 images-service/.env
 sql-service/.env
+auth-service/.env
+socket-service/.env
 .env
 
 images-service/images/users

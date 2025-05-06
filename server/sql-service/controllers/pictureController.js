@@ -1,5 +1,7 @@
-// Cargar las variables de entorno
-require('dotenv').config();
+// pictureController.js (formato ES Module)
+
+// Cargar las variables de entorno desde .env
+import 'dotenv/config';
 
 // Crear una constante para la URL de la API
 const API_URL = process.env.API_URL;
@@ -10,16 +12,15 @@ const API_URL = process.env.API_URL;
  */
 const pictureController = ({ Picture, sequelize }) => {
   return {
-    // Corregimos la definición de la función createDefaultPicture
     async createDefaultPicture(userId, transaction = null) {
       try {
-        // Hacer la llamada a la API utilizando la URL cargada desde .env
+        // Llamada a la API para crear imagen por defecto
         const response = await fetch(`${API_URL}/create-default-picture`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ userId }), // Enviamos el userId como cuerpo de la solicitud
+          body: JSON.stringify({ userId }),
         });
 
         if (!response.ok) {
@@ -27,15 +28,15 @@ const pictureController = ({ Picture, sequelize }) => {
         }
 
         const data = await response.json();
-        const pictureId = data.pictureId; // Obtenemos el ID de la imagen desde la respuesta
+        const pictureId = data.pictureId;
 
-        // Ahora creamos el registro de la imagen en la base de datos
+        // Crear registro en base de datos
         const picture = await Picture.create(
-          { user_id: userId, is_active: true, picture_id: pictureId }, // Añadimos el pictureId de la API
+          { user_id: userId, is_active: true, picture_id: pictureId },
           { transaction }
         );
 
-        return picture.id; // Devolvemos el ID de la imagen creada
+        return picture.id;
 
       } catch (error) {
         throw new Error(`Error en el proceso de creación de la imagen por defecto: ${error.message}`);
