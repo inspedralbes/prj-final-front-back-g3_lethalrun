@@ -10,18 +10,17 @@ export const createPictureController = {
 
   /**
    * Crea una imagen por defecto cuando se crea un nuevo usuario.
+   * Ahora se puede proporcionar un nombre para la imagen.
    * @param {number} userId - El ID del usuario al que se le asignará la imagen.
+   * @param {string} customName - El nombre personalizado para la imagen.
    * @returns {number} - El ID de la imagen creada.
    * @throws {Error} - Si ocurre un error al crear la imagen.
    */
-  async createDefaultPicture(userId) {
+  async createDefaultPicture(userId, customName) {
     try {
-      const data = await response.json();
-      const pictureId = data.pictureId;
-
-      // Nombre del archivo
+      // Nombre del archivo de la imagen por defecto
       const defaultImageName = 'default.png';
-      const newImageName = `${pictureId}_${defaultImageName}`;
+      const newImageName = customName ? `${userId}_${customName}.png` : `${userId}_${defaultImageName}`;
 
       // Rutas de las imágenes
       const defaultImagePath = path.join(__dirname, '..', 'images', 'default', defaultImageName);
@@ -33,24 +32,26 @@ export const createPictureController = {
         fs.mkdirSync(userFolderPath, { recursive: true });
       }
 
-      // Copiar y renombrar la imagen
+      // Copiar y renombrar la imagen por defecto
       fs.copyFileSync(defaultImagePath, newImagePath);
 
-      return pictureId;
+      return userId; // Retornamos el ID de usuario como referencia de la creación
     } catch (error) {
-      console.error('Error creating default picture:', error);
+      console.error('Error creando la imagen por defecto:', error);
       throw error;
     }
   },
 
   /**
    * Crea una nueva imagen asociada a un usuario.
+   * Ahora se puede proporcionar un nombre para la imagen.
    * @param {Object} file - El archivo de imagen subido.
    * @param {number} userId - El ID del usuario al que se le asociará la imagen.
+   * @param {string} customName - El nombre personalizado para la imagen.
    * @returns {number} - El ID de la imagen creada.
    * @throws {Error} - Si ocurre un error al crear la imagen.
    */
-  async createPicture(file, userId) {
+  async createPicture(file, userId, customName) {
     try {
       const formData = new FormData();
       formData.append('file', file);
@@ -68,8 +69,9 @@ export const createPictureController = {
       const data = await response.json();
       const pictureId = data.pictureId;
 
+      // Si se proporcionó un nombre personalizado, lo usamos; de lo contrario, generamos uno por defecto
       const fileExtension = path.extname(file.originalname);
-      const newFilename = `${pictureId}_${path.basename(file.originalname, fileExtension)}${fileExtension}`;
+      const newFilename = customName ? `${pictureId}_${customName}${fileExtension}` : `${pictureId}_${path.basename(file.originalname, fileExtension)}${fileExtension}`;
 
       const userFolderPath = path.join('./images', 'users', userId.toString());
 
@@ -84,7 +86,7 @@ export const createPictureController = {
 
       return pictureId;
     } catch (error) {
-      console.error('Error creating picture:', error);
+      console.error('Error creando la imagen:', error);
       throw error;
     }
   },
@@ -110,7 +112,7 @@ export const createPictureController = {
 
       return { message: 'Imagen activa establecida correctamente' };
     } catch (error) {
-      console.error('Error setting active picture:', error);
+      console.error('Error estableciendo la imagen activa:', error);
       throw error;
     }
   },
@@ -132,7 +134,7 @@ export const createPictureController = {
       const data = await response.json();
       return data || null;
     } catch (error) {
-      console.error('Error getting active picture:', error);
+      console.error('Error obteniendo la imagen activa:', error);
       throw error;
     }
   },
@@ -164,7 +166,7 @@ export const createPictureController = {
       }
 
     } catch (error) {
-      console.error('Error deleting picture:', error);
+      console.error('Error eliminando la imagen:', error);
       throw error;
     }
   },
@@ -186,7 +188,7 @@ export const createPictureController = {
       const data = await response.json();
       return data || [];
     } catch (error) {
-      console.error('Error getting user pictures:', error);
+      console.error('Error obteniendo las imágenes del usuario:', error);
       throw error;
     }
   },
@@ -217,7 +219,7 @@ export const createPictureController = {
       const data = await response.json();
       return data.pictureId;
     } catch (error) {
-      console.error('Error updating picture:', error);
+      console.error('Error actualizando la imagen:', error);
       throw error;
     }
   },

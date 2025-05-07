@@ -7,14 +7,28 @@ const router = express.Router();
 const picturesRouter = (db) => {
   const controller = pictureController(db);
 
-  // Ruta para crear una nueva imagen (sin archivo)
+  // Ruta para crear una nueva imagen (sin archivo) con un nombre personalizado
   router.post('/create/:userId', async (req, res) => {
     const { userId } = req.params;
+    const { customName } = req.body;  // El nombre personalizado puede ser enviado en el cuerpo de la solicitud
     try {
-      const pictureId = await controller.createPicture(userId);
+      const pictureId = await controller.createPicture(userId, customName);
       res.status(201).json({ message: 'Imagen creada', pictureId });
     } catch (error) {
       console.error('Error creando imagen:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Ruta para crear una imagen por defecto (llama al método `createDefaultPicture`)
+  router.post('/create-default/:userId', async (req, res) => {
+    const { userId } = req.params;
+    const { customName } = req.body;  // Nombre personalizado para la imagen por defecto
+    try {
+      const pictureId = await controller.createDefaultPicture(userId, customName);
+      res.status(201).json({ message: 'Imagen por defecto creada', pictureId });
+    } catch (error) {
+      console.error('Error creando imagen por defecto:', error);
       res.status(500).json({ error: error.message });
     }
   });

@@ -46,7 +46,7 @@ router.get('/logout', verifyJWTCliente, (req, res) => {
 
 // ENVIAR CORREO DE VERIFICACIÓN
 router.post('/send-verification-email', async (req, res) => {
-  const { email, username, password, rol = 'cliente' } = req.body;
+  const { email, username, password } = req.body;
 
   if (!email) {
     return res.status(400).json({ message: 'El correo electrónico es requerido.' });
