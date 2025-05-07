@@ -1,10 +1,10 @@
-// app.js
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import session from 'express-session';
-import passport from './googleService.js';
+import passport from './services/googleService.js';
 import authRoutes from './routes/authRoutes.js';
+import validateAuthRoutes from './routes/verifyRoutes.js'; 
 
 dotenv.config();
 
@@ -31,12 +31,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Rutas de autenticación
-app.use('/api/auth', authRoutes);
+app.use('/auth', authRoutes);
 
-// Ruta por defecto
-app.get('/', (req, res) => {
-  res.send('Auth Service corriendo');
-});
+// Rutas de validación de tokens para otros servicios
+app.use('/validate', validateAuthRoutes); // ⬅️ aquí se añade
 
 // Iniciar servidor
 app.listen(PORT, () => {

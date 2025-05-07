@@ -1,28 +1,57 @@
 import jwt from 'jsonwebtoken';
 
-// Función para generar un JWT
+// 🔐 Generar JWT con clave distinta según rol
 export function generateJWT(user) {
   const payload = {
-    id: user._id,
+    id: user.id,
     email: user.email,
     username: user.username,
+    rol: user.rol, // importante que esté en el modelo
   };
-  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }); // Token válido por 1 hora
+
+  const secret = user.rol === 'admin'
+    ? process.env.JWT_SECRET_ADMIN
+    : process.env.JWT_SECRET_CLIENTE;
+
+  return jwt.sign(payload, secret, { expiresIn: '1h' });
 }
 
-// Middleware para verificar si el usuario está autenticado
-export default function verifyJWT(req, res, next) {
-  const token = req.headers.authorization?.split(' ')[1]; // Espera "Bearer <token>"
-
-  if (!token) {
-    return res.status(401).json({ message: 'Token no proporcionado' });
-  }
+// ✅ Middleware: permite cliente y admin
+export function verifyJWTCliente(req, res, next) {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(401).json({ message: 'Token no proporcionado' });
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // Agregamos el payload del token al request
+    // Intenta verificar primero con la clave admin
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET_ADMIN);
+    } catch (e) {
+      decoded = jwt.verify(token, process.env.JWT_SECRET_CLIENTE);
+    }
+
+    req.user = decoded;
     next();
-  } catch (error) {
+  } catch (err) {
     return res.status(403).json({ message: 'Token inválido o expirado' });
+  }
+}
+
+// 🔒 Middleware: solo permite admin
+export function verifyJWTAdmin(req, res, next) {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(401).json({ message: 'Token no proporcionado' });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_ADMIN);
+
+    if (decoded.rol !== 'admin') {
+      return res.status(403).json({ message: 'Acceso restringido a administradores' });
+    }
+
+    req.user = decoded;
+    next();
+  } catch (err) {
+    return res.status(403).json({ message: 'Token inválido o expirado o no es de admin' });
   }
 }

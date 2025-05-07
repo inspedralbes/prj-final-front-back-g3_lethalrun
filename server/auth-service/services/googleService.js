@@ -2,18 +2,15 @@ import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as LocalStrategy } from 'passport-local';
 import dotenv from 'dotenv';
-import createuserController from './controllers/userController.js';
-import createPictureController from './controllers/pictureController.js';
-import db from './sql/connectDB.js';
+import createuserController from '../controllers/userController.js';
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 
 /**
- * Inicializa los controladores para usuarios y imágenes
+ * Inicializa el controlador de usuarios
  * @type {Object}
  */
-const userController = createuserController(db);
-const pictureController = createPictureController(db);
+const userController = createuserController();
 
 // Carga las variables de entorno desde el archivo .env
 dotenv.config();
@@ -44,9 +41,6 @@ passport.use(
           // Si el usuario no existe, crea uno nuevo
           const randomPassword = crypto.randomBytes(16).toString('hex');
           const userId = await userController.createUser(profile.emails[0].value, profile.displayName, randomPassword);
-
-          // Crea una imagen de perfil por defecto para el nuevo usuario
-          await pictureController.createDefaultPicture(userId);
 
           // Obtiene el usuario recién creado
           user = await userController.getUser(userId);
