@@ -58,6 +58,7 @@ const route = useRoute();
 const menuItems = [
   { to: '/dashboard', label: 'Inici', active: true },
   { to: '/graffiti/settings', label: 'Graffiti', active: false },
+  { to: '/gachapon', label: 'Gachapon', active: false },
 ];
 
 const props = defineProps({
