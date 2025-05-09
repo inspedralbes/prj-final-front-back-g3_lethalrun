@@ -31,7 +31,7 @@ router.get('/auth/google', passport.authenticate('google', {
   scope: ['profile', 'email'],
 }));
 
-router.get('/auth/callback', passport.authenticate('google', { failureRedirect: '/' }), (req, res) => {
+router.get('/callback', passport.authenticate('google', { failureRedirect: '/' }), (req, res) => {
   const token = generateJWT(req.user);
   res.redirect(`${process.env.DOMAIN_URL}:${process.env.WEB_PORT}/auth/callback?token=${token}`);
 });
