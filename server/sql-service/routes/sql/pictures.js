@@ -3,14 +3,13 @@ import pictureController from '../../controllers/pictureController.js';
 
 const router = express.Router();
 
-// Recibe `db` (los modelos) como parámetro
 const picturesRouter = (db) => {
   const controller = pictureController(db);
 
-  // Ruta para crear una nueva imagen (sin archivo) con un nombre personalizado
+  // Crear imagen personalizada (sin archivo, solo registro)
   router.post('/create/:userId', async (req, res) => {
     const { userId } = req.params;
-    const { customName } = req.body;  // El nombre personalizado puede ser enviado en el cuerpo de la solicitud
+    const { customName } = req.body;
     try {
       const pictureId = await controller.createPicture(userId, customName);
       res.status(201).json({ message: 'Imagen creada', pictureId });
@@ -20,20 +19,7 @@ const picturesRouter = (db) => {
     }
   });
 
-  // Ruta para crear una imagen por defecto (llama al método `createDefaultPicture`)
-  router.post('/create-default/:userId', async (req, res) => {
-    const { userId } = req.params;
-    const { customName } = req.body;  // Nombre personalizado para la imagen por defecto
-    try {
-      const pictureId = await controller.createDefaultPicture(userId, customName);
-      res.status(201).json({ message: 'Imagen por defecto creada', pictureId });
-    } catch (error) {
-      console.error('Error creando imagen por defecto:', error);
-      res.status(500).json({ error: error.message });
-    }
-  });
-
-  // Ruta para establecer una imagen activa para un usuario
+  // Establecer imagen activa para un usuario
   router.put('/set-active/:pictureId/:userId', async (req, res) => {
     const { pictureId, userId } = req.params;
     try {
@@ -45,7 +31,7 @@ const picturesRouter = (db) => {
     }
   });
 
-  // Ruta para obtener la imagen activa de un usuario
+  // Obtener la imagen activa de un usuario
   router.get('/active/:userId', async (req, res) => {
     const { userId } = req.params;
     try {
@@ -61,7 +47,7 @@ const picturesRouter = (db) => {
     }
   });
 
-  // Ruta para eliminar una imagen
+  // Eliminar una imagen
   router.delete('/delete/:id/:userId', async (req, res) => {
     const { id, userId } = req.params;
     try {
@@ -73,7 +59,7 @@ const picturesRouter = (db) => {
     }
   });
 
-  // Ruta para obtener todas las imágenes de un usuario
+  // Obtener todas las imágenes de un usuario
   router.get('/all/:userId', async (req, res) => {
     const { userId } = req.params;
     try {
@@ -81,19 +67,6 @@ const picturesRouter = (db) => {
       res.status(200).json(pictures);
     } catch (error) {
       console.error('Error obteniendo imágenes del usuario:', error);
-      res.status(500).json({ error: error.message });
-    }
-  });
-
-  // Ruta para actualizar el path de una imagen
-  router.put('/update/:id/:userId', async (req, res) => {
-    const { id, userId } = req.params;
-    const { newPath } = req.body;
-    try {
-      const updatedPictureId = await controller.updatePicturePath(id, userId, newPath);
-      res.status(200).json({ message: 'Imagen actualizada correctamente', pictureId: updatedPictureId });
-    } catch (error) {
-      console.error('Error actualizando imagen:', error);
       res.status(500).json({ error: error.message });
     }
   });

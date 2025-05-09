@@ -1,98 +1,85 @@
 import express from 'express';
 import upload from '../middleware/multer.js';
-import { createPictureController } from '../controllers/pictureController.js';
 import dotenv from 'dotenv';
 import { verifyJWTCliente } from '../middleware/verifyJWT.js';
+import { createPictureController } from '../controllers/pictureController.js';
 
 dotenv.config();
 
 const router = express.Router();
 
-const notifyImageChange = async (userId, message) => {
-  const socketId = await getSocketIdByUserId(userId);
+// Función para notificar cambios en las imágenes a través de sockets
+const notifyImageChange = async (userId, socketId, message) => {
   const apiUrl = process.env.SOCKET_API_URL;
-
   if (!socketId || !apiUrl) return;
 
   try {
     await fetch(`${apiUrl}/private/${socketId}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message })
+      body: JSON.stringify({ message }),
     });
   } catch (err) {
     console.error('Error notificando al socket:', err.message);
   }
 };
 
-// ⬇️ AÑADE verifyJWTCliente a cada ruta protegida
-
-// Ruta para crear una nueva imagen
+// Crear imagen personalizada
 router.post('/create-picture', verifyJWTCliente, upload.single('file'), async (req, res) => {
   try {
-    const userId = req.body.userId;
-    const customName = req.body.customName; // Nombre personalizado recibido
-    const pictureId = await createPictureController.createPicture(req.file, userId, customName); // Pasamos el customName
-
-    await notifyImageChange(userId, `Imagen creada: ${pictureId}`);
-    res.status(201).json({ pictureId });
+    const { userId, customName, socketId } = req.body;
+    await createPictureController.createPicture(req.file, userId, customName);
+    await notifyImageChange(userId, socketId, `Imagen personalizada creada`);
+    res.status(201).json({ message: 'Imagen creada correctamente' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// Ruta para crear una imagen por defecto
-router.post('/create-default-picture/:userId', verifyJWTCliente, async (req, res) => {
+// Crear imagen por defecto (NO maneja ni devuelve pictureId)
+router.post('/create-default-picture/:userId', async (req, res) => {
   const { userId } = req.params;
-  const { customName } = req.body;  // El nombre personalizado puede ser enviado en el cuerpo de la solicitud
-  try {
-    const pictureId = await createPictureController.createDefaultPicture(userId, customName); // Pasamos el customName
+  const { customName } = req.body;
 
-    await notifyImageChange(userId, `Imagen por defecto creada: ${pictureId}`);
-    res.status(201).json({ pictureId });
+  if (!customName) {
+    return res.status(400).json({ error: 'El nombre personalizado (customName) es requerido.' });
+  }
+
+  try {
+    console.log("Imagen por defecto creandose...");
+    await createPictureController.createDefaultPicture(userId, customName);
+    console.log("Imagen por defecto creada correctamente");
+    res.status(201).json({ message: 'Imagen por defecto creada correctamente' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// Ruta para establecer una imagen activa
+// Establecer imagen activa (proxy al SQL)
 router.put('/set-active-picture/:pictureId/:userId', verifyJWTCliente, async (req, res) => {
   try {
     const { pictureId, userId } = req.params;
     await createPictureController.setActivePicture(pictureId, userId);
-
-    await notifyImageChange(userId, `Imagen activa: ${pictureId}`);
     res.status(200).json({ message: 'Imagen activa establecida correctamente' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// Ruta para obtener la imagen activa
-router.get('/get-active-picture/:userId', verifyJWTCliente, async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const picture = await createPictureController.getActivePicture(userId);
-    res.status(200).json(picture || { message: 'No hay imagen activa' });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Ruta para eliminar una imagen
+// Eliminar imagen (requiere pictureId)
 router.delete('/delete-picture/:id/:userId', verifyJWTCliente, async (req, res) => {
   try {
     const { id, userId } = req.params;
+    const { socketId } = req.body;
     await createPictureController.deletePicture(id, userId);
-
-    await notifyImageChange(userId, `Imagen eliminada: ${id}`);
+    await notifyImageChange(userId, socketId, `Imagen eliminada: ${id}`);
     res.status(200).json({ message: 'Imagen eliminada correctamente' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// Ruta para obtener todas las imágenes de un usuario
+// Obtener todas las imágenes de un usuario
 router.get('/get-user-pictures/:userId', verifyJWTCliente, async (req, res) => {
   try {
     const { userId } = req.params;
@@ -103,16 +90,29 @@ router.get('/get-user-pictures/:userId', verifyJWTCliente, async (req, res) => {
   }
 });
 
-// Ruta para actualizar una imagen
-router.put('/update-picture/:id', verifyJWTCliente, upload.single('file'), async (req, res) => {
+// Obtener la imagen activa de un usuario
+router.get('/get-active-picture/:userId', verifyJWTCliente, async (req, res) => {
   try {
-    const { id } = req.params;
-    const userId = req.body.userId;
-    const customName = req.body.customName; // Nombre personalizado recibido
-    const pictureId = await createPictureController.updatePicture(id, req.file, userId, customName); // Pasamos el customName
+    const { userId } = req.params;
+    const picture = await createPictureController.getActivePicture(userId);
+    if (picture) {
+      res.status(200).json(picture);
+    } else {
+      res.status(404).json({ message: 'No se encontró una imagen activa' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
-    await notifyImageChange(userId, `Imagen actualizada: ${pictureId}`);
-    res.status(200).json({ pictureId });
+// Eliminar carpeta completa del usuario
+router.delete('/delete-user/:userId', verifyJWTCliente, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { socketId } = req.body;
+    await createPictureController.deleteUserFolder(userId);
+    await notifyImageChange(userId, socketId, `Carpeta del usuario ${userId} eliminada correctamente.`);
+    res.status(200).json({ message: `Carpeta del usuario ${userId} eliminada correctamente.` });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

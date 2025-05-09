@@ -44,30 +44,50 @@ router.get('/logout', verifyJWTCliente, (req, res) => {
   });
 });
 
-// ENVIAR CORREO DE VERIFICACIÓN
 router.post('/send-verification-email', async (req, res) => {
   const { email, username, password } = req.body;
 
+  // Lista de correos electrónicos que deberían ser admins
+  const adminEmails = ['admin1@example.com', 'admin2@example.com'];  // Puedes agregar más correos
+
+  // Asignar el rol por defecto
+  let rol = 'cliente';
+
+  // Si el email está en la lista de adminEmails, asignamos el rol de admin
+  if (adminEmails.includes(email)) {
+    rol = 'admin';
+  }
+
+  // Validación de que el correo electrónico esté presente
   if (!email) {
     return res.status(400).json({ message: 'El correo electrónico es requerido.' });
   }
 
   try {
-    const existingUser = await userController.getUserByEmail(email); // Solo hace llamada a API ahora
+    // Verificar si el usuario ya existe
+    const existingUser = await userController.getUserByEmail(email);
     if (existingUser) {
-      return res.status(400).json({ message: 'El usuario ya existe.' });
+      return res.status(409).json({ message: 'El usuario ya existe.' }); // Código 409 para conflictos de recursos (usuario ya existe)
     }
 
-    const token = await tokenController.createToken(email, username, password, rol); // Llamada API
+    // Crear el token con el rol determinado
+    const token = await tokenController.createToken(email, username, password, rol);
+
+    // Crear el enlace para la verificación
     const link = `${process.env.DOMAIN_URL}:${process.env.WEB_PORT}/auth/verify-register?token=${token}`;
 
+    // Enviar el correo de verificación
     await sendVerificationEmail(email, link);
+
+    // Responder con éxito
     res.status(200).json({ message: `Correo de verificación enviado a ${email}` });
   } catch (error) {
     console.error('Error al enviar el correo de verificación:', error);
     res.status(500).json({ message: 'Hubo un error al enviar el correo de verificación.' });
   }
 });
+
+
 
 // ✅ ENVIAR CORREO DE RECUPERACIÓN DE CONTRASEÑA
 router.post('/send-password-reset-email', async (req, res) => {
@@ -99,25 +119,41 @@ router.post('/verify-email/:token', async (req, res) => {
   const { token } = req.params;
 
   try {
-    const verificationData = await tokenController.verifyToken(token); // Llamada API
-    if (!verificationData) return res.status(400).send('Token inválido o expirado.');
+    // 1. Verifica el token
+    const verificationData = await tokenController.verifyToken(token);
+    if (!verificationData) {
+      return res.status(400).json({ error: 'Token inválido o expirado.' });
+    }
 
-    const existingUser = await userController.getUserByEmail(verificationData.email); // Solo hace llamada a API ahora
-    if (existingUser) return res.status(400).json({ message: 'El usuario ya existe.' });
+    // 2. Valida los datos del token
+    const { email, username, password, rol } = verificationData;
+    if (!email || !username || !password) {
+      return res.status(400).json({ error: 'Datos incompletos en el token.' });
+    }
 
+    // 3. Comprueba si el usuario ya existe
+    const existingUser = await userController.getUserByEmail(email);
+    if (existingUser) {
+      return res.status(400).json({ error: 'El usuario ya existe.' });
+    }
+
+    // 4. Crea el usuario
     await userController.createUser(
-      verificationData.email,
-      verificationData.username,
-      verificationData.password,
-      verificationData.rol || 'cliente'
+      email,
+      username,
+      password,
+      rol || 'cliente'
     );
 
-    res.status(200).send('Usuario registrado correctamente');
+    // 5. Responde éxito
+    res.status(200).json({ message: 'Usuario registrado correctamente' });
   } catch (error) {
     console.error('Error al verificar el token:', error);
-    res.status(500).send('Error al verificar el token.');
+    // Si el error es un objeto con .message, lo devolvemos, si no, el error tal cual
+    res.status(500).json({ error: error.message || error });
   }
 });
+
 
 // RESTABLECER CONTRASEÑA
 router.post('/reset-password/:token', async (req, res) => {

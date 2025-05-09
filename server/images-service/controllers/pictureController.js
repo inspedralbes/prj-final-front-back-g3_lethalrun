@@ -1,226 +1,168 @@
-import { config } from 'dotenv';
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
+import fetch from 'node-fetch';
+import { fileURLToPath } from 'url';
 
-config(); // Cargar variables de entorno desde .env
+// Solución para __dirname en ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const API_URL = process.env.API_URL; // URL de la API
+const USERS_FOLDER = path.join(__dirname,'images', 'users');
+const DEFAULT_IMAGE_PATH = path.join(__dirname, '..', 'images', 'default', 'default.png');
+const API_SQL_URL = process.env.API_SQL_URL;
 
 export const createPictureController = {
-
-  /**
-   * Crea una imagen por defecto cuando se crea un nuevo usuario.
-   * Ahora se puede proporcionar un nombre para la imagen.
-   * @param {number} userId - El ID del usuario al que se le asignará la imagen.
-   * @param {string} customName - El nombre personalizado para la imagen.
-   * @returns {number} - El ID de la imagen creada.
-   * @throws {Error} - Si ocurre un error al crear la imagen.
-   */
-  async createDefaultPicture(userId, customName) {
-    try {
-      // Nombre del archivo de la imagen por defecto
-      const defaultImageName = 'default.png';
-      const newImageName = customName ? `${userId}_${customName}.png` : `${userId}_${defaultImageName}`;
-
-      // Rutas de las imágenes
-      const defaultImagePath = path.join(__dirname, '..', 'images', 'default', defaultImageName);
-      const userFolderPath = path.join(__dirname, '..', 'images', 'users', userId.toString());
-      const newImagePath = path.join(userFolderPath, newImageName);
-
-      // Crear carpeta del usuario si no existe
-      if (!fs.existsSync(userFolderPath)) {
-        fs.mkdirSync(userFolderPath, { recursive: true });
-      }
-
-      // Copiar y renombrar la imagen por defecto
-      fs.copyFileSync(defaultImagePath, newImagePath);
-
-      return userId; // Retornamos el ID de usuario como referencia de la creación
-    } catch (error) {
-      console.error('Error creando la imagen por defecto:', error);
-      throw error;
-    }
-  },
-
-  /**
-   * Crea una nueva imagen asociada a un usuario.
-   * Ahora se puede proporcionar un nombre para la imagen.
-   * @param {Object} file - El archivo de imagen subido.
-   * @param {number} userId - El ID del usuario al que se le asociará la imagen.
-   * @param {string} customName - El nombre personalizado para la imagen.
-   * @returns {number} - El ID de la imagen creada.
-   * @throws {Error} - Si ocurre un error al crear la imagen.
-   */
+  // Crear una imagen personalizada
   async createPicture(file, userId, customName) {
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('userId', userId);
+    const userFolder = path.join(USERS_FOLDER, userId);
 
-      const response = await fetch(`${API_URL}/pictures/create`, {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error(`Error en la creación de la imagen: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      const pictureId = data.pictureId;
-
-      // Si se proporcionó un nombre personalizado, lo usamos; de lo contrario, generamos uno por defecto
-      const fileExtension = path.extname(file.originalname);
-      const newFilename = customName ? `${pictureId}_${customName}${fileExtension}` : `${pictureId}_${path.basename(file.originalname, fileExtension)}${fileExtension}`;
-
-      const userFolderPath = path.join('./images', 'users', userId.toString());
-
-      if (!fs.existsSync(userFolderPath)) {
-        fs.mkdirSync(userFolderPath, { recursive: true });
-      }
-
-      const oldPath = path.join('./images', file.filename);
-      const newPath = path.join(userFolderPath, newFilename);
-
-      fs.renameSync(oldPath, newPath);
-
-      return pictureId;
-    } catch (error) {
-      console.error('Error creando la imagen:', error);
-      throw error;
+    if (!fs.existsSync(userFolder)) {
+      fs.mkdirSync(userFolder, { recursive: true });
     }
+
+    const ext = path.extname(file.originalname) || '.png';
+    const randomSuffix = Math.random().toString(36).substring(2, 10);
+    const fileName = `${userId}_${randomSuffix}${ext}`;
+    const newPath = path.join(userFolder, fileName);
+
+    fs.renameSync(file.path, newPath);
+
+    // Solo enviamos customName al servicio SQL
+    const response = await fetch(`${API_SQL_URL}/create/${userId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ customName: customName || fileName })
+    });
+
+    if (!response.ok) {
+      const result = await response.json();
+      throw new Error(result.error || 'Error al guardar la imagen en SQL');
+    }
+    return;
   },
 
-  /**
-   * Establece una imagen activa para un usuario.
-   * @param {number} pictureId - El ID de la imagen que se quiere establecer como activa.
-   * @param {number} userId - El ID del usuario.
-   * @throws {Error} - Si ocurre un error al establecer la imagen activa.
-   */
-  async setActivePicture(pictureId, userId) {
-    try {
-      const response = await fetch(`${API_URL}/pictures/set-active/${pictureId}/${userId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+// Crear una imagen por defecto para un usuario (NO llama a SQL)
+async createDefaultPicture(userId, customName) {
+  console.log('--- [createDefaultPicture] ---');
+  console.log('Parámetros recibidos:', { userId, customName });
 
-      if (!response.ok) {
-        throw new Error(`Error estableciendo la imagen activa: ${response.statusText}`);
-      }
+  if (!userId || !customName) {
+    console.error('Faltan parámetros: userId y customName son obligatorios.');
+    throw new Error('Faltan parámetros: userId y customName son obligatorios.');
+  }
 
-      return { message: 'Imagen activa establecida correctamente' };
-    } catch (error) {
-      console.error('Error estableciendo la imagen activa:', error);
-      throw error;
+  console.log('USERS_FOLDER:', USERS_FOLDER);
+  const userFolder = path.join(USERS_FOLDER, userId);
+  console.log('Ruta de la carpeta del usuario:', userFolder);
+
+  try {
+    // Verificar y crear la carpeta del usuario si no existe
+    if (!fs.existsSync(userFolder)) {
+      console.log('La carpeta del usuario no existe. Creándola...');
+      fs.mkdirSync(userFolder, { recursive: true });
+      console.log('Carpeta creada:', userFolder);
+    } else {
+      console.log('La carpeta del usuario ya existe.');
     }
-  },
 
-  /**
-   * Obtiene la imagen activa de un usuario.
-   * @param {number} userId - El ID del usuario.
-   * @returns {Object|null} - La imagen activa del usuario, o null si no existe.
-   * @throws {Error} - Si ocurre un error al obtener la imagen activa.
-   */
-  async getActivePicture(userId) {
-    try {
-      const response = await fetch(`${API_URL}/pictures/active/${userId}`);
-
-      if (!response.ok) {
-        throw new Error(`Error obteniendo la imagen activa: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      return data || null;
-    } catch (error) {
-      console.error('Error obteniendo la imagen activa:', error);
-      throw error;
+    // Comprobar si la imagen por defecto existe
+    console.log('Ruta de la imagen por defecto:', DEFAULT_IMAGE_PATH);
+    if (!fs.existsSync(DEFAULT_IMAGE_PATH)) {
+      console.error('La imagen por defecto no existe:', DEFAULT_IMAGE_PATH);
+      throw new Error('La imagen por defecto no existe.');
     }
-  },
 
-  /**
-   * Elimina una imagen si no está activa.
-   * @param {number} id - El ID de la imagen a eliminar.
-   * @param {number} userId - El ID del usuario dueño de la imagen.
-   * @throws {Error} - Si ocurre un error al eliminar la imagen.
-   */
+    // Copiar la imagen por defecto al destino
+    const newPath = path.join(userFolder, customName);
+    console.log(`Copiando imagen por defecto a: ${newPath}`);
+    fs.copyFileSync(DEFAULT_IMAGE_PATH, newPath);
+    console.log('Imagen copiada correctamente.');
+
+    return { message: 'Imagen por defecto creada correctamente' };
+  } catch (err) {
+    console.error('Error en createDefaultPicture:', err);
+    throw err;
+  }
+},
+
+  // Eliminar una imagen (requiere pictureId)
   async deletePicture(id, userId) {
-    try {
-      // Hacer la solicitud a la API para eliminar la imagen
-      const response = await fetch(`${API_URL}/pictures/delete/${id}/${userId}`, {
+    const userFolder = path.join(USERS_FOLDER, userId);
+    const files = fs.existsSync(userFolder) ? fs.readdirSync(userFolder) : [];
+    const fileToDelete = files.find((file) => file.startsWith(id));
+
+    if (fileToDelete) {
+      const filePath = path.join(userFolder, fileToDelete);
+      fs.unlinkSync(filePath);
+
+      const response = await fetch(`${API_SQL_URL}/delete/${id}/${userId}`, {
         method: 'DELETE',
       });
 
       if (!response.ok) {
-        throw new Error(`Error eliminando la imagen: ${response.statusText}`);
+        const result = await response.json();
+        throw new Error(result.error || 'Error al eliminar la imagen en SQL');
       }
 
-      // Eliminar el archivo físico si es necesario
-      const picture = await this.getUserPicture(id);
-      if (picture && picture.path) {
-        const filePath = path.join('./images', picture.path);
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
-        }
-      }
-
-    } catch (error) {
-      console.error('Error eliminando la imagen:', error);
-      throw error;
+      return { message: 'Imagen eliminada correctamente' };
+    } else {
+      throw new Error('Imagen no encontrada.');
     }
   },
 
-  /**
-   * Obtiene todas las imágenes de un usuario.
-   * @param {number} userId - El ID del usuario.
-   * @returns {Array} - Un array de imágenes asociadas al usuario.
-   * @throws {Error} - Si ocurre un error al obtener las imágenes.
-   */
+  // Obtener todas las imágenes de un usuario
   async getUserPictures(userId) {
-    try {
-      const response = await fetch(`${API_URL}/pictures/all/${userId}`);
+    const response = await fetch(`${API_SQL_URL}/all/${userId}`);
 
-      if (!response.ok) {
-        throw new Error(`Error obteniendo las imágenes del usuario: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      return data || [];
-    } catch (error) {
-      console.error('Error obteniendo las imágenes del usuario:', error);
-      throw error;
+    if (!response.ok) {
+      const result = await response.json();
+      throw new Error(result.error || 'Error al obtener las imágenes del usuario.');
     }
+
+    const pictures = await response.json();
+    return pictures;
   },
 
-  /**
-   * Actualiza una imagen existente para un usuario.
-   * @param {number} id - El ID de la imagen que se desea actualizar.
-   * @param {Object} newFile - El nuevo archivo de imagen.
-   * @param {number} userId - El ID del usuario propietario de la imagen.
-   * @returns {number} - El ID de la imagen actualizada.
-   * @throws {Error} - Si ocurre un error al actualizar la imagen.
-   */
-  async updatePicture(id, newFile, userId) {
-    try {
-      const formData = new FormData();
-      formData.append('file', newFile);
-      formData.append('userId', userId);
+  // Obtener la imagen activa de un usuario desde SQL
+  async getActivePicture(userId) {
+    const response = await fetch(`${API_SQL_URL}/active/${userId}`);
 
-      const response = await fetch(`${API_URL}/pictures/update/${id}`, {
-        method: 'PUT',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error(`Error actualizando la imagen: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      return data.pictureId;
-    } catch (error) {
-      console.error('Error actualizando la imagen:', error);
-      throw error;
+    if (!response.ok) {
+      const result = await response.json();
+      throw new Error(result.error || 'Error al obtener la imagen activa del usuario desde SQL');
     }
+
+    const picture = await response.json();
+    return picture;
   },
+
+  // Establecer la imagen activa (hace proxy al SQL)
+  async setActivePicture(pictureId, userId) {
+    const response = await fetch(`${API_SQL_URL}/set-active/${pictureId}/${userId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    if (!response.ok) {
+      const result = await response.json();
+      throw new Error(result.error || 'Error al establecer la imagen activa en SQL');
+    }
+    return;
+  },
+
+  // Eliminar la carpeta completa de un usuario
+  async deleteUserFolder(userId) {
+    const userFolder = path.join(USERS_FOLDER, userId);
+
+    if (!fs.existsSync(userFolder)) {
+      throw new Error(`La carpeta del usuario ${userId} no existe.`);
+    }
+
+    try {
+      fs.rmSync(userFolder, { recursive: true, force: true });
+    } catch (err) {
+      console.error(`❌ Error eliminando carpeta del usuario ${userId}:`, err.message);
+      throw new Error('Error al eliminar la carpeta del usuario.');
+    }
+  }
 };

@@ -31,10 +31,19 @@ const createUserController = () => {
     },
 
     async getUserByEmail(email) {
-      const res = await fetch(`${API_URL}/users?email=${encodeURIComponent(email)}`);
-      if (!res.ok) throw new Error(`Error obteniendo usuario con email ${email}`);
+      const res = await fetch(`${API_URL}/users/${encodeURIComponent(email)}`);
+      
+      if (res.status === 404) {
+        return null; // Usuario no encontrado, es válido
+      }
+    
+      if (!res.ok) {
+        throw new Error(`Error obteniendo usuario con email ${email}`);
+      }
+    
       return await res.json();
-    },
+    }
+    ,
 
     async changeUsername(user, newUsername) {
       const res = await fetch(`${API_URL}/users/${user.id}/username`, {
