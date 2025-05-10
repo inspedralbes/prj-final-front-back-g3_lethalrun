@@ -11,6 +11,7 @@ const PORT = process.env.PORT || 3000;
 
 // Habilitar CORS para cualquier origen
 app.use(cors()); // 👈 Esta línea soluciona los problemas de CORS
+app.use('/images', express.static('images'));
 
 // Middleware para procesar JSON y formularios
 app.use(bodyParser.json());

@@ -21,7 +21,7 @@ router.post('/login', (req, res, next) => {
       if (err) return res.status(500).json({ message: 'Error al iniciar sesión', error: err.message });
 
       const token = generateJWT(user);
-      res.status(200).json({ message: 'Login exitoso', token });
+      res.status(200).json({ message: 'Login exitoso', token, user });
     });
   })(req, res, next);
 });
