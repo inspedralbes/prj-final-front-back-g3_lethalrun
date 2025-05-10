@@ -2,18 +2,21 @@ import fs from 'fs';
 import path from 'path';
 import fetch from 'node-fetch';
 import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+dotenv.config();
 
 // Solución para __dirname en ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const USERS_FOLDER = path.join(__dirname,'images', 'users');
+const USERS_FOLDER = path.join(__dirname,'..', 'images', 'users');
 const DEFAULT_IMAGE_PATH = path.join(__dirname, '..', 'images', 'default', 'default.png');
 const API_SQL_URL = process.env.API_SQL_URL;
 
 export const createPictureController = {
+
   // Crear una imagen personalizada
-  async createPicture(file, userId, customName) {
+  async createPicture(file, userId, token) {
     const userFolder = path.join(USERS_FOLDER, userId);
 
     if (!fs.existsSync(userFolder)) {
@@ -27,66 +30,70 @@ export const createPictureController = {
 
     fs.renameSync(file.path, newPath);
 
-    // Solo enviamos customName al servicio SQL
+    // Usamos el fileName generado para enviarlo al servicio SQL
     const response = await fetch(`${API_SQL_URL}/create/${userId}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ customName: customName || fileName })
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` // Se añade el token Bearer
+      },
+      body: JSON.stringify({ customName: fileName })
     });
 
     if (!response.ok) {
       const result = await response.json();
       throw new Error(result.error || 'Error al guardar la imagen en SQL');
     }
+
     return;
   },
 
-// Crear una imagen por defecto para un usuario (NO llama a SQL)
-async createDefaultPicture(userId, customName) {
-  console.log('--- [createDefaultPicture] ---');
-  console.log('Parámetros recibidos:', { userId, customName });
+  // Crear una imagen por defecto para un usuario (NO llama a SQL)
+  async createDefaultPicture(userId, customName) {
+    console.log('--- [createDefaultPicture] ---');
+    console.log('Parámetros recibidos:', { userId, customName });
 
-  if (!userId || !customName) {
-    console.error('Faltan parámetros: userId y customName son obligatorios.');
-    throw new Error('Faltan parámetros: userId y customName son obligatorios.');
-  }
-
-  console.log('USERS_FOLDER:', USERS_FOLDER);
-  const userFolder = path.join(USERS_FOLDER, userId);
-  console.log('Ruta de la carpeta del usuario:', userFolder);
-
-  try {
-    // Verificar y crear la carpeta del usuario si no existe
-    if (!fs.existsSync(userFolder)) {
-      console.log('La carpeta del usuario no existe. Creándola...');
-      fs.mkdirSync(userFolder, { recursive: true });
-      console.log('Carpeta creada:', userFolder);
-    } else {
-      console.log('La carpeta del usuario ya existe.');
+    if (!userId || !customName) {
+      console.error('Faltan parámetros: userId y customName son obligatorios.');
+      throw new Error('Faltan parámetros: userId y customName son obligatorios.');
     }
 
-    // Comprobar si la imagen por defecto existe
-    console.log('Ruta de la imagen por defecto:', DEFAULT_IMAGE_PATH);
-    if (!fs.existsSync(DEFAULT_IMAGE_PATH)) {
-      console.error('La imagen por defecto no existe:', DEFAULT_IMAGE_PATH);
-      throw new Error('La imagen por defecto no existe.');
+    console.log('USERS_FOLDER:', USERS_FOLDER);
+    const userFolder = path.join(USERS_FOLDER, userId);
+    console.log('Ruta de la carpeta del usuario:', userFolder);
+
+    try {
+      // Verificar y crear la carpeta del usuario si no existe
+      if (!fs.existsSync(userFolder)) {
+        console.log('La carpeta del usuario no existe. Creándola...');
+        fs.mkdirSync(userFolder, { recursive: true });
+        console.log('Carpeta creada:', userFolder);
+      } else {
+        console.log('La carpeta del usuario ya existe.');
+      }
+
+      // Comprobar si la imagen por defecto existe
+      console.log('Ruta de la imagen por defecto:', DEFAULT_IMAGE_PATH);
+      if (!fs.existsSync(DEFAULT_IMAGE_PATH)) {
+        console.error('La imagen por defecto no existe:', DEFAULT_IMAGE_PATH);
+        throw new Error('La imagen por defecto no existe.');
+      }
+
+      // Copiar la imagen por defecto al destino
+      const newPath = path.join(userFolder, customName);
+      console.log(`Copiando imagen por defecto a: ${newPath}`);
+      fs.copyFileSync(DEFAULT_IMAGE_PATH, newPath);
+      console.log('Imagen copiada correctamente.');
+
+      return { message: 'Imagen por defecto creada correctamente' };
+    } catch (err) {
+      console.error('Error en createDefaultPicture:', err);
+      throw err;
     }
-
-    // Copiar la imagen por defecto al destino
-    const newPath = path.join(userFolder, customName);
-    console.log(`Copiando imagen por defecto a: ${newPath}`);
-    fs.copyFileSync(DEFAULT_IMAGE_PATH, newPath);
-    console.log('Imagen copiada correctamente.');
-
-    return { message: 'Imagen por defecto creada correctamente' };
-  } catch (err) {
-    console.error('Error en createDefaultPicture:', err);
-    throw err;
-  }
-},
+  },
 
   // Eliminar una imagen (requiere pictureId)
-  async deletePicture(id, userId) {
+  async deletePicture(id, userId, token) {
     const userFolder = path.join(USERS_FOLDER, userId);
     const files = fs.existsSync(userFolder) ? fs.readdirSync(userFolder) : [];
     const fileToDelete = files.find((file) => file.startsWith(id));
@@ -97,6 +104,9 @@ async createDefaultPicture(userId, customName) {
 
       const response = await fetch(`${API_SQL_URL}/delete/${id}/${userId}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}` // Se añade el token Bearer
+        }
       });
 
       if (!response.ok) {
@@ -111,8 +121,13 @@ async createDefaultPicture(userId, customName) {
   },
 
   // Obtener todas las imágenes de un usuario
-  async getUserPictures(userId) {
-    const response = await fetch(`${API_SQL_URL}/all/${userId}`);
+  async getUserPictures(userId, token) {
+
+    const response = await fetch(`${API_SQL_URL}/all/${userId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}` // Se añade el token Bearer
+      }
+    });
 
     if (!response.ok) {
       const result = await response.json();
@@ -124,8 +139,12 @@ async createDefaultPicture(userId, customName) {
   },
 
   // Obtener la imagen activa de un usuario desde SQL
-  async getActivePicture(userId) {
-    const response = await fetch(`${API_SQL_URL}/active/${userId}`);
+  async getActivePicture(userId, token) {
+    const response = await fetch(`${API_SQL_URL}/active/${userId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}` // Se añade el token Bearer
+      }
+    });
 
     if (!response.ok) {
       const result = await response.json();
@@ -137,10 +156,13 @@ async createDefaultPicture(userId, customName) {
   },
 
   // Establecer la imagen activa (hace proxy al SQL)
-  async setActivePicture(pictureId, userId) {
+  async setActivePicture(pictureId, userId, token) {
     const response = await fetch(`${API_SQL_URL}/set-active/${pictureId}/${userId}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' }
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` // Se añade el token Bearer
+      }
     });
 
     if (!response.ok) {

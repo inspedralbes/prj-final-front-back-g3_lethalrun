@@ -28,7 +28,6 @@ router.post('/', async (req, res) => {
   }
 });
 
-
   // Obtener usuario por ID
   router.get('/:id', async (req, res) => {
     const { id } = req.params;

@@ -31,7 +31,7 @@ const createUserController = () => {
     },
 
     async getUserByEmail(email) {
-      const res = await fetch(`${API_URL}/users/${encodeURIComponent(email)}`);
+      const res = await fetch(`${API_URL}/users/by-email/${encodeURIComponent(email)}`);
       
       if (res.status === 404) {
         return null; // Usuario no encontrado, es válido

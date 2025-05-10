@@ -34,8 +34,7 @@ app.use(passport.session());
 app.use('/auth', authRoutes);
 
 // Rutas de validación de tokens para otros servicios
-app.use('/validate', validateAuthRoutes); // ⬅️ aquí se añade
-
+app.use('/validate', validateAuthRoutes); 
 // Iniciar servidor
 app.listen(PORT, () => {
   console.log(`Auth Service escuchando en ${process.env.DOMAIN_URL}:${PORT}`);

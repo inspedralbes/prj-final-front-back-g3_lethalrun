@@ -22,16 +22,22 @@ export function verifyJWTCliente(req, res, next) {
   if (!token) return res.status(401).json({ message: 'Token no proporcionado' });
 
   try {
-    // Intenta verificar primero con la clave admin
     let decoded;
     try {
+      // Intenta verificar primero con la clave admin
       decoded = jwt.verify(token, process.env.JWT_SECRET_ADMIN);
     } catch (e) {
+      // Si no es admin, intenta con la clave de cliente
       decoded = jwt.verify(token, process.env.JWT_SECRET_CLIENTE);
     }
 
-    req.user = decoded;
-    next();
+    // Si el rol es admin o cliente, permite el acceso
+    if (decoded.rol === 'admin' || decoded.rol === 'cliente') {
+      req.user = decoded;
+      next();
+    } else {
+      return res.status(403).json({ message: 'Acceso restringido' });
+    }
   } catch (err) {
     return res.status(403).json({ message: 'Token inválido o expirado' });
   }
@@ -45,6 +51,7 @@ export function verifyJWTAdmin(req, res, next) {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET_ADMIN);
 
+    // Verifica que el rol sea admin
     if (decoded.rol !== 'admin') {
       return res.status(403).json({ message: 'Acceso restringido a administradores' });
     }

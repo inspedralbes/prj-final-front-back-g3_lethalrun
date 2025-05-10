@@ -27,8 +27,8 @@ const notifyImageChange = async (userId, socketId, message) => {
 // Crear imagen personalizada
 router.post('/create-picture', verifyJWTCliente, upload.single('file'), async (req, res) => {
   try {
-    const { userId, customName, socketId } = req.body;
-    await createPictureController.createPicture(req.file, userId, customName);
+    const { userId, socketId } = req.body;
+    await createPictureController.createPicture(req.file, userId);
     await notifyImageChange(userId, socketId, `Imagen personalizada creada`);
     res.status(201).json({ message: 'Imagen creada correctamente' });
   } catch (error) {
@@ -81,6 +81,7 @@ router.delete('/delete-picture/:id/:userId', verifyJWTCliente, async (req, res) 
 
 // Obtener todas las imágenes de un usuario
 router.get('/get-user-pictures/:userId', verifyJWTCliente, async (req, res) => {
+  console.log("entrando en metodo")
   try {
     const { userId } = req.params;
     const pictures = await createPictureController.getUserPictures(userId);
