@@ -6,6 +6,7 @@ images-service/.env
 sql-service/.env
 auth-service/.env
 socket-service/.env
+mongo service/.env
 .env
 
 images-service/images/users

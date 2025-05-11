@@ -1,56 +1,76 @@
 import bcrypt from 'bcrypt';
 import pictureController from './pictureController.js';
 import fetch from 'node-fetch';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const createUserController = (models) => {
   const { User, Picture, sequelize } = models;
   const pictureService = pictureController({ Picture });
 
   return {
+
     async createUser(email, username, password) {
-      const listAdmins = [
-        'a20davsalsos@inspedralbes.cat',
-        'a23izadelesp@inspedralbes.cat',
-        'a23brioropoy@inspedralbes.cat',
-        'a23marrojgon@inspedralbes.cat'
-      ];
+    const listAdmins = [
+      'a20davsalsos@inspedralbes.cat',
+      'a23izadelesp@inspedralbes.cat',
+      'a23brioropoy@inspedralbes.cat',
+      'a23marrojgon@inspedralbes.cat'
+    ];
 
-      const rol = listAdmins.includes(email) ? 'admin' : 'cliente';
-      const hashedPassword = await bcrypt.hash(password, 10);
+    const rol = listAdmins.includes(email) ? 'admin' : 'cliente';
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-      let newUser;
-      let defaultPicturePath;
+    let newUser;
+    let defaultPicturePath;
 
-      // 1. Crea el usuario primero (transacción mínima)
-      const t = await sequelize.transaction();
-      try {
-        newUser = await User.create({
-          email,
-          username,
-          password: hashedPassword,
-          rol,
-        }, { transaction: t });
+    const t = await sequelize.transaction();
+    try {
+      // 1. Crear usuario
+      newUser = await User.create({
+        email,
+        username,
+        password: hashedPassword,
+        rol,
+      }, { transaction: t });
 
-        await t.commit();
-      } catch (error) {
-        await t.rollback();
-        console.error('Error creando el usuario:', error);
-        throw error;
+      await t.commit();
+    } catch (error) {
+      await t.rollback();
+      console.error('Error creando el usuario:', error);
+      throw error;
+    }
+
+    // 2. Crear slots en microservicio (API externa)
+    try {
+      const slotResponse = await fetch(`${process.env.SLOTS_API_URL}/create`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+
+      if (!slotResponse.ok) {
+        throw new Error(`Error al crear slots: ${slotResponse.statusText}`);
       }
 
-      // 2. Crea la imagen por defecto (llamada a microservicio y registro en SQL)
-      try {
-        console.log('Llamando a createDefaultPicture para el usuario', newUser.id);
-        defaultPicturePath = await pictureService.createDefaultPicture(newUser.id);
-        console.log('Imagen por defecto creada para', newUser.id, 'en', defaultPicturePath);
-      } catch (error) {
-        // Si falla la imagen, elimina el usuario recién creado para no dejar basura
-        await User.destroy({ where: { id: newUser.id } });
-        throw error;
-      }
+      console.log('Slots creados correctamente para', email);
+    } catch (error) {
+      // Si falla, borrar el usuario para no dejar datos huérfanos
+      await User.destroy({ where: { id: newUser.id } });
+      throw error;
+    }
 
-      return newUser.id;
-    },
+    // 3. Crear imagen por defecto
+    try {
+      defaultPicturePath = await pictureService.createDefaultPicture(newUser.id);
+    } catch (error) {
+      await User.destroy({ where: { id: newUser.id } });
+      throw error;
+    }
+
+    return newUser.id;
+  },
 
     async getUser(id) {
       try {
