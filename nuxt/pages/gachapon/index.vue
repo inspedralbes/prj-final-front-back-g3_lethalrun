@@ -14,13 +14,13 @@
       <div class="container mx-auto">
         <div class="flex flex-col items-center gap-8">
 
-          <div class="flex flex-col items-center justify-center">
+          <div class="flex flex-col items-center justify-center w-full sm:w-80 md:w-96">
             <GashaponMachine
               @request-roll="handleGachaRollRequest"
               @animation-finished="handleGachaAnimationFinished"
               :rolled-prize="prizeForMachineAnimation"
               :current-attempts="gachaAttempts"
-              :show-attempts-counter="true" />
+              :show-attempts-counter="false" />
           </div>
 
           <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -44,7 +44,6 @@
 <script setup>
 import Navbar from '../components/Navbar.vue';
 import GachaponSlot from '../components/GachaponSlot.vue';
-// import GachaponDisplay from '../components/GachaponDisplay.vue'; // Eliminado
 import GashaponMachine from '../components/GashaponMachine.vue';
 import { ref, computed, nextTick } from 'vue';
 
@@ -68,12 +67,6 @@ const slotSkins = ref([
 
 const selectedSlotIndex = ref(0); // El slot 0 estará seleccionado por defecto
 
-// Ya no se necesita selectedSkinInfo, selectedSkin, selectedSkinName para GachaponDisplay
-// Pero pueden ser útiles para otra lógica si es necesario. Las mantendré comentadas por si acaso.
-// const selectedSkinInfo = computed(() => slotSkins.value[selectedSlotIndex.value] || availableSkins.value[0]);
-// const selectedSkin = computed(() => selectedSkinInfo.value?.imageUrl);
-// const selectedSkinName = computed(() => selectedSkinInfo.value?.name);
-
 const slot1Skin = computed(() => slotSkins.value[0]?.imageUrl || '/placeholder.png');
 const slot2Skin = computed(() => slotSkins.value[1]?.imageUrl || '/placeholder.png');
 const slot3Skin = computed(() => slotSkins.value[2]?.imageUrl || '/placeholder.png');
@@ -86,7 +79,7 @@ const selectSlot = (index) => {
 const prizeForMachineAnimation = ref(null);
 const pendingPrizeToApply = ref(null);
 const pendingSlotIndex = ref(null);
-const gachaAttempts = ref(15);
+const gachaAttempts = ref(999999);
 
 const handleGachaRollRequest = async () => {
   prizeForMachineAnimation.value = null;
