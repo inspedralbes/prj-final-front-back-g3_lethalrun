@@ -44,7 +44,7 @@ router.post('/unlock', verifyJWTCliente, async (req, res) => { // Usamos el midd
 
 // Obtener número del slot activo (requiere autenticación de cliente o admin)
 router.get('/active-slot-number', verifyJWTCliente, async (req, res) => { // Usamos el middleware de cliente
-  const { email } = req.query;
+  const { email } = req.body;
   try {
     const number = await controller.getActiveSlotNumber(email);
     res.json({ activeSlotNumber: number });
@@ -66,9 +66,11 @@ router.post('/set-slot-number', verifyJWTCliente, async (req, res) => { // Usamo
 
 // Obtener datos completos del usuario (requiere autenticación de cliente o admin)
 router.get('/user', verifyJWTCliente, async (req, res) => { // Usamos el middleware de cliente
-  const { email } = req.query;
+  const { email } = req.body;
   try {
+    console.log(email);
     const user = await controller.getUser(email);
+    console.log(user);
     if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
     res.json(user);
   } catch (err) {
