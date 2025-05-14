@@ -1,46 +1,64 @@
-// server/images-service/middleware/multer.js
 import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 
-// Define __dirname
+// Define __dirname for ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Configuración del almacenamiento de imágenes
+/**
+ * Configuración de almacenamiento para Multer usando diskStorage.
+ * Define la carpeta de destino y el nombre de archivo para cada imagen subida.
+ */
 const storage = multer.diskStorage({
+  /**
+   * Determina la carpeta de destino para el archivo subido.
+   * Crea una carpeta por usuario usando el userId extraído del nombre de archivo.
+   *
+   * @param {Object} req - Objeto de la petición Express.
+   * @param {Object} file - Objeto de archivo Multer.
+   * @param {Function} cb - Callback estándar de Multer.
+   */
   destination: (req, file, cb) => {
-
-    // get the file name from the request
+    // Extrae el userId del nombre del archivo (formato esperado: userId_timestamp.ext)
     const fileName = file.originalname;
-
-    // the filename is like 16_1234567890.png
-    // get the userId from the filename
     const userId = fileName.split('_')[0];
 
-    // Ruta donde se guardarán las imágenes
+    // Define la ruta de destino para las imágenes del usuario
     const uploadPath = path.join(__dirname, '..', '..', 'images', 'users', userId.toString());
 
-    // Crear la carpeta si no existe
+    // Crea la carpeta si no existe
     if (!fs.existsSync(uploadPath)) {
       fs.mkdirSync(uploadPath, { recursive: true });
     }
 
-    cb(null, uploadPath); // Configura la carpeta de destino
+    cb(null, uploadPath);
   },
+  /**
+   * Asigna un nombre único al archivo subido basado en la fecha actual.
+   *
+   * @param {Object} req - Objeto de la petición Express.
+   * @param {Object} file - Objeto de archivo Multer.
+   * @param {Function} cb - Callback estándar de Multer.
+   */
   filename: (req, file, cb) => {
-    // Asignar un nombre único a la imagen
     const extname = path.extname(file.originalname);
-    const filename = `${Date.now()}${extname}`; // Nombre basado en la fecha actual
+    const filename = `${Date.now()}${extname}`;
     cb(null, filename);
   }
 });
 
-// Filtro de archivo para asegurar que solo se suban imágenes
+/**
+ * Filtro de archivos para Multer.
+ * Permite solo imágenes con formatos JPEG, PNG o GIF.
+ *
+ * @param {Object} req - Objeto de la petición Express.
+ * @param {Object} file - Objeto de archivo Multer.
+ * @param {Function} cb - Callback estándar de Multer.
+ */
 const fileFilter = (req, file, cb) => {
   const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
-  
   if (allowedMimeTypes.includes(file.mimetype)) {
     cb(null, true); // Aceptar archivo
   } else {
@@ -48,11 +66,19 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-// Inicializar multer con las configuraciones anteriores
+/**
+ * Middleware Multer configurado para:
+ * - Almacenar archivos en disco por usuario.
+ * - Limitar el tamaño máximo a 10 MB.
+ * - Filtrar solo imágenes válidas.
+ *
+ * @type {import('multer').Multer}
+ * @see <https://expressjs.com/en/resources/middleware/multer.html>[1]
+ */
 const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
-  limits: { fileSize: 10 * 1024 * 1024 }, // Limitar tamaño de archivo a 10 MB
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB
 });
 
 export default upload;

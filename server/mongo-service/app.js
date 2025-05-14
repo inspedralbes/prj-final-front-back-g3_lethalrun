@@ -1,26 +1,58 @@
+/**
+ * @file Punto de entrada principal del servicio de gestión de skins
+ * @description Configura servidor Express, middlewares y rutas para operaciones CRUD de skins
+ * @module app
+ */
+
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import slotRoutes from './routes/mongoRoutes.js';
 
-dotenv.config(); // Carga las variables desde .env
+dotenv.config();
 
+/**
+ * Instancia de la aplicación Express
+ * @type {express.Application}
+ */
 const app = express();
 
-// Middleware
+/**
+ * @middleware Configuración CORS para acceso cross-origin
+ * @param {Object} options - Opciones de configuración
+ * @param {string} options.origin - Orígenes permitidos ('*' para cualquiera)
+ * @param {Array<string>} options.methods - Métodos HTTP permitidos
+ * @param {Array<string>} options.allowedHeaders - Cabeceras permitidas
+ */
 app.use(cors({
-  origin: '*', // Permitir cualquier origen
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
-  allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-app.use(express.json()); // Para leer JSON del body
+/**
+ * @middleware Procesamiento de datos en formato JSON
+ */
+app.use(express.json());
 
-// Rutas
+/**
+ * @namespace Rutas para gestión de skins
+ * @description Endpoints CRUD para operaciones con skins
+ */
 app.use('/skins', slotRoutes);
 
-// Puerto
+/**
+ * Puerto del servidor (configurable por entorno)
+ * @type {number|string}
+ */
 const PORT = process.env.PORT || 3000;
+
+/**
+ * Inicia el servidor de gestión de skins
+ * @listens PORT
+ */
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+  console.log('\n\n');
+  console.log('🧩✨ [MONGO SERVICE] ✨🧩');
+  console.log(`🚀 Servidor activo en http://localhost:${PORT}`);
 });

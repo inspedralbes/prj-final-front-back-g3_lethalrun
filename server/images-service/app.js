@@ -1,32 +1,62 @@
+/**
+ * @fileoverview Punto de entrada principal del servicio de imágenes.
+ * @description Configura el servidor Express, middlewares y rutas para la gestión y consulta de imágenes.
+ * @module app
+ */
+
 import express from 'express';
 import bodyParser from 'body-parser';
 import { config } from 'dotenv';
-import cors from 'cors'; // 👈 Importar CORS
+import cors from 'cors';
 import router from './routes/pictureRoutes.js';
 
-config(); // Cargar las variables de entorno desde .env
+config(); // Cargar variables de entorno
 
+/**
+ * Instancia de la aplicación Express.
+ * @type {express.Application}
+ */
 const app = express();
+
+/**
+ * Puerto en el que se ejecuta el servidor.
+ * @type {number|string}
+ */
 const PORT = process.env.PORT || 3000;
 
-// Habilitar CORS para cualquier origen
+/**
+ * @middleware Habilita CORS para cualquier origen.
+ */
 app.use(cors({
-  origin: '*', // Permitir cualquier origen
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
-  allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-
+/**
+ * @middleware Servir archivos estáticos desde la carpeta 'images'.
+ */
 app.use('/images', express.static('images'));
 
-// Middleware para procesar JSON y formularios
+/**
+ * @middleware Procesa datos en formato JSON y formularios.
+ */
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Ruta base de la API
+/**
+ * @namespace Rutas para gestión de imágenes.
+ * @description Endpoints para operaciones CRUD sobre imágenes.
+ */
 app.use('/pictures', router);
 
-// Iniciar el servidor
+/**
+ * Inicia el servidor de imágenes.
+ * @listens PORT
+ */
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log('\n\n');
+  console.log('🖼️✨ [IMAGES SERVICE] ✨🖼️');
+  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+  console.log('\n');
 });

@@ -60,7 +60,7 @@ export function useAuth() {
     const register = async (username, email, password) => {
         try {
             console.log("Enviando solicitud de registro...");
-            return await $fetch(`${BASE_URL}/send-verification-email`, {
+            return await $fetch(`${BASE_URL}/auth/send-verification-email`, {
                 method: "POST",
                 body: { username, email, password },
                 credentials: "include",
@@ -75,7 +75,7 @@ export function useAuth() {
         if (!token) throw new Error("Token not provided");
 
         try {
-            const response = await $fetch(`${BASE_URL}/verify-email/${token}`, {
+            const response = await $fetch(`${BASE_URL}/auth/verify-email/${token}`, {
                 method: "POST",
             });
             return response;
@@ -90,7 +90,7 @@ export function useAuth() {
 
         try {
             console.log("Enviando solicitud de restablecimiento de contraseña...");
-            return await $fetch(`${BASE_URL}/reset-password/${token}`, {
+            return await $fetch(`${BASE_URL}/auth/reset-password/${token}`, {
                 method: "POST",
                 body: { newPassword },
             });

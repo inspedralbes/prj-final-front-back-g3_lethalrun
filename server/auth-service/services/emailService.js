@@ -6,7 +6,8 @@ import dotenv from "dotenv";
 dotenv.config();
 
 /**
- * Configuración del cliente OAuth2 para autenticación con Google
+ * Configuración del cliente OAuth2 para autenticación con Google.
+ * Permite obtener un token de acceso para enviar correos a través de Gmail usando OAuth2.
  * @type {google.auth.OAuth2}
  */
 const oauth2Client = new google.auth.OAuth2(
@@ -15,14 +16,15 @@ const oauth2Client = new google.auth.OAuth2(
   "https://developers.google.com/oauthplayground"
 );
 
-// Establecer las credenciales para el cliente OAuth2
+// Establece las credenciales para el cliente OAuth2 usando el refresh token.
 oauth2Client.setCredentials({
   refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
   scope: 'https://www.googleapis.com/auth/gmail.send'
 });
 
 /**
- * Configuración del transporter de nodemailer para enviar correos a través de Gmail
+ * Configura el transporter de nodemailer para enviar correos a través de Gmail
+ * utilizando autenticación OAuth2.
  * @type {nodemailer.Transporter}
  */
 const transporter = nodemailer.createTransport({
@@ -33,15 +35,20 @@ const transporter = nodemailer.createTransport({
     clientId: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
-    accessToken: oauth2Client.getAccessToken() 
+    accessToken: oauth2Client.getAccessToken()
   },
 });
 
 /**
- * Envía un correo electrónico de verificación de cuenta
- * @param {string} email - Dirección de correo electrónico del destinatario
- * @param {string} link - Enlace de verificación
- * @returns {Promise<void>}
+ * Envía un correo electrónico de verificación de cuenta.
+ *
+ * Esta función genera un correo HTML personalizado para que el usuario verifique su cuenta.
+ * El enlace de verificación debe llevar al frontend donde el usuario completará el proceso.
+ *
+ * @param {string} email - Dirección de correo electrónico del destinatario.
+ * @param {string} link - Enlace de verificación que se incluirá en el correo.
+ * @returns {Promise<void>} - Promesa que se resuelve cuando el correo ha sido enviado.
+ * @throws {Error} - Si ocurre algún error durante el envío del correo.
  */
 const sendVerificationEmail = async (email, link) => {
   const htmlContent = `<!DOCTYPE html>
@@ -133,19 +140,19 @@ const sendVerificationEmail = async (email, link) => {
     html: htmlContent,
   };
 
-  try {
-    await transporter.sendMail(mailOptions);
-    console.log(`Correo de verificación enviado a ${email}`);
-  } catch (error) {
-    console.error("Error enviando el correo:", error);
-  }
+  await transporter.sendMail(mailOptions);
 };
 
 /**
- * Envía un correo electrónico para restablecer la contraseña
- * @param {string} email - Dirección de correo electrónico del destinatario
- * @param {string} link - Enlace para restablecer la contraseña
- * @returns {Promise<void>}
+ * Envía un correo electrónico para restablecer la contraseña.
+ *
+ * Esta función genera un correo HTML personalizado para que el usuario pueda restablecer su contraseña.
+ * El enlace debe llevar a una página donde el usuario podrá ingresar una nueva contraseña.
+ *
+ * @param {string} email - Dirección de correo electrónico del destinatario.
+ * @param {string} link - Enlace para restablecer la contraseña.
+ * @returns {Promise<void>} - Promesa que se resuelve cuando el correo ha sido enviado.
+ * @throws {Error} - Si ocurre algún error durante el envío del correo.
  */
 const sendPasswordResetEmail = async (email, link) => {
   const htmlContent = `<!DOCTYPE html>
@@ -185,7 +192,6 @@ const sendPasswordResetEmail = async (email, link) => {
                                     </td>
                                 </tr>
                             </table>
-
                             <p style="margin-top: 30px; font-size: 14px; color: #7f8c8d;">Si no has solicitado este cambio, puedes ignorar este correo. Tu cuenta permanece segura.</p>
                         </td>
                     </tr>
@@ -203,12 +209,7 @@ const sendPasswordResetEmail = async (email, link) => {
     html: htmlContent,
   };
 
-  try {
-    await transporter.sendMail(mailOptions);
-    console.log(`Correo de restablecimiento de contraseña enviado a ${email}`);
-  } catch (error) {
-    console.error("Error enviando el correo:", error);
-  }
+  await transporter.sendMail(mailOptions);
 };
 
 // Exportar las funciones de envío de correo para su uso en otros módulos

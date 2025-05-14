@@ -4,67 +4,69 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// ESM: obtener __dirname y __filename
+// Configuración
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 const app = express();
 const childProcesses = [];
-
+const DELAY_MS = 5000; // 5 segundos entre microservicios (ajustable)
 const scriptName = path.basename(__filename);
 
-// Detectar carpetas de microservicios (excluyendo node_modules y la carpeta del script)
+// Detección de microservicios
 const directories = fs.readdirSync(__dirname, { withFileTypes: true })
   .filter(dirent => dirent.isDirectory())
   .map(dirent => dirent.name)
   .filter(name => name !== 'node_modules' && name !== scriptName.replace('.mjs', ''));
 
-function startMicroservices() {
-  directories.forEach(dir => {
+// Función de despliegue escalonado
+async function startMicroservices() {
+  for (const dir of directories) {
     const microservicePath = path.join(__dirname, dir);
     const appFile = 'app.js';
     const appFilePath = path.join(microservicePath, appFile);
 
     if (!fs.existsSync(appFilePath)) {
-      console.log(`No se encontró ${appFile} en ${dir}, se omite.`);
-      return;
+      console.log(`⏭️  Omitting ${dir} (${appFile} not found)`);
+      continue;
     }
 
-    // Usar 'node app.js' para arrancar el microservicio
-    const child = spawn('node', [appFile], {
-      cwd: microservicePath,
-      stdio: 'inherit',
-      shell: true // Compatible con Windows y Linux
-    });
+    try {
+      const child = spawn('node', [appFile], {
+        cwd: microservicePath,
+        stdio: 'inherit',
+        shell: true
+      });
 
-    child.on('error', error => {
-      console.error(`Error al iniciar ${dir}:`, error);
-    });
-    child.on('exit', code => {
-      console.log(`Microservicio ${dir} finalizado con código ${code}`);
-    });
+      child.on('error', error => console.error(`❌ ${dir} error:`, error));
+      child.on('exit', code => console.log(`⏹️  ${dir} stopped (code ${code})`));
 
-    childProcesses.push(child);
-    console.log(`Microservicio ${dir} iniciado con node app.js`);
-  });
+      childProcesses.push(child);
+      console.log('\n')
+      console.log(`✅ ${dir} deployed! PID: ${child.pid}`);
+
+      // Espera entre despliegues
+      await new Promise(resolve => setTimeout(resolve, DELAY_MS));
+    } catch (error) {
+      console.error(`⚠️  Critical error in ${dir}:`, error);
+    }
+  }
 }
 
+// Gestión de cierre
 process.on('SIGINT', () => {
-  console.log('\nCerrando todos los microservicios...');
-  childProcesses.forEach(child => {
-    if (!child.killed) {
-      child.kill();
-    }
-  });
+  console.log('\n🔽  Shutting down services...');
+  childProcesses.forEach(child => child.killed || child.kill());
   setTimeout(() => {
-    console.log('Servidor Express y microservicios detenidos');
+    console.log('🛑  All services stopped');
     process.exit(0);
   }, 2000);
 });
 
-// No necesitas rutas, solo el orquestador
+// Inicio del orquestador
 app.listen(1000, () => {
-  console.log('Servidor Express ejecutándose en puerto 1000 (orquestador)');
-  console.log('Microservicios detectados:', directories);
-  startMicroservices();
+  console.log('🎛️  Orchestrator running on port 1000');
+  console.log('📦  Detected services:', directories.join(', '));
+  startMicroservices()
+    .then(() => console.log('⚡ All services deployed!'))
+    .catch(err => console.error('💥 Deployment failed:', err));
 });

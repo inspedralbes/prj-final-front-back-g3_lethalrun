@@ -7,17 +7,36 @@ import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 
 /**
- * Inicializa el controlador de usuarios
+ * Configuración principal de estrategias de autenticación Passport.js
+ * @module auth/passportConfig
+ * @requires passport
+ * @requires passport-google-oauth20
+ * @requires passport-local
+ * @requires dotenv
+ * @requires ../controllers/userController.js
+ * @requires crypto
+ * @requires bcrypt
+ */
+
+/**
+ * Controlador de usuarios para operaciones de autenticación
  * @type {Object}
  */
 const userController = createuserController();
 
-// Carga las variables de entorno desde el archivo .env
+// Carga variables de entorno
 dotenv.config();
 
 /**
- * Configura la estrategia de autenticación de Google OAuth
- * Esta estrategia permite a los usuarios iniciar sesión con sus cuentas de Google
+ * Estrategia de autenticación con Google OAuth 2.0
+ * @name GoogleStrategy
+ * @memberof module:auth/passportConfig
+ * @function
+ * @param {Object} options - Configuración de la estrategia
+ * @param {string} options.clientID - Client ID de Google OAuth
+ * @param {string} options.clientSecret - Client Secret de Google OAuth
+ * @param {string} options.callbackURL - URL de callback para redirección
+ * @param {verifyCallback} verifyCallback - Función de verificación
  */
 passport.use(
   new GoogleStrategy(
@@ -27,28 +46,29 @@ passport.use(
       callbackURL: process.env.GOOGLE_REDIRECT_URI,
     },
     /**
-     * Función de verificación para la autenticación de Google
-     * @param {string} accessToken - Token de acceso proporcionado por Google
-     * @param {string} refreshToken - Token de actualización proporcionado por Google
+     * Callback de verificación para autenticación con Google
+     * @async
+     * @param {string} accessToken - Token de acceso de Google
+     * @param {string} refreshToken - Token de refresco de Google
      * @param {Object} profile - Perfil del usuario de Google
-     * @param {Function} done - Función de callback para indicar el resultado de la autenticación
+     * @param {Object} profile.emails - Array de emails del usuario
+     * @param {function} done - Función de callback de Passport
+     * @returns {Promise<void>}
      */
     async (accessToken, refreshToken, profile, done) => {
       try {
-        // Busca un usuario existente por email
-        let user = await userController.getUserByEmail(profile.emails[0].value);
+        const email = profile.emails[0].value;
+        let user = await userController.getUserByEmail(email);
+        
         if (!user) {
-          // Si el usuario no existe, crea uno nuevo
           const randomPassword = crypto.randomBytes(16).toString('hex');
-          const userId = await userController.createUser(profile.emails[0].value, profile.displayName, randomPassword);
-
-          // Obtiene el usuario recién creado
+          const userId = await userController.createUser(email, profile.displayName, randomPassword);
           user = await userController.getUser(userId);
-          console.log('Usuario creado:', user);
         }
-        // Elimina la contraseña del objeto usuario por seguridad
-        delete user.password;
-        return done(null, user);
+        
+        // Eliminamos datos sensibles antes de serializar
+        const { password, ...safeUser } = user;
+        return done(null, safeUser);
       } catch (error) {
         return done(error, null);
       }
@@ -57,8 +77,14 @@ passport.use(
 );
 
 /**
- * Configura la estrategia de autenticación local
- * Esta estrategia permite a los usuarios iniciar sesión con email y contraseña
+ * Estrategia de autenticación local con email y contraseña
+ * @name LocalStrategy
+ * @memberof module:auth/passportConfig
+ * @function
+ * @param {Object} options - Configuración de campos
+ * @param {string} options.usernameField - Campo del formulario para el email
+ * @param {string} options.passwordField - Campo del formulario para la contraseña
+ * @param {verifyCallback} verifyCallback - Función de verificación
  */
 passport.use(
   new LocalStrategy(
@@ -67,28 +93,24 @@ passport.use(
       passwordField: 'password',
     },
     /**
-     * Función de verificación para la autenticación local
+     * Callback de verificación para autenticación local
+     * @async
      * @param {string} email - Email del usuario
-     * @param {string} password - Contraseña del usuario
-     * @param {Function} done - Función de callback para indicar el resultado de la autenticación
+     * @param {string} password - Contraseña en texto plano
+     * @param {function} done - Función de callback de Passport
+     * @returns {Promise<void>}
      */
     async (email, password, done) => {
       try {
-        // Busca un usuario por email
         const user = await userController.getUserByEmail(email);
-        if (!user) {
-          return done(null, false, { message: 'Usuario no encontrado' });
-        }
+        if (!user) return done(null, false, { message: 'Usuario no encontrado' });
 
-        // Compara la contraseña proporcionada con la almacenada
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-          return done(null, false, { message: 'Contraseña incorrecta' });
-        }
+        if (!isMatch) return done(null, false, { message: 'Contraseña incorrecta' });
 
-        // Elimina la contraseña del objeto usuario por seguridad
-        delete user.password;
-        return done(null, user);
+        // Eliminamos la contraseña del objeto usuario
+        const { password: _, ...safeUser } = user;
+        return done(null, safeUser);
       } catch (error) {
         return done(error, null);
       }
@@ -97,21 +119,28 @@ passport.use(
 );
 
 /**
- * Serializa el usuario para almacenarlo en la sesión
- * @param {Object} user - Objeto de usuario
- * @param {Function} done - Función de callback
+ * Serialización del usuario para la sesión
+ * @param {Object} user - Objeto usuario completo
+ * @param {function} done - Función de callback
  */
 passport.serializeUser((user, done) => {
   done(null, user);
 });
 
 /**
- * Deserializa el usuario de la sesión
- * @param {Object} user - Objeto de usuario serializado
- * @param {Function} done - Función de callback
+ * Deserialización del usuario desde la sesión
+ * @param {Object} user - Objeto usuario serializado
+ * @param {function} done - Función de callback
  */
 passport.deserializeUser((user, done) => {
   done(null, user);
 });
+
+/**
+ * @typedef {function} verifyCallback
+ * @param {?Error} error - Objeto de error (si aplica)
+ * @param {?(Object|boolean)} user - Objeto usuario o false
+ * @param {?Object} info - Información adicional
+ */
 
 export default passport;
