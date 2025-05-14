@@ -21,7 +21,7 @@ const createUserController = () => {
       }
 
       const data = await res.json();
-      return data.id;
+      return data.userId;
     },
 
     async getUser(id) {

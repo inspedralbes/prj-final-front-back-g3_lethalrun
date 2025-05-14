@@ -10,7 +10,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Habilitar CORS para cualquier origen
-app.use(cors()); // 👈 Esta línea soluciona los problemas de CORS
+app.use(cors({
+  origin: '*', // Permitir cualquier origen
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
+  allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
+}));
 app.use('/images', express.static('images'));
 
 // Middleware para procesar JSON y formularios

@@ -96,12 +96,15 @@ export const createPictureController = {
   async deletePicture(id, userId, token) {
     const userFolder = path.join(USERS_FOLDER, userId);
     const files = fs.existsSync(userFolder) ? fs.readdirSync(userFolder) : [];
-    const fileToDelete = files.find((file) => file.startsWith(id));
+    const fileToDelete = files.find((file) => file.startsWith(`${userId}_`));
 
     if (fileToDelete) {
       const filePath = path.join(userFolder, fileToDelete);
       fs.unlinkSync(filePath);
 
+      console.log('url Hard: ', "http://localhost:3003/sql/pictures/delete/7/16")
+      console.log('url: ', `${API_SQL_URL}/delete/${id}/${userId}`)
+      console.log('token: ', token)
       const response = await fetch(`${API_SQL_URL}/delete/${id}/${userId}`, {
         method: 'DELETE',
         headers: {

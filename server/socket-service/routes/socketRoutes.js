@@ -20,7 +20,9 @@ export default (io) => {  // Asegúrate de que se esté exportando una función 
   router.post('/private/:socketId', verifyJWTCliente, (req, res) => {
     const { socketId } = req.params;
     const { message } = req.body;
-    io.to(socketId).emit('receive-private-message', { message });
+    console.log('Mensaje privado:', message);
+    console.log('Enviando mensaje privado a:', socketId);
+    io.to(socketId).emit('update-pictures', { message });
     res.status(200).json({ status: `Mensaje enviado a ${socketId}` });
   });
 

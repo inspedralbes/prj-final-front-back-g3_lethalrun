@@ -174,7 +174,7 @@ const profileOptions = [
   { to: '/profile/my-info', label: 'El meu perfil' }
 ];
 
-const logoutLink = `${config.public.apiUrl}/api/auth/logout`;
+const logoutLink = `${config.public.authUrl}/auth/logout`;
 
 let graffitis = ref([]);
 let isModalOpen = ref(false); // Estado para el modal
@@ -191,7 +191,7 @@ const fetchGraffitis = async () => {
 };
 
 const getPath = (path) => {
-  return `${config.public.apiUrl}/images/${path}`;
+  return `${config.public.imagesUrl}/images/users/${user.id}/${path}`;
 };
 
 
@@ -252,7 +252,9 @@ const uploadImage = async () => {
 
   // Crear el formulario con el archivo de imagen
   const formData = new FormData();
-  formData.append("image", imageBlob, 'image.jpg');
+  formData.append("file", imageBlob, 'image.jpg');
+  formData.append("userId", user.id);
+  formData.append("socketId", $socket.id);
 
   try {
     await uploadGraffiti(formData);
@@ -266,7 +268,8 @@ const uploadImage = async () => {
 
 const deleteGraffitiHandler = async (id) => {
   try {
-    await deleteGraffiti(id);
+
+    await deleteGraffiti(id, $socket.id);
   } catch (error) {
     console.error('Error deleting graffiti:', error);
   }
@@ -274,7 +277,7 @@ const deleteGraffitiHandler = async (id) => {
 
 const setActiveGraffitiHandler = async (id) => {
   try {
-    await setActiveGraffiti(id);
+    await setActiveGraffiti(id, $socket.id);
   } catch (error) {
     console.error('Error setting graffiti as active:', error);
   }
@@ -315,7 +318,7 @@ const totalPages = computed(() => Math.ceil(graffitis.value.length / pageSize));
 onMounted(() => {
   $socket.on('update-pictures', (data) => {
     console.log(data);
-    graffitis.value = data;
+    graffitis.value = data.message;
   });
 });
 

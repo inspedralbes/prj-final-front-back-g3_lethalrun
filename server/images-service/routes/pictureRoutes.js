@@ -9,15 +9,19 @@ dotenv.config();
 const router = express.Router();
 
 // Función para notificar cambios en las imágenes a través de sockets
-const notifyImageChange = async (userId, socketId, message) => {
+const notifyImageChange = async (userId, socketId, token) => {
+  console.log('notifyImageChange1:', userId, socketId);
   const apiUrl = process.env.SOCKET_API_URL;
   if (!socketId || !apiUrl) return;
 
+  const message = await createPictureController.getUserPictures(userId);
+  console.log('Pictures enviadas:', message)
+  console.log('fetch to:', `${apiUrl}/private/${socketId}`);
   try {
     await fetch(`${apiUrl}/private/${socketId}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message }),
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({message}),
     });
   } catch (err) {
     console.error('Error notificando al socket:', err.message);
@@ -28,8 +32,13 @@ const notifyImageChange = async (userId, socketId, message) => {
 router.post('/create-picture', verifyJWTCliente, upload.single('file'), async (req, res) => {
   try {
     const { userId, socketId } = req.body;
+    console.log('userId:', userId);
+    console.log('socketId:', socketId);
     await createPictureController.createPicture(req.file, userId);
-    await notifyImageChange(userId, socketId, `Imagen personalizada creada`);
+    console.log('Imagen personalizada creada correctamente');
+    const token = req.headers.authorization.split(' ')[1]; // Obtener el token del encabezado
+    await notifyImageChange(userId, socketId, token);
+    console.log('Notificación enviada al socket:', socketId);
     res.status(201).json({ message: 'Imagen creada correctamente' });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -58,8 +67,11 @@ router.post('/create-default-picture/:userId', async (req, res) => {
 // Establecer imagen activa (proxy al SQL)
 router.put('/set-active-picture/:pictureId/:userId', verifyJWTCliente, async (req, res) => {
   try {
+    const token = req.headers.authorization.split(' ')[1]; // Obtener el token del encabezado
     const { pictureId, userId } = req.params;
+    const { socketId } = req.body;
     await createPictureController.setActivePicture(pictureId, userId);
+    await notifyImageChange(userId, socketId, token);
     res.status(200).json({ message: 'Imagen activa establecida correctamente' });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -69,10 +81,20 @@ router.put('/set-active-picture/:pictureId/:userId', verifyJWTCliente, async (re
 // Eliminar imagen (requiere pictureId)
 router.delete('/delete-picture/:id/:userId', verifyJWTCliente, async (req, res) => {
   try {
+    const token = req.headers.authorization.split(' ')[1]; // Obtener el token del encabezado
     const { id, userId } = req.params;
     const { socketId } = req.body;
-    await createPictureController.deletePicture(id, userId);
-    await notifyImageChange(userId, socketId, `Imagen eliminada: ${id}`);
+
+    console.log('/delete-picture/:id/:userId info:');
+    console.log('userId:', userId);
+    console.log('socketId:', socketId);
+    console.log('id:', id);
+    console.log('token:', token);
+
+    await createPictureController.deletePicture(id, userId, token);
+
+    console.log('notificando al socket');
+    await notifyImageChange(userId, socketId, token);
     res.status(200).json({ message: 'Imagen eliminada correctamente' });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -109,10 +131,11 @@ router.get('/get-active-picture/:userId', verifyJWTCliente, async (req, res) => 
 // Eliminar carpeta completa del usuario
 router.delete('/delete-user/:userId', verifyJWTCliente, async (req, res) => {
   try {
+    const token = req.headers.authorization.split(' ')[1]; // Obtener el token del encabezado
     const { userId } = req.params;
     const { socketId } = req.body;
     await createPictureController.deleteUserFolder(userId);
-    await notifyImageChange(userId, socketId, `Carpeta del usuario ${userId} eliminada correctamente.`);
+    await notifyImageChange(userId, socketId, token);
     res.status(200).json({ message: `Carpeta del usuario ${userId} eliminada correctamente.` });
   } catch (error) {
     res.status(500).json({ error: error.message });

@@ -153,12 +153,12 @@ const profileOptions = [
   { to: '/profile/my-info', label: 'El meu perfil' }
 ];
 
-const logoutlink = `${config.public.apiUrl}/api/auth/logout`;
+const logoutlink = `${config.public.authUrl}/auth/logout`;
 
 const isLogged = store.getIsAuthenticated;
 
 const logout = () => {
-    window.location.href = `${config.public.apiUrl}/api/auth/logout`;
+    window.location.href = `${config.public.authUrl}/auth/logout`;
 };
 </script>
 

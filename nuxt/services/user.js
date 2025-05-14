@@ -8,7 +8,7 @@ export function useUser() {
     const route = useRoute();
 
     const config = useRuntimeConfig();
-    const BASE_URL = config.public.apiUrl;
+    const BASE_URL = config.public.authUrl;
 
     const updateUsername = async (newUsername) => {
         try {

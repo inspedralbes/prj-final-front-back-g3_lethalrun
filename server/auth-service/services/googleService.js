@@ -44,6 +44,7 @@ passport.use(
 
           // Obtiene el usuario recién creado
           user = await userController.getUser(userId);
+          console.log('Usuario creado:', user);
         }
         // Elimina la contraseña del objeto usuario por seguridad
         delete user.password;

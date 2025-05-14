@@ -94,7 +94,7 @@ const handleChangeUsername = async () => {
 };
 
 const profileOptions = [{ to: '/profile/my-info', label: 'El meu perfil' }];
-const logoutlink = `${config.public.apiUrl}/api/auth/logout`;
+const logoutlink = `${config.public.authUrl}/auth/logout`;
 const isLogged = store.getIsAuthenticated;
 
 watchEffect(() => {

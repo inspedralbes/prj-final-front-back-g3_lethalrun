@@ -8,14 +8,17 @@ export function useGraffitis() {
     const route = useRoute();
 
     const config = useRuntimeConfig();
-    const BASE_URL = config.public.apiUrl;
+    const BASE_URL = config.public.imagesUrl+'/pictures';
 
 
     const getGraffitis = async () => {
         try {
-            return await $fetch(`${BASE_URL}/users/${store.user.id}/pictures`, {
+            return await $fetch(`${BASE_URL}/get-user-pictures/${store.user.id}`, {
                 method: "GET",
-                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${store.token}`,
+                },
             });
         } catch (error) {
             console.error("Error al obtener los graffitis:", error);
@@ -26,14 +29,13 @@ export function useGraffitis() {
     const uploadGraffiti = async (formData) => {
         try {
             // const response = await $fetch(`${BASE_URL}/pictures`, {
-            const response = await $fetch(`${BASE_URL}/pictures`, {
+            const response = await $fetch(`${BASE_URL}/create-picture`, {
 
                 method: "POST",
-                credentials: "include",
+                headers: {
+                    "Authorization": `Bearer ${store.token}`,
+                },
                 body: formData, // Asegúrate de que `formData` es un FormData
-                // headers: {
-                //     'Content-Type': 'multipart/form-data', // No es necesario establecer esto explícitamente en algunos casos
-                // }
             });
             return response;
         } catch (error) {
@@ -42,11 +44,17 @@ export function useGraffitis() {
         }
     }    
 
-    const setActiveGraffiti = async (graffitiId) => {
+    const setActiveGraffiti = async (graffitiId, socketId) => {
         try {
-            return await $fetch(`${BASE_URL}/pictures/${graffitiId}/setActive`, {
+            return await $fetch(`${BASE_URL}/set-active-picture/${graffitiId}/${store.user.id}`, {
                 method: "PUT",
-                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${store.token}`,
+                },
+                body: {
+                    socketId: socketId
+                }
             });
         } catch (error) {
             console.error("Error al eliminar el graffiti:", error);
@@ -54,11 +62,19 @@ export function useGraffitis() {
         }
     }
 
-    const deleteGraffiti = async (id) => {
+    const deleteGraffiti = async (id, socketId) => {
+        console.log("ID a eliminar:", id);
+        console.log("Socket ID:", socketId);
         try {
-            return await $fetch(`${BASE_URL}/pictures/${id}`, {
+            return await $fetch(`${BASE_URL}/delete-picture/${id}/${store.user.id}`, {
                 method: "DELETE",
-                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${store.token}`,
+                },
+                body: {
+                    socketId: socketId
+                }
             });
         } catch (error) {
             console.error("Error al eliminar el graffiti:", error);

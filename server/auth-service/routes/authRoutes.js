@@ -32,8 +32,15 @@ router.get('/google', passport.authenticate('google', {
 }));
 
 router.get('/callback', passport.authenticate('google', { failureRedirect: '/' }), (req, res) => {
-  const token = generateJWT(req.user);
-  res.redirect(`${process.env.DOMAIN_URL}:${process.env.WEB_PORT}/auth/callback?token=${token}&user=${req.user}`);
+
+  const user = req.user;
+
+  // parse user object to JSON
+  const userJson = JSON.stringify(user);
+
+  const token = generateJWT(user);
+
+  res.redirect(`${process.env.DOMAIN_URL}:${process.env.WEB_PORT}/auth/callback?token=${token}&user=${userJson}`);
 });
 
 // CERRAR SESIÓN

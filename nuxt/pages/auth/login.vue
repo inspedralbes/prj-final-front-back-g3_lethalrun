@@ -38,7 +38,7 @@ const handleLogin = async () => {
 
 const handleGoogleLogin = () => {
   isLoadingGoogle.value = true;
-  window.location.href = `${config.public.apiUrl}/auth/google`;
+  window.location.href = `${config.public.authUrl}/auth/google`;
 }
 </script>
 

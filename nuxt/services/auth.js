@@ -8,7 +8,7 @@ export function useAuth() {
     const route = useRoute();
 
     const config = useRuntimeConfig();
-    const BASE_URL = config.public.apiUrl;
+    const BASE_URL = config.public.authUrl;
 
     const login = async (email, password) => {
         try {
@@ -48,6 +48,7 @@ export function useAuth() {
         try {
             const parsedUser = JSON.parse(userData);
             store.setUser(parsedUser);
+            store.setToken(token);
             store.setIsAuthenticated(true);
             router.push("/");
         } catch (error) {

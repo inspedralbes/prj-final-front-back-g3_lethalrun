@@ -1,7 +1,8 @@
 // src/middlewares/verifyJWT.js
 
 import fetch from 'node-fetch';
-
+import dotenv from 'dotenv';
+dotenv.config();  
 const AUTH_API_URL = process.env.AUTH_API_URL; 
 
 // ✅ Middleware: permite cliente y admin
@@ -10,22 +11,26 @@ export async function verifyJWTCliente(req, res, next) {
   if (!token) return res.status(401).json({ message: 'Token no proporcionado' });
 
   try {
+    console.log("Token recibido:", token);
+    console.log("URL de la API de autenticación:", `${AUTH_API_URL}/check-cliente`);
     // Ahora pasamos el token en el header Authorization
     const response = await fetch(`${AUTH_API_URL}/check-cliente`, {
-      method: 'POST',
+      method: 'GET',
       headers: { 
         'Authorization': `Bearer ${token}`, // Aquí se pasa el token como Bearer en el header
         'Content-Type': 'application/json',
       },
     });
 
-    if (!response.ok) throw new Error('Error al contactar la API externa');
-
+    
     const data = await response.json();
-
-    if (!data.valid || !['cliente', 'admin'].includes(data.role)) {
+    console.log("Respuesta de la API de autenticación:", data);
+    
+    if (!response.ok) throw new Error('Error al contactar la API externa');
+     if (data.user.rol !== "cliente" && data.user.rol !== "admin") {
       return res.status(403).json({ message: 'Acceso denegado para cliente o admin' });
     }
+
 
     req.user = data.user;
     next();
