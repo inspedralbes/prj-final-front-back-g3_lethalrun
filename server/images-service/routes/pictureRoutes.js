@@ -8,44 +8,64 @@ dotenv.config();
 
 const router = express.Router();
 
-// Función para notificar cambios en las imágenes a través de sockets
+/**
+ * Notifica a un socket sobre cambios en las imágenes de un usuario.
+ * Envía la lista actualizada de imágenes al servicio de sockets.
+ *
+ * @param {string} userId - ID del usuario.
+ * @param {string} socketId - ID del socket a notificar.
+ * @param {string} token - Token de autenticación Bearer.
+ * @returns {Promise<void>}
+ */
 const notifyImageChange = async (userId, socketId, token) => {
-  console.log('notifyImageChange1:', userId, socketId);
   const apiUrl = process.env.SOCKET_API_URL;
   if (!socketId || !apiUrl) return;
 
   const message = await createPictureController.getUserPictures(userId);
-  console.log('Pictures enviadas:', message)
-  console.log('fetch to:', `${apiUrl}/private/${socketId}`);
   try {
     await fetch(`${apiUrl}/private/${socketId}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({message}),
+      body: JSON.stringify({ message }),
     });
-  } catch (err) {
-    console.error('Error notificando al socket:', err.message);
+  } catch {
+    // Error silencioso para no interrumpir el flujo principal
   }
 };
 
-// Crear imagen personalizada
+/**
+ * @route POST /create-picture
+ * @group Imágenes - Gestión de imágenes de usuario
+ * @security JWT
+ * @description
+ * Sube una imagen personalizada para un usuario autenticado y notifica el cambio por socket.
+ * 
+ * @returns {Object} 201 - Imagen creada correctamente
+ * @returns {Object} 500 - Error interno del servidor
+ */
 router.post('/create-picture', verifyJWTCliente, upload.single('file'), async (req, res) => {
   try {
     const { userId, socketId } = req.body;
-    console.log('userId:', userId);
-    console.log('socketId:', socketId);
     await createPictureController.createPicture(req.file, userId);
-    console.log('Imagen personalizada creada correctamente');
-    const token = req.headers.authorization.split(' ')[1]; // Obtener el token del encabezado
+    const token = req.headers.authorization.split(' ')[1];
     await notifyImageChange(userId, socketId, token);
-    console.log('Notificación enviada al socket:', socketId);
     res.status(201).json({ message: 'Imagen creada correctamente' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// Crear imagen por defecto (NO maneja ni devuelve pictureId)
+/**
+ * @route POST /create-default-picture/:userId
+ * @group Imágenes - Gestión de imágenes de usuario
+ * @description
+ * Copia la imagen por defecto para un usuario. No requiere autenticación.
+ * 
+ * @param {string} customName.body.required - Nombre personalizado para la imagen por defecto
+ * @returns {Object} 201 - Imagen por defecto creada correctamente
+ * @returns {Object} 400 - Falta el nombre personalizado
+ * @returns {Object} 500 - Error interno del servidor
+ */
 router.post('/create-default-picture/:userId', async (req, res) => {
   const { userId } = req.params;
   const { customName } = req.body;
@@ -55,19 +75,26 @@ router.post('/create-default-picture/:userId', async (req, res) => {
   }
 
   try {
-    console.log("Imagen por defecto creandose...");
     await createPictureController.createDefaultPicture(userId, customName);
-    console.log("Imagen por defecto creada correctamente");
     res.status(201).json({ message: 'Imagen por defecto creada correctamente' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// Establecer imagen activa (proxy al SQL)
+/**
+ * @route PUT /set-active-picture/:pictureId/:userId
+ * @group Imágenes - Gestión de imágenes de usuario
+ * @security JWT
+ * @description
+ * Establece una imagen como activa para el usuario y notifica el cambio por socket.
+ * 
+ * @returns {Object} 200 - Imagen activa establecida correctamente
+ * @returns {Object} 500 - Error interno del servidor
+ */
 router.put('/set-active-picture/:pictureId/:userId', verifyJWTCliente, async (req, res) => {
   try {
-    const token = req.headers.authorization.split(' ')[1]; // Obtener el token del encabezado
+    const token = req.headers.authorization.split(' ')[1];
     const { pictureId, userId } = req.params;
     const { socketId } = req.body;
     await createPictureController.setActivePicture(pictureId, userId);
@@ -78,22 +105,22 @@ router.put('/set-active-picture/:pictureId/:userId', verifyJWTCliente, async (re
   }
 });
 
-// Eliminar imagen (requiere pictureId)
+/**
+ * @route DELETE /delete-picture/:id/:fileName/:userId
+ * @group Imágenes - Gestión de imágenes de usuario
+ * @security JWT
+ * @description
+ * Elimina una imagen de usuario y notifica el cambio por socket.
+ * 
+ * @returns {Object} 200 - Imagen eliminada correctamente
+ * @returns {Object} 500 - Error interno del servidor
+ */
 router.delete('/delete-picture/:id/:fileName/:userId', verifyJWTCliente, async (req, res) => {
   try {
-    const token = req.headers.authorization.split(' ')[1]; // Obtener el token del encabezado
+    const token = req.headers.authorization.split(' ')[1];
     const { id, fileName, userId } = req.params;
     const { socketId } = req.body;
-
-    console.log('/delete-picture/:id/:userId info:');
-    console.log('userId:', userId);
-    console.log('socketId:', socketId);
-    console.log('id:', id);
-    console.log('token:', token);
-
     await createPictureController.deletePicture(id, userId, token, fileName);
-
-    console.log('notificando al socket');
     await notifyImageChange(userId, socketId, token);
     res.status(200).json({ message: 'Imagen eliminada correctamente' });
   } catch (error) {
@@ -101,9 +128,17 @@ router.delete('/delete-picture/:id/:fileName/:userId', verifyJWTCliente, async (
   }
 });
 
-// Obtener todas las imágenes de un usuario
+/**
+ * @route GET /get-user-pictures/:userId
+ * @group Imágenes - Gestión de imágenes de usuario
+ * @security JWT
+ * @description
+ * Obtiene todas las imágenes de un usuario autenticado.
+ * 
+ * @returns {Array<Object>} 200 - Lista de imágenes del usuario
+ * @returns {Object} 500 - Error interno del servidor
+ */
 router.get('/get-user-pictures/:userId', verifyJWTCliente, async (req, res) => {
-  console.log("entrando en metodo")
   try {
     const { userId } = req.params;
     const pictures = await createPictureController.getUserPictures(userId);
@@ -113,7 +148,17 @@ router.get('/get-user-pictures/:userId', verifyJWTCliente, async (req, res) => {
   }
 });
 
-// Obtener la imagen activa de un usuario
+/**
+ * @route GET /get-active-picture/:userId
+ * @group Imágenes - Gestión de imágenes de usuario
+ * @security JWT
+ * @description
+ * Obtiene la imagen activa de un usuario autenticado.
+ * 
+ * @returns {Object} 200 - Imagen activa del usuario
+ * @returns {Object} 404 - No se encontró una imagen activa
+ * @returns {Object} 500 - Error interno del servidor
+ */
 router.get('/get-active-picture/:userId', verifyJWTCliente, async (req, res) => {
   try {
     const { userId } = req.params;
@@ -128,10 +173,19 @@ router.get('/get-active-picture/:userId', verifyJWTCliente, async (req, res) => 
   }
 });
 
-// Eliminar carpeta completa del usuario
+/**
+ * @route DELETE /delete-user/:userId
+ * @group Imágenes - Gestión de imágenes de usuario
+ * @security JWT
+ * @description
+ * Elimina la carpeta completa de imágenes de un usuario y notifica el cambio por socket.
+ * 
+ * @returns {Object} 200 - Carpeta del usuario eliminada correctamente
+ * @returns {Object} 500 - Error interno del servidor
+ */
 router.delete('/delete-user/:userId', verifyJWTCliente, async (req, res) => {
   try {
-    const token = req.headers.authorization.split(' ')[1]; // Obtener el token del encabezado
+    const token = req.headers.authorization.split(' ')[1];
     const { userId } = req.params;
     const { socketId } = req.body;
     await createPictureController.deleteUserFolder(userId);

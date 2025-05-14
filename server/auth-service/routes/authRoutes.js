@@ -7,11 +7,35 @@ import bcrypt from 'bcrypt';
 import { generateJWT, verifyJWTCliente, verifyJWTAdmin } from '../middleware/verifyJWT.js';
 
 const router = express.Router();
-
 const tokenController = createTokenController();
 const userController = createUserController();
 
-// LOGIN CON EMAIL Y CONTRASEÑA
+/**
+ * @typedef {Object} AuthResponse
+ * @property {string} message - Mensaje descriptivo de la operación
+ * @property {string} [token] - Token JWT (cuando aplica)
+ * @property {Object} [user] - Datos del usuario (cuando aplica)
+ */
+
+/**
+ * Router para manejar autenticación de usuarios
+ * 
+ * Incluye:
+ * - Login local y con Google
+ * - Verificación de email
+ * - Restablecimiento de contraseña
+ * - Rutas protegidas
+ */
+ 
+/**
+ * @route POST /login
+ * @group Autenticación - Operaciones de login
+ * @param {string} email.body.required - Correo del usuario
+ * @param {string} password.body.required - Contraseña
+ * @returns {AuthResponse} 200 - Login exitoso
+ * @returns {Object} 401 - Credenciales inválidas
+ * @returns {Object} 500 - Error del servidor
+ */
 router.post('/login', (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     if (err) return res.status(500).json({ message: 'Error en el servidor', error: err.message });
@@ -26,24 +50,34 @@ router.post('/login', (req, res, next) => {
   })(req, res, next);
 });
 
-// LOGIN CON GOOGLE
+/**
+ * @route GET /google
+ * @group Autenticación - Login con Google
+ * @description Inicia el flujo de autenticación con Google OAuth2
+ */
 router.get('/google', passport.authenticate('google', {
   scope: ['profile', 'email'],
 }));
 
+/**
+ * @route GET /callback
+ * @group Autenticación - Login con Google
+ * @description Callback de Google OAuth2. Redirige a la web con token JWT
+ * @param {string} code.query - Código de autorización de Google
+ */
 router.get('/callback', passport.authenticate('google', { failureRedirect: '/' }), (req, res) => {
-
   const user = req.user;
-
-  // parse user object to JSON
   const userJson = JSON.stringify(user);
-
   const token = generateJWT(user);
-
   res.redirect(`${process.env.DOMAIN_URL}:${process.env.WEB_PORT}/auth/callback?token=${token}&user=${userJson}`);
 });
 
-// CERRAR SESIÓN
+/**
+ * @route GET /logout
+ * @group Autenticación - Gestión de sesión
+ * @security JWT
+ * @description Cierra la sesión actual y redirige a la página principal
+ */
 router.get('/logout', verifyJWTCliente, (req, res) => {
   req.logout((err) => {
     if (err) return res.status(500).send('Error al cerrar sesión');
@@ -51,154 +85,119 @@ router.get('/logout', verifyJWTCliente, (req, res) => {
   });
 });
 
+/**
+ * @route POST /send-verification-email
+ * @group Verificación - Registro de usuario
+ * @param {string} email.body.required - Correo a verificar
+ * @param {string} username.body.required - Nombre de usuario
+ * @param {string} password.body.required - Contraseña
+ * @returns {Object} 200 - Correo enviado exitosamente
+ * @returns {Object} 400 - Datos faltantes
+ * @returns {Object} 409 - Usuario ya existe
+ */
 router.post('/send-verification-email', async (req, res) => {
   const { email, username, password } = req.body;
+  const adminEmails = ['admin1@example.com', 'admin2@example.com'];
+  let rol = adminEmails.includes(email) ? 'admin' : 'cliente';
 
-  // Lista de correos electrónicos que deberían ser admins
-  const adminEmails = ['admin1@example.com', 'admin2@example.com'];  // Puedes agregar más correos
-
-  // Asignar el rol por defecto
-  let rol = 'cliente';
-
-  // Si el email está en la lista de adminEmails, asignamos el rol de admin
-  if (adminEmails.includes(email)) {
-    rol = 'admin';
-  }
-
-  // Validación de que el correo electrónico esté presente
-  if (!email) {
-    return res.status(400).json({ message: 'El correo electrónico es requerido.' });
-  }
+  if (!email) return res.status(400).json({ message: 'El correo electrónico es requerido.' });
 
   try {
-    // Verificar si el usuario ya existe
     const existingUser = await userController.getUserByEmail(email);
-    if (existingUser) {
-      return res.status(409).json({ message: 'El usuario ya existe.' }); // Código 409 para conflictos de recursos (usuario ya existe)
-    }
+    if (existingUser) return res.status(409).json({ message: 'El usuario ya existe.' });
 
-    // Crear el token con el rol determinado
     const token = await tokenController.createToken(email, username, password, rol);
-
-    // Crear el enlace para la verificación
     const link = `${process.env.DOMAIN_URL}:${process.env.WEB_PORT}/auth/verify-register?token=${token}`;
-
-    // Enviar el correo de verificación
     await sendVerificationEmail(email, link);
 
-    // Responder con éxito
     res.status(200).json({ message: `Correo de verificación enviado a ${email}` });
   } catch (error) {
-    console.error('Error al enviar el correo de verificación:', error);
     res.status(500).json({ message: 'Hubo un error al enviar el correo de verificación.' });
   }
 });
 
-
-
-// ✅ ENVIAR CORREO DE RECUPERACIÓN DE CONTRASEÑA
+/**
+ * @route POST /send-password-reset-email
+ * @group Verificación - Recuperación de contraseña
+ * @param {string} email.body.required - Correo asociado a la cuenta
+ * @returns {Object} 200 - Correo enviado exitosamente
+ * @returns {Object} 400 - Datos faltantes
+ * @returns {Object} 404 - Usuario no encontrado
+ */
 router.post('/send-password-reset-email', async (req, res) => {
   const { email } = req.body;
-
-  if (!email) {
-    return res.status(400).json({ message: 'El correo electrónico es requerido.' });
-  }
+  if (!email) return res.status(400).json({ message: 'El correo electrónico es requerido.' });
 
   try {
-    const user = await userController.getUserByEmail(email); // Solo hace llamada a API ahora
-    if (!user) {
-      return res.status(404).json({ message: 'Usuario no encontrado.' });
-    }
+    const user = await userController.getUserByEmail(email);
+    if (!user) return res.status(404).json({ message: 'Usuario no encontrado.' });
 
-    const token = await tokenController.createToken(user.email, user.username, null, user.rol); // Llamada API
+    const token = await tokenController.createToken(user.email, user.username, null, user.rol);
     const link = `${process.env.DOMAIN_URL}:${process.env.WEB_PORT}/auth/reset-password?token=${token}`;
-
     await sendPasswordResetEmail(user.email, link);
+
     res.status(200).json({ message: `Correo de restablecimiento enviado a ${email}` });
   } catch (error) {
-    console.error('Error al enviar el correo de restablecimiento:', error);
     res.status(500).json({ message: 'Hubo un error al enviar el correo de restablecimiento.' });
   }
 });
 
-// VERIFICACIÓN DE EMAIL
+/**
+ * @route POST /verify-email/:token
+ * @group Verificación - Registro de usuario
+ * @param {string} token.path.required - Token de verificación
+ * @returns {Object} 200 - Usuario registrado exitosamente
+ * @returns {Object} 400 - Token inválido o datos incompletos
+ * @returns {Object} 500 - Error del servidor
+ */
 router.post('/verify-email/:token', async (req, res) => {
   const { token } = req.params;
-
   try {
-    // 1. Verifica el token
     const verificationData = await tokenController.verifyToken(token);
-    if (!verificationData) {
-      return res.status(400).json({ error: 'Token inválido o expirado.' });
-    }
+    if (!verificationData) return res.status(400).json({ error: 'Token inválido o expirado.' });
 
-    // 2. Valida los datos del token
     const { email, username, password, rol } = verificationData;
-    if (!email || !username || !password) {
-      return res.status(400).json({ error: 'Datos incompletos en el token.' });
-    }
+    if (!email || !username || !password) return res.status(400).json({ error: 'Datos incompletos en el token.' });
 
-    // 3. Comprueba si el usuario ya existe
     const existingUser = await userController.getUserByEmail(email);
-    if (existingUser) {
-      return res.status(400).json({ error: 'El usuario ya existe.' });
-    }
+    if (existingUser) return res.status(400).json({ error: 'El usuario ya existe.' });
 
-    // 4. Crea el usuario
-    await userController.createUser(
-      email,
-      username,
-      password,
-      rol || 'cliente'
-    );
-
-    // 5. Responde éxito
+    await userController.createUser(email, username, password, rol || 'cliente');
     res.status(200).json({ message: 'Usuario registrado correctamente' });
   } catch (error) {
-    console.error('Error al verificar el token:', error);
-    // Si el error es un objeto con .message, lo devolvemos, si no, el error tal cual
     res.status(500).json({ error: error.message || error });
   }
 });
 
-
-// RESTABLECER CONTRASEÑA
+/**
+ * @route POST /reset-password/:token
+ * @group Verificación - Recuperación de contraseña
+ * @param {string} token.path.required - Token de restablecimiento
+ * @param {string} newPassword.body.required - Nueva contraseña
+ * @returns {Object} 200 - Contraseña actualizada
+ * @returns {Object} 400 - Datos faltantes o token inválido
+ * @returns {Object} 404 - Usuario no encontrado
+ */
 router.post('/reset-password/:token', async (req, res) => {
   const { newPassword } = req.body;
   const { token } = req.params;
 
-  if (!token || !newPassword) {
-    return res.status(400).json({ message: 'Token y nueva contraseña son requeridos.' });
-  }
+  if (!token || !newPassword) return res.status(400).json({ message: 'Token y nueva contraseña son requeridos.' });
 
   try {
-    const tokenData = await tokenController.verifyToken(token); // Llamada API
+    const tokenData = await tokenController.verifyToken(token);
     if (!tokenData) return res.status(400).json({ message: 'Token inválido o expirado.' });
 
-    const user = await userController.getUserByEmail(tokenData.email); // Solo hace llamada a API ahora
+    const user = await userController.getUserByEmail(tokenData.email);
     if (!user) return res.status(404).json({ message: 'Usuario no encontrado.' });
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    await userController.changePassword(user, hashedPassword); // Solo hace llamada a API ahora
+    await userController.changePassword(user, hashedPassword);
 
     res.status(200).json({ message: 'Contraseña actualizada con éxito.' });
   } catch (error) {
-    console.error('Error al restablecer la contraseña:', error);
     res.status(500).json({ message: 'Error al restablecer la contraseña.' });
   }
-});
-
-// RUTAS PROTEGIDAS
-router.get('/protected', verifyJWTCliente, (req, res) => {
-  res.status(200).json({ message: 'Ruta protegida accesible por cliente o admin', user: req.user });
-});
-
-router.get('/admin-only', verifyJWTAdmin, (req, res) => {
-  res.status(200).json({ message: 'Acceso concedido solo a administradores', user: req.user });
-});
-
-router.get('/cliente-area', verifyJWTCliente, (req, res) => {
-  res.status(200).json({ message: 'Área accesible para clientes y administradores', user: req.user });
 });
 
 export default router;

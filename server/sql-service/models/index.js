@@ -29,7 +29,13 @@ const rootSequelize = new Sequelize('', DB_USER, DB_PASSWORD, {
   logging: false
 });
 
-// Verifica y crea la base de datos si no existe
+/**
+ * Verifica si la base de datos existe y la crea si es necesario.
+ * 
+ * @async
+ * @function ensureDatabaseExists
+ * @throws {Error} Si ocurre un error de conexión o creación de la base de datos.
+ */
 const ensureDatabaseExists = async () => {
   try {
     await rootSequelize.authenticate();
@@ -49,7 +55,15 @@ const ensureDatabaseExists = async () => {
   }
 };
 
-// Inicializa la base de datos, modelos y tablas
+/**
+ * Inicializa la base de datos, carga los modelos dinámicamente y sincroniza las tablas.
+ * Si la tabla User está vacía, inserta un usuario y foto de prueba.
+ * 
+ * @async
+ * @function initializeDatabase
+ * @returns {Promise<Object>} Objeto con los modelos, la instancia de sequelize y Sequelize.
+ * @throws {Error} Si ocurre un error en la inicialización o sincronización.
+ */
 const initializeDatabase = async () => {
   await ensureDatabaseExists();
 
@@ -62,6 +76,7 @@ const initializeDatabase = async () => {
 
   const db = {};
 
+  // Carga dinámica de modelos en el directorio actual
   const modelFiles = fs
     .readdirSync(__dirname)
     .filter(file => file !== basename && file.endsWith('.js'));
@@ -73,12 +88,14 @@ const initializeDatabase = async () => {
     db[model.name] = model;
   }
 
+  // Configuración de asociaciones si existen
   Object.keys(db).forEach(modelName => {
     if (db[modelName].associate) {
       db[modelName].associate(db);
     }
   });
 
+  // Sincroniza las tablas con la base de datos
   await sequelize.sync({ alter: true });
   console.log("✅ Tablas sincronizadas correctamente.");
 
