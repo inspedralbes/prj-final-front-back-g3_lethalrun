@@ -12,7 +12,7 @@ export function useAuth() {
 
     const login = async (email, password) => {
         try {
-            return await $fetch(`${BASE_URL}/api/auth/login`, {
+            return await $fetch(`${BASE_URL}/auth/login`, {
                 method: "POST",
                 body: { email, password },
                 credentials: "include",
@@ -38,6 +38,7 @@ export function useAuth() {
 
     const processUserFromQuery = () => {
         const userData = route.query.user;
+        const token = route.query.token;
 
         if (!userData) {
             router.push("/auth/login");

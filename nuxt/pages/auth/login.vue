@@ -1,7 +1,11 @@
 <script setup>
 import { ref } from 'vue';
 import { useAuth } from "@/services/auth";
+import { useAppStore } from '@/stores/app';
+import { useRoute, useRouter } from 'nuxt/app';
 
+const store = useAppStore();
+const router = useRouter();
 const config = useRuntimeConfig();
 const { login } = useAuth();
 
@@ -20,7 +24,11 @@ const handleLogin = async () => {
   try {
     const response = await login(email.value, password.value);
     console.log("Inicio de sesión exitoso:", response);
-    window.location.href = response.redirectUrl;
+    store.setUser(response.user);
+    store.setToken(response.token);
+    store.setIsAuthenticated(true);
+    console.log("Usuario autenticado:", store.user);
+    router.push("/");
   } catch (error) {
     console.error("Error en el inicio de sesión:", error);
   } finally {
@@ -30,7 +38,7 @@ const handleLogin = async () => {
 
 const handleGoogleLogin = () => {
   isLoadingGoogle.value = true;
-  window.location.href = `${config.public.apiUrl}/api/auth/google`;
+  window.location.href = `${config.public.apiUrl}/auth/google`;
 }
 </script>
 

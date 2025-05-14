@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import Sequelize from 'sequelize';
 import dotenv from 'dotenv';
+import bcrypt from 'bcrypt';
 
 dotenv.config(); // Cargar variables de entorno
 
@@ -90,7 +91,7 @@ const initializeDatabase = async () => {
     const testUser = await db.User.create({
       email: 'admin@example.com',
       username: 'admin',
-      password: 'hashedpassword123',
+      password: await bcrypt.hash('admin', 10),
       rol: 'admin'
     });
 

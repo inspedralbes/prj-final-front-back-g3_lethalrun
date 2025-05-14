@@ -4,6 +4,9 @@ import express from 'express';
 import http from 'http';
 import { initSocket } from './controllers/socketController.js';  // Asegúrate de que este controlador esté correcto
 import socketRoutes from './routes/socketRoutes.js';  // Rutas para eventos de Socket.IO
+import dotenv from 'dotenv';
+
+dotenv.config();  // Cargar variables de entorno desde .env
 
 const app = express();
 const server = http.createServer(app);

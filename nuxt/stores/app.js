@@ -7,10 +7,18 @@ export const useAppStore = defineStore("app", {
         ? JSON.parse(localStorage.getItem("user"))
         : {
           id: 0,
-          email: "david@gmail.com",
-          username: "Dasbits",
-          picture: "picture.png",
+          email: "example@example.com",
+          username: "example",
+          xp: 0,
+          play_time: 0,
+          rol: "example",
+          createdAt: "2025-05-13T10:00:32.000Z",
+          updatedAt: "2025-05-13T10:00:32.000Z"
         },
+    token:
+      typeof window !== "undefined" && window.localStorage.getItem("token")
+        ? localStorage.getItem("token")
+        : "",
     isAuthenticated: false,
   }),
   getters: {
@@ -30,6 +38,15 @@ export const useAppStore = defineStore("app", {
       // Opcional: Actualizar el localStorage al mismo tiempo
       if (typeof window !== "undefined") {
         window.localStorage.setItem("user", JSON.stringify(userData));
+      }
+    },
+
+    setToken(token) {
+      this.token = token;
+
+      // Opcional: Actualizar el localStorage al mismo tiempo
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem("token", token);
       }
     },
 
