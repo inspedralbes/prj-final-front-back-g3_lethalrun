@@ -62,11 +62,12 @@ export function useGraffitis() {
         }
     }
 
-    const deleteGraffiti = async (id, socketId) => {
+    const deleteGraffiti = async (id, socketId, path) => {
         console.log("ID a eliminar:", id);
         console.log("Socket ID:", socketId);
+        console.log("Path:", path);
         try {
-            return await $fetch(`${BASE_URL}/delete-picture/${id}/${store.user.id}`, {
+            return await $fetch(`${BASE_URL}/delete-picture/${id}/${path}/${store.user.id}`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",

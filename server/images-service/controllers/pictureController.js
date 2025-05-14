@@ -93,22 +93,21 @@ export const createPictureController = {
   },
 
   // Eliminar una imagen (requiere pictureId)
-  async deletePicture(id, userId, token) {
+  async deletePicture(id, userId, token, fileName) {
     const userFolder = path.join(USERS_FOLDER, userId);
-    const files = fs.existsSync(userFolder) ? fs.readdirSync(userFolder) : [];
-    const fileToDelete = files.find((file) => file.startsWith(`${userId}_`));
+    const filePath = path.join(userFolder, fileName);
 
-    if (fileToDelete) {
-      const filePath = path.join(userFolder, fileToDelete);
-      fs.unlinkSync(filePath);
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath); // Elimina la imagen local
 
-      console.log('url Hard: ', "http://localhost:3003/sql/pictures/delete/7/16")
-      console.log('url: ', `${API_SQL_URL}/delete/${id}/${userId}`)
-      console.log('token: ', token)
+      console.log('url Hard: ', "http://localhost:3003/sql/pictures/delete/7/16");
+      console.log('url: ', `${API_SQL_URL}/delete/${id}/${userId}`);
+      console.log('token: ', token);
+
       const response = await fetch(`${API_SQL_URL}/delete/${id}/${userId}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${token}` // Se añade el token Bearer
+          'Authorization': `Bearer ${token}`
         }
       });
 

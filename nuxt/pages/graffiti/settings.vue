@@ -62,7 +62,7 @@
                   </p>
 
                   <!-- Botón "Delete" -->
-                  <button @click="deleteGraffitiHandler(graffiti.id)" :disabled="graffiti.is_active" :class="graffiti.is_active
+                  <button @click="deleteGraffitiHandler(graffiti.id, graffiti.path)" :disabled="graffiti.is_active" :class="graffiti.is_active
                     ? 'bg-gray-400 cursor-not-allowed'
                     : 'bg-red-600 hover:bg-red-700 cursor-pointer'"
                     :title="graffiti.is_active ? 'No se puede eliminar porque está activo' : ''"
@@ -266,10 +266,11 @@ const uploadImage = async () => {
   }
 };
 
-const deleteGraffitiHandler = async (id) => {
+// Función para eliminar graffiti
+const deleteGraffitiHandler = async (id, path) => {
   try {
-
-    await deleteGraffiti(id, $socket.id);
+    console.log('Deleting graffiti with ID:', id);
+    await deleteGraffiti(id, $socket.id, path);
   } catch (error) {
     console.error('Error deleting graffiti:', error);
   }

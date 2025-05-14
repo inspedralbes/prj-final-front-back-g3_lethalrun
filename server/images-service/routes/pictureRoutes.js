@@ -79,10 +79,10 @@ router.put('/set-active-picture/:pictureId/:userId', verifyJWTCliente, async (re
 });
 
 // Eliminar imagen (requiere pictureId)
-router.delete('/delete-picture/:id/:userId', verifyJWTCliente, async (req, res) => {
+router.delete('/delete-picture/:id/:fileName/:userId', verifyJWTCliente, async (req, res) => {
   try {
     const token = req.headers.authorization.split(' ')[1]; // Obtener el token del encabezado
-    const { id, userId } = req.params;
+    const { id, fileName, userId } = req.params;
     const { socketId } = req.body;
 
     console.log('/delete-picture/:id/:userId info:');
@@ -91,7 +91,7 @@ router.delete('/delete-picture/:id/:userId', verifyJWTCliente, async (req, res) 
     console.log('id:', id);
     console.log('token:', token);
 
-    await createPictureController.deletePicture(id, userId, token);
+    await createPictureController.deletePicture(id, userId, token, fileName);
 
     console.log('notificando al socket');
     await notifyImageChange(userId, socketId, token);
