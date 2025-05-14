@@ -89,6 +89,7 @@ export class SlotController {
 
   async getActiveSlotNumber(email) {
     const user = await UserModel.findOne({ email });
+    console.log(user);
     if (!user) throw new Error('Usuario no encontrado');
 
     for (const key in user.slots) {
