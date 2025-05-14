@@ -7,8 +7,8 @@ sql-service/.env
 auth-service/.env
 socket-service/.env
 mongo service/.env
-.env
 
+# Ignora la carpeta de imagenes de los usuarios
 images-service/images/users
 
 # Ignora archivos de configuración de editores
