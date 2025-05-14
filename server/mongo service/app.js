@@ -8,7 +8,12 @@ dotenv.config(); // Carga las variables desde .env
 const app = express();
 
 // Middleware
-app.use(cors()); // Habilita CORS para todas las rutas
+app.use(cors({
+  origin: '*', // Permitir cualquier origen
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
+  allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
+}));
+
 app.use(express.json()); // Para leer JSON del body
 
 // Rutas

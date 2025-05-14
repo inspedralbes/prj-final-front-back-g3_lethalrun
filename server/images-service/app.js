@@ -15,6 +15,8 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
   allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
 }));
+
+
 app.use('/images', express.static('images'));
 
 // Middleware para procesar JSON y formularios

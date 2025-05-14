@@ -6,9 +6,6 @@ import { verifyJWTCliente } from '../middleware/verifyJWT.js'; // Importamos los
 const router = express.Router();
 const controller = new SlotController();
 
-// Habilitamos CORS para todas las rutas
-router.use(cors());
-
 // Crear usuario (publico, sin necesidad de autenticación)
 router.post('/create', async (req, res) => {
   const { email } = req.body;
