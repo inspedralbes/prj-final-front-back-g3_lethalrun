@@ -17,11 +17,11 @@ El sistema está dividido en múltiples microservicios que se comunican principa
 ## 📁 Estructura del Proyecto
 
 backend/
-├── auth-service/ # Servicio de autenticación y manejo de tokens
-├── images-service/ # Servicio de almacenamiento y gestión de graffitis
-├── mongo-service/ # Servicio de gestión de datos en MongoDB (skins y gashapon)
-├── socket-service/ # Servicio de comunicación en tiempo real
-└── sql-service/ # Servicio de gestión de datos en SQL (usuarios e imágenes)
+- ├── auth-service/ # Servicio de autenticación y manejo de tokens
+- ├── images-service/ # Servicio de almacenamiento y gestión de graffitis
+- ├── mongo-service/ # Servicio de gestión de datos en MongoDB (skins y gashapon)
+- ├── socket-service/ # Servicio de comunicación en tiempo real
+- └── sql-service/ # Servicio de gestión de datos en SQL (usuarios e imágenes)
 
 
 ---
