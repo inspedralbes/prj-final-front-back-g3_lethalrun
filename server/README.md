@@ -98,8 +98,4 @@ Gestión de datos relacionales:
 
 ## ⚙️ Instalación y Configuración
 
-Clona el repositorio:
-
-```bash
-git clone https://github.com/tu-usuario/lethal-run-backend.git
-cd lethal-run-backend
+Consulta la guía completa de instalación en 📄 [MANUAL_INSTALACIÓN.md](./MANUAL_INSTALACIÓN.md)
