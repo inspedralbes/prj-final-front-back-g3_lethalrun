@@ -9,7 +9,7 @@ Este documento detalla los pasos necesarios para poner en marcha el backend del 
 - [Node.js](https://nodejs.org/) instalado (versión recomendada: 18.x o superior)
 - `npm` instalado (incluido con Node.js)
 - Base de datos MySQL o XAMPP en funcionamiento
-- Archivos `.env` configurados correctamente (ver ejemplo `.env.example` si existe)
+- Archivos `.env` configurados correctamente (ver ejemplo `.env.example` en cada microservicio)
 
 ---
 
