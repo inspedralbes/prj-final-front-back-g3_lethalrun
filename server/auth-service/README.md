@@ -70,4 +70,3 @@ Además, expone endpoints para que otros servicios validen los tokens JWT y conf
 
 ---
 
-¿Quieres que te prepare también documentación Swagger/OpenAPI para este microservicio? 😄
