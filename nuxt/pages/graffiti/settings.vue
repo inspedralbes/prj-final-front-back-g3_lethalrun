@@ -165,10 +165,6 @@ const config = useRuntimeConfig();
 
 const user = store.user;
 const isLogged = store.getIsAuthenticated;
-const menuItems = [
-  { to: '/dashboard', label: 'Dashboard', active: true },
-  { to: '/graffiti/settings', label: 'Graffiti', active: false }
-];
 
 const profileOptions = [
   { to: '/profile/my-info', label: 'El meu perfil' }

@@ -34,18 +34,28 @@ export function useAuth() {
         }
     };
 
-    const requestRoll = async (slot) => {
-        try{
-            return await $fetch(`${BASE_URL}/request-roll`, {
-                method: "GET",
-                credentials: "include",
-                body: slot
-            });
-        } catch (error) {
-            console.error("Error al hacer request roll:", error);
-            throw error;
+    const test = {
+        "email": "usuario@ejemplo.com",
+        "slots": {
+            "slot1": {
+                "isActive": true,
+                "number": 1,
+                "isUnlocked": true
+            },
+            "slot2": {
+                "isActive": false,
+                "number": 2,
+                "isUnlocked": false
+            },
+            "slot3": {
+                "isActive": false,
+                "number": 3,
+                "isUnlocked": false
+            }
         }
     }
+
+
 
     return { getGashaponOptions, getMySlots, requestRoll };
 }
