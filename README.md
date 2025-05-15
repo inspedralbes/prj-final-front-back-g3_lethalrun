@@ -37,10 +37,11 @@ Lethal Run es un juego competitivo de estilo "trap-runner" donde:
 ## 🧠 Estructura General del Proyecto
 
 lethal-run/
-├── backend/ # Microservicios y lógica del servidor
-├── unity-client/ # Cliente del juego en Unity
-├── docs/ # Documentación adicional
-└── README.md # Este archivo
+
+- ├── backend/        # Microservicios y lógica del servidor → [server/](./server/)
+- ├── frontend/       # Cliente web del juego → [nuxt/](./nuxt/)
+- ├── docs/           # Documentación adicional
+- └── README.md       # Este archivo
 
 
 ---
