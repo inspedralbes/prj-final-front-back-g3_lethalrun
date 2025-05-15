@@ -90,9 +90,8 @@ Gestión de datos relacionales:
 ## 🧰 Requisitos del Sistema
 
 - 🟢 Node.js (v14 o superior)  
-- 🍃 MongoDB  
-- 🐘 MySQL o PostgreSQL  
-- 🧠 Redis *(opcional, para caché)*  
+- 🍃 MongoDB o MongoDB Atlas
+- 🐘 MySQL  
 - 🚦 Nginx *(para entorno de producción)*
 
 ---
