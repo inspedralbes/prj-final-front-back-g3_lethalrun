@@ -25,13 +25,13 @@ npm install
 
 ## 🚀 Despliegue del backend
 
-# 🔵 En Windows
+### 🔵 En Windows
 
 ```bash
 node deploy-windows.mjs
 ```
 
-# 🟢 En Linux
+### 🟢 En Linux
 
 ```bash
 node deploy-linux.js
