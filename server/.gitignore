@@ -6,7 +6,7 @@ images-service/.env
 sql-service/.env
 auth-service/.env
 socket-service/.env
-mongo service/.env
+mongo-service/.env
 
 # Ignora la carpeta de imagenes de los usuarios
 images-service/images/users
