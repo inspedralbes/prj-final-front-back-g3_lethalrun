@@ -19,7 +19,30 @@ Abre una terminal en la raíz del proyecto backend y ejecuta:
 
 ```bash
 npm install
+```
 
 ---
 
 ## 🚀 Despliegue del backend
+
+# 🔵 En Windows
+
+```bash
+node deploy-windows.mjs
+```
+
+# 🟢 En Linux
+
+```bash
+node deploy-linux.js
+```
+
+---
+
+## ❗ Notas importantes
+
+- Asegúrate de que el servicio de MySQL esté corriendo antes de ejecutar el despliegue.
+
+- El script de despliegue creará la base de datos, aplicará las migraciones y arrancará los servicios necesarios.
+
+- Si ocurre algún error, revisa los mensajes en consola y asegúrate de que los archivos .env estén correctamente configurados.
