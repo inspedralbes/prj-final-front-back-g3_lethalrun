@@ -48,12 +48,10 @@ lethal-run/
 
 ## 🚀 Estado Actual
 
-El proyecto se encuentra en fase inicial de desarrollo. Se están estableciendo:
+La primera versión del juego ya está terminada. Por el momento, no está previsto continuar con el desarrollo.
 
-- Las bases del backend con microservicios desacoplados  
-- La arquitectura y diseño de niveles en Unity  
-- Las interfaces de usuario en Penpot  
-- La organización del trabajo en Taiga
+Sin embargo, el proyecto está disponible públicamente para quien quiera descargarlo, jugarlo o incluso contribuir con mejoras.  
+¡Anímate a experimentar y expandirlo por tu cuenta!
 
 ---
 
