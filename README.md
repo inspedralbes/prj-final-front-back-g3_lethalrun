@@ -1,40 +1,18 @@
 # 🧠 Backend - Lethal Run
 
-Este repositorio contiene la implementación del backend para el juego **"Lethal Run"** desarrollado en Unity. El backend está compuesto por una arquitectura de microservicios que gestiona la autenticación de usuarios, almacenamiento de imágenes, gestión de datos y comunicación en tiempo real.
-
-## 👥 Integrantes
-
-- David Salvador Sosa  
-- Marc Rojano González  
-- Brian Orozco Poyato  
-- Izan De La Cruz Espejo
-
-## 🕹️ Nombre
-
-**Lethal Run**
-
-## 📝 Descripción
-
-Juego multijugador 3D de plataformas donde un jugador intenta eliminar a los demás con las trampas colocadas en el mapa y los otros intentan llegar al final del recorrido. Además, podrás personalizar algunos de tus cosméticos para interactuar con otros jugadores.
-
-## 🔗 URLs
-
-- 🌲 **TAIGA:** [https://tree.taiga.io/project/a23izadelesp-lethal-run](https://tree.taiga.io/project/a23izadelesp-lethal-run)  
-- 🎨 **PENPOT:** *[Pendiente de actualización]*
-
-## 🚧 Estado
-
-Estamos creando las bases de nuestro proyecto con buenas prácticas.
+Este repositorio contiene la implementación del backend para el juego **Lethal Run**, desarrollado con una arquitectura basada en microservicios. Cada servicio es responsable de una funcionalidad específica, lo que permite escalabilidad, mantenibilidad y resistencia ante fallos.
 
 ---
 
 ## 🏗️ Arquitectura General
 
-El backend está diseñado utilizando una arquitectura de microservicios, donde cada servicio es responsable de un conjunto específico de funcionalidades. Esta arquitectura proporciona:
+El sistema está dividido en múltiples microservicios que se comunican principalmente mediante HTTP y, en ciertos casos, mediante sockets o mensajería.
 
-- 🔁 **Escalabilidad:** Cada servicio puede escalar de forma independiente según sus necesidades.  
-- 🧩 **Mantenibilidad:** La separación de responsabilidades facilita el mantenimiento y la evolución del código.  
-- 🛡️ **Resistencia a fallos:** La independencia entre servicios evita que el fallo de uno afecte a todo el sistema.
+- 🔁 **Escalabilidad:** Cada microservicio puede escalar de forma independiente.  
+- 🧩 **Mantenibilidad:** Separación clara de responsabilidades.  
+- 🛡️ **Resiliencia:** Los fallos en un servicio no afectan al sistema completo.
+
+---
 
 ## 📁 Estructura del Proyecto
 
@@ -48,67 +26,64 @@ backend/
 
 ---
 
-## 🧩 Descripción de los Microservicios
+## 🧩 Microservicios
 
 ### 🔐 [Auth Service](auth-service/README.md)
 
-*Gestiona la autenticación y autorización de usuarios en el sistema:*
+Gestión de autenticación y autorización:
 
 - Registro y login de usuarios con verificación por email  
 - Integración con autenticación de Google  
-- Generación y validación de tokens JWT  
-- Verificación de sesiones para otros microservicios  
+- JWT: generación, validación y verificación de sesiones  
 
 ---
 
 ### 🖼️ [Images Service](images-service/README.md)
 
-*Maneja el almacenamiento y gestión de los graffitis creados por los usuarios:*
+Gestión de graffitis de usuario:
 
-- Almacenamiento físico de archivos de imagen en el servidor  
-- Comunicación con SQL Service para registrar las rutas de las imágenes  
-- Optimización y procesamiento de imágenes subidas  
+- Almacenamiento físico de archivos en el servidor  
+- Registro de rutas en SQL  
+- Procesamiento y optimización de imágenes  
 
 ---
 
 ### 🎨 [Mongo Service](mongo-service/README.md)
 
-*Administra la información relacionada con las skins y el sistema de gashapon:*
+Sistema de cosméticos y gashapon:
 
-- Registro de skins obtenidas por los usuarios  
-- Gestión del desbloqueo de slots en el sistema gashapon  
-- Persistencia de datos en MongoDB para acceso rápido  
+- Registro y gestión de skins  
+- Desbloqueo de slots  
+- Persistencia en MongoDB  
 
 ---
 
 ### 📡 [Socket Service](socket-service/README.md)
 
-*Implementa la comunicación en tiempo real para diferentes funcionalidades del juego:*
+Comunicación en tiempo real:
 
-- Enrutamiento de mensajes a socket IDs específicos  
-- Notificaciones en tiempo real  
-- Comunicación bidireccional entre el cliente y el servidor  
+- Enrutamiento de mensajes por socket ID  
+- Notificaciones  
+- Canal bidireccional entre cliente y servidor  
 
 ---
 
 ### 🗃️ [SQL Service](sql-service/README.md)
 
-*Gestiona la persistencia de datos relacionados con usuarios e imágenes:*
+Gestión de datos relacionales:
 
-- Almacenamiento de información de usuarios  
-- Asociación entre usuarios y sus imágenes (graffitis)  
-- Consultas y operaciones CRUD sobre la base de datos SQL  
+- Almacenamiento de usuarios  
+- Asociación de usuarios con imágenes  
+- Operaciones CRUD sobre base de datos SQL  
 
 ---
 
 ## 🔄 Flujo de Comunicación
 
-Los microservicios se comunican entre sí principalmente mediante peticiones HTTP y en algunos casos mediante mensajería. El flujo típico de comunicación es:
-
-1. 🧍 El cliente (juego o web) envía una petición al servicio correspondiente.  
-2. 🛡️ El servicio consulta con el Auth Service para validar el token del usuario.  
-3. ⚙️ Si la validación es exitosa, el servicio procesa la petición, comunicándose con otros servicios si es necesario.  
-4. 📬 El servicio devuelve la respuesta al cliente.
+1. El cliente envía una petición al microservicio correspondiente.  
+2. El microservicio valida el token con Auth Service.  
+3. Si es válido, se procesa la petición y se comunica con otros servicios si es necesario.  
+4. El resultado se devuelve al cliente.
 
 ---
 
@@ -116,19 +91,15 @@ Los microservicios se comunican entre sí principalmente mediante peticiones HTT
 
 - 🟢 Node.js (v14 o superior)  
 - 🍃 MongoDB  
-- 🐘 MySQL/PostgreSQL  
+- 🐘 MySQL o PostgreSQL  
 - 🧠 Redis *(opcional, para caché)*  
-- 🚦 Nginx *(para producción)*
+- 🚦 Nginx *(para entorno de producción)*
 
 ---
 
-## ⚙️ Configuración e Instalación
+## ⚙️ Instalación y Configuración
 
-Cada microservicio contiene su propio archivo de configuración e instrucciones de instalación. Consulta la documentación específica de cada servicio para más detalles.
-
-### 🛠️ Configuración General
-
-Clona este repositorio:
+Clona el repositorio:
 
 ```bash
 git clone https://github.com/tu-usuario/lethal-run-backend.git
