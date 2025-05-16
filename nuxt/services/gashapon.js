@@ -10,32 +10,14 @@ export function useGashapon() {
     const config = useRuntimeConfig();
     const BASE_URL = config.public.apiUrl;
 
-    const test = {
-        "email": "usuario@ejemplo.com",
-        "slots": {
-            "slot1": {
-                "isActive": true,
-                "number": 3,
-                "isUnlocked": true
-            },
-            "slot2": {
-                "isActive": false,
-                "number": 5,
-                "isUnlocked": false
-            },
-            "slot3": {
-                "isActive": false,
-                "number": 1,
-                "isUnlocked": false
-            }
-        }
-    }
     const getMySlots = async () => {
         try {
-            return test;
-            return await $fetch(`${BASE_URL}/my-slots`, {
+            return await $fetch(`${BASE_URL}/active-slot-number`, {
                 method: "GET",
-                credentials: "include",
+                "Authorization": `Bearer ${store.token}`,
+                body: {
+                    email: store.user.email
+                }
             });
         } catch (error) {
             console.error("Error al obtener los slots:", error);
@@ -43,5 +25,22 @@ export function useGashapon() {
         }
     };
 
-    return { getMySlots };
+    const setSlotNumber = async (slotName, newNumber) => {
+        try {
+            return await $fetch(`${BASE_URL}/set-slot-number`, {
+                method: "POST",
+                "Authorization": `Bearer ${store.token}`,
+                body: {
+                    email: store.user.email,
+                    slotName: slotName,
+                    newNumber: newNumber
+                }
+            });
+        } catch (error) {
+            console.error("Error al obtener los slots:", error);
+            throw error;
+        }
+    };
+
+    return { getMySlots, setSlotNumber };
 }
