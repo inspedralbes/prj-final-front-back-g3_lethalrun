@@ -1037,21 +1037,6 @@ onMounted(async () => {
     transform: scale(0.95);
 }
 
-.slot:first-child::after {
-    content: 'GRATIS';
-    position: absolute;
-    top: -10px;
-    right: -10px;
-    background: linear-gradient(135deg, #ff4d4d 0%, #ff1a1a 100%);
-    color: white;
-    padding: 5px 10px;
-    font-size: 0.7em;
-    border-radius: 10px;
-    font-weight: bold;
-    box-shadow: 0 0 5px rgba(255, 77, 77, 0.5);
-    transform: rotate(15deg);
-}
-
 .rarity-dropdown {
     width: 100%;
     max-width: 600px;
