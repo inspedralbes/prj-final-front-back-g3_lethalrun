@@ -130,7 +130,7 @@ router.post('/set-slot-number', verifyJWTCliente, async (req, res) => {
  * @returns {Object} 403 - Acceso no autorizado
  * @returns {Object} 404 - Usuario no encontrado
  */
-router.get('/user/:email', async (req, res) => {
+router.get('/user/:email', verifyJWTCliente, async (req, res) => {
   const { email } = req.params;
   try {
     const user = await controller.getUser(email);

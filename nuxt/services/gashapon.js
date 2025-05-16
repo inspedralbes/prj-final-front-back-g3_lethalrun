@@ -13,10 +13,14 @@ export function useGashapon() {
     const getMySlots = async () => {
         try {
             console.log(`${BASE_URL}/user`);
+            console.log(store.token);
             return await $fetch(`${BASE_URL}/user/${store.user.email}`, {
                 method: "GET",
-                "Authorization": `Bearer ${store.token}`,
+                headers: {
+                    "Authorization": `Bearer ${store.token}`
+                } 
             });
+
         } catch (error) {
             console.error("Error al obtener los slots:", error);
             throw error;
@@ -27,7 +31,9 @@ export function useGashapon() {
         try {
             return await $fetch(`${BASE_URL}/set-slot-number`, {
                 method: "POST",
-                "Authorization": `Bearer ${store.token}`,
+                headers: {
+                    "Authorization": `Bearer ${store.token}`
+                },
                 body: {
                     email: store.user.email,
                     slotName: slotName,

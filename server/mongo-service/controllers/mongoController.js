@@ -74,9 +74,9 @@ export class SlotController {
     const newUser = new UserModel({
       email,
       slots: {
-        slot1: { isActive: true, number: 1, isUnlocked: true },
-        slot2: { isActive: false, number: 2, isUnlocked: false },
-        slot3: { isActive: false, number: 3, isUnlocked: false }
+        slot1: { isActive: true, number: 0, isUnlocked: true },
+        slot2: { isActive: false, number: 0, isUnlocked: false },
+        slot3: { isActive: false, number: 0, isUnlocked: false }
       }
     });
 

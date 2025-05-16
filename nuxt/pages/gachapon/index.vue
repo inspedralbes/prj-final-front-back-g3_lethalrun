@@ -80,27 +80,27 @@
                             <tr>
                                 <td class="rarity-common">Común</td>
                                 <td>50%</td>
-                                <td>Cazadores de rango E y D</td>
+                                <td>Default y Negra con flow </td>
                             </tr>
                             <tr>
                                 <td class="rarity-rare">Raro</td>
                                 <td>30%</td>
-                                <td>Cazadores de rango C</td>
+                                <td>Kirito y Asuna</td>
                             </tr>
                             <tr>
                                 <td class="rarity-epic">Épico</td>
                                 <td>15%</td>
-                                <td>Cazadores de rango B</td>
+                                <td>Megumin</td>
                             </tr>
                             <tr>
                                 <td class="rarity-legendary">Legendario</td>
                                 <td>4%</td>
-                                <td>Cazadores de rango A</td>
+                                <td>Spiderman</td>
                             </tr>
                             <tr>
                                 <td class="rarity-mythical">Mítico</td>
                                 <td>1%</td>
-                                <td>Cazadores de rango S</td>
+                                <td>Luffy e Igris</td>
                             </tr>
                         </tbody>
                     </table>
