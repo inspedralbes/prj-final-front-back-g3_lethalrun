@@ -1,16 +1,14 @@
 <template>
     <div class="boby">
-        <div class="bg-animation">
-            <div id="stars"></div>
-            <div id="stars2"></div>
-            <div id="stars3"></div>
-            <div id="stars4"></div>
-        </div>
         <Navbar class="h-min" :logoSrc="'/LethalRun_logo-removebg-preview.png'" :logoLink="'/'" :menuItems="menuItems"
             :profileImg="'/profile-icon.jpg'" :profileOptions="profileOptions" :logoutLink="logoutLink"
             :isLogged="isLogged" />
 
-        <div class="container">
+        <div class="container overflow-hidden">
+            <div id="stars"></div>
+            <div id="stars2"></div>
+            <div id="stars3"></div>
+            <div id="stars4"></div>
             <header class="header-gacha">
                 <h1 class="title-gacha">Lethal Run Skins!</h1>
             </header>
@@ -147,9 +145,17 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useGashapon } from '@/services/gashapon';
 
-onMounted(() => {
+const { getMySlots } = useGashapon();
+const mySlots = ref(null);
+
+onMounted(async () => {
+    mySlots.value = await getMySlots();
+    mySlots.value = mySlots.value.slots;
+    console.log(mySlots.value);
+
     // Elementos del DOM
     const pullButton = document.getElementById('pull-button');
     const currentCharacter = document.getElementById('current-character');
@@ -168,64 +174,75 @@ onMounted(() => {
 
     // Personajes del gacha de Solo Leveling
     const characters = [
-        {
-            "id": 0,
-            "name": "Default",
-            "rarity": "Común",
-            "image": "/skins/skin-a.png?text=Default",
-            "description": "Un personaje genérico, sin habilidades especiales pero con gran potencial para evolucionar."
-        },
-        {
-            "id": 1,
-            "name": "Negra con Flow",
-            "rarity": "Raro",
-            "image": "/skins/skin-a.png?text=Negra+con+Flow",
-            "description": "Con estilo y confianza, domina cualquier escenario con una presencia única y habilidades sorprendentes."
-        },
-        {
-            "id": 2,
-            "name": "Kirito",
-            "rarity": "Legendario",
-            "image": "/skins/skin-a.png?text=Kirito",
-            "description": "El espadachín negro, un maestro en el manejo de la espada dual y conocido por su valentía en mundos virtuales."
-        },
-        {
-            "id": 3,
-            "name": "Megumin",
-            "rarity": "Épico",
-            "image": "/skins/skin-a.png?text=Megumin",
-            "description": "La Archimaga obsesionada con la magia de explosión. Solo puede lanzar un hechizo por día, pero es devastador."
-        },
-        {
-            "id": 4,
-            "name": "Luffy",
-            "rarity": "Mítico",
-            "image": "/skins/skin-a.png?text=Luffy",
-            "description": "El capitán de los Sombrero de Paja, con habilidades de goma gracias a la fruta Gomu Gomu no Mi."
-        },
-        {
-            "id": 5,
-            "name": "Asuna",
-            "rarity": "Legendario",
-            "image": "/skins/skin-a.png?text=Asuna",
-            "description": "La relampagueante espadachina de Sword Art Online, reconocida por su velocidad y habilidades de combate."
-        },
-        {
-            "id": 6,
-            "name": "Spiderman",
-            "rarity": "Legendario",
-            "image": "/skins/skin-a.png?text=Spiderman",
-            "description": "El amistoso vecino que protege Nueva York con sus habilidades arácnidas y su agudo sentido del peligro."
-        },
-        {
-            "id": 7,
-            "name": "Igris",
-            "rarity": "Mítico",
-            "image": "/skins/skin-a.png?text=Igris",
-            "description": "Un caballero de sombras que sirve fielmente a su monarca. Conocido por su impresionante habilidad con la espada."
-        },
+      {
+        id: 0,
+        name: "Default",
+        rarity: "Común",
+        image: "/skins/default.png",
+        video: "/skins/gifs/default.gif",
+        description: "Un personaje genérico, sin habilidades especiales pero con gran potencial para evolucionar."
+      },
+      {
+        id: 1,
+        name: "Negra con Flow",
+        rarity: "Raro",
+        image: "/skins/negra.png",
+        video: "/skins/gifs/negra.gif",
+        description: "Con estilo y confianza, domina cualquier escenario con una presencia única y habilidades sorprendentes."
+      },
+      {
+        id: 2,
+        name: "Kirito",
+        rarity: "Legendario",
+        image: "/skins/kirito.png",
+        video: "/skins/gifs/kirito.gif",
+        description: "El espadachín negro, un maestro en el manejo de la espada dual y conocido por su valentía en mundos virtuales."
+      },
+      {
+        id: 3,
+        name: "Megumin",
+        rarity: "Épico",
+        image: "/skins/megumin.png",
+        video: "/skins/gifs/megumin.gif",
+        description: "La Archimaga obsesionada con la magia de explosión. Solo puede lanzar un hechizo por día, pero es devastador."
+      },
+      {
+        id: 4,
+        name: "Luffy",
+        rarity: "Mítico",
+        image: "/skins/luffy.png",
+        video: "/skins/gifs/luffy.gif",
+        description: "El capitán de los Sombrero de Paja, con habilidades de goma gracias a la fruta Gomu Gomu no Mi."
+      },
+      {
+        id: 5,
+        name: "Asuna",
+        rarity: "Legendario",
+        image: "/skins/asuna.png",
+        video: "/skins/gifs/asuna.gif",
+        description: "La relampagueante espadachina de Sword Art Online, reconocida por su velocidad y habilidades de combate."
+      },
+      {
+        id: 6,
+        name: "Spiderman",
+        rarity: "Legendario",
+        image: "/skins/spiderman.png",
+        video: "/skins/gifs/spiderman.gif",
+        description: "El amistoso vecino que protege Nueva York con sus habilidades arácnidas y su agudo sentido del peligro."
+      },
+      {
+        id: 7,
+        name: "Igris",
+        rarity: "Mítico",
+        image: "/skins/igris.png",
+        video: "/skins/gifs/igris.gif",
+        description: "Un caballero de sombras que sirve fielmente a su monarca. Conocido por su impresionante habilidad con la espada."
+      },
     ];
 
+    function getCharacterById(id) {
+        return characters.find(character => character.id === id);
+    }
 
     // Variables de estado
     let currentSlot = 1;
@@ -246,6 +263,7 @@ onMounted(() => {
             });
         });
 
+
         const equipButtons = document.querySelectorAll('.equip-button');
         equipButtons.forEach(button => {
             button.addEventListener('click', (e) => {
@@ -258,11 +276,32 @@ onMounted(() => {
                 }
             });
         });
+
+        // add image to slots
+        Object.entries(mySlots.value).forEach(([key, slot], index) => {
+            const slotPreview = document.getElementById(`slot-preview-${index + 1}`);
+            if (slotPreview) {
+                var character = getCharacterById(slot.number);
+                slotPreview.src = character.image;
+
+                if(slot.isActive){
+                    // we add class equipped-slot to the one who has data-slot=${index + 1}
+                    const slotElement = document.querySelector(`.slot[data-slot="${index + 1}"]`);
+                    slotElement.classList.add('equipped-slot');
+                    slotElement.querySelector('.equipped').style.display = 'block';
+                }
+            }
+            slots[index + 1] = slot;
+            
+        });
+
     }
 
     // Establecer slot activo
     function setActiveSlot(slotNumber) {
         currentSlot = slotNumber;
+        const myCurrentSlot = mySlots.value[`slot${currentSlot}`];
+        const myCurrentCharacter = getCharacterById(myCurrentSlot.number);
 
         // Actualizar UI de slots
         const slotElements = document.querySelectorAll('.slot');
@@ -277,13 +316,16 @@ onMounted(() => {
         // Mostrar personaje en slot activo si existe
         if (slots[currentSlot]) {
             currentCharacter.src = slots[currentSlot].image;
-            statusDisplay.textContent = `${slots[currentSlot].name} - ${slots[currentSlot].rarity}`;
+            statusDisplay.textContent = `${myCurrentCharacter.name} - ${myCurrentCharacter.rarity}`;
             setGlowColor(slots[currentSlot].rarity);
         } else {
             currentCharacter.src = "/skins/skin-a.png";
             statusDisplay.textContent = "¡Listo para tirar!";
             itemGlow.style.opacity = "0";
         }
+
+        currentCharacter.src = myCurrentSlot ? getCharacterById(myCurrentSlot.number).video : "/skins/skin-a.png";
+
     }
 
     // Equipar slot
