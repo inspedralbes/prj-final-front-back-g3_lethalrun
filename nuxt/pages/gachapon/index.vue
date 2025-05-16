@@ -344,7 +344,10 @@ onMounted(async () => {
             }
         });
 
-        showNotification(`¡${slots[slotNumber].name} equipado!`);
+        const myCurrentSlot = mySlots.value[`slot${currentSlot}`];
+        const char = getCharacterById(myCurrentSlot.number);
+
+        showNotification(`¡${char.name} equipado!`);
     }
 
     // Obtener personaje aleatorio basado en rareza
