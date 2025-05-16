@@ -110,7 +110,7 @@
             <div class="notification" id="notification"></div>
 
             <div class="footer">
-                Solo Leveling Gacha Machine © 2025
+                Lethal Run gacha-machine © 2025
             </div>
         </div>
 
