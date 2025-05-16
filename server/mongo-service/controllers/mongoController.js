@@ -8,7 +8,7 @@ const MONGODB_URI = process.env.MONGODB_URI;
 /**
  * Establece conexión con MongoDB Atlas. Si ya existe una conexión activa,
  * no realiza una nueva conexión.
- * @throws {Error} Si falla la conexión a la base de datos.
+ * @throws {Error} Si falla la conexión a la base de datos
  */
 if (!mongoose.connection.readyState) {
   mongoose.connect(MONGODB_URI, {
