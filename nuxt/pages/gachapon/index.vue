@@ -1,14 +1,15 @@
 <template>
-    <div class="boby">
+    <div class="boby overflow-hidden">
+        <div id="stars"></div>
+        <div id="stars2"></div>
+        <div id="stars3"></div>
+        <div id="stars4"></div>
         <Navbar class="h-min" :logoSrc="'/LethalRun_logo-removebg-preview.png'" :logoLink="'/'" :menuItems="menuItems"
             :profileImg="'/profile-icon.jpg'" :profileOptions="profileOptions" :logoutLink="logoutLink"
             :isLogged="isLogged" />
 
-        <div class="container overflow-hidden">
-            <div id="stars"></div>
-            <div id="stars2"></div>
-            <div id="stars3"></div>
-            <div id="stars4"></div>
+        <div class="container">
+            
             <header class="header-gacha">
                 <h1 class="title-gacha">Lethal Run Skins!</h1>
             </header>
@@ -148,13 +149,18 @@
 import { ref, onMounted } from 'vue'
 import { useGashapon } from '@/services/gashapon';
 
-const { getMySlots } = useGashapon();
+const config = useRuntimeConfig();
+const { getMySlots, setSlotNumber } = useGashapon();
 const mySlots = ref(null);
+
+const profileOptions = [
+  { to: '/profile/my-info', label: 'El meu perfil' }
+];
+const logoutLink = `${config.public.authUrl}/auth/logout`;
 
 onMounted(async () => {
     mySlots.value = await getMySlots();
     mySlots.value = mySlots.value.slots;
-    console.log(mySlots.value);
 
     // Elementos del DOM
     const pullButton = document.getElementById('pull-button');
@@ -185,7 +191,7 @@ onMounted(async () => {
       {
         id: 1,
         name: "Negra con Flow",
-        rarity: "Raro",
+        rarity: "Común",
         image: "/skins/negra.png",
         video: "/skins/gifs/negra.gif",
         description: "Con estilo y confianza, domina cualquier escenario con una presencia única y habilidades sorprendentes."
@@ -193,7 +199,7 @@ onMounted(async () => {
       {
         id: 2,
         name: "Kirito",
-        rarity: "Legendario",
+        rarity: "Raro",
         image: "/skins/kirito.png",
         video: "/skins/gifs/kirito.gif",
         description: "El espadachín negro, un maestro en el manejo de la espada dual y conocido por su valentía en mundos virtuales."
@@ -217,7 +223,7 @@ onMounted(async () => {
       {
         id: 5,
         name: "Asuna",
-        rarity: "Legendario",
+        rarity: "Raro",
         image: "/skins/asuna.png",
         video: "/skins/gifs/asuna.gif",
         description: "La relampagueante espadachina de Sword Art Online, reconocida por su velocidad y habilidades de combate."
@@ -294,6 +300,9 @@ onMounted(async () => {
             slots[index + 1] = slot;
             
         });
+        const myCurrentSlot = mySlots.value[`slot${currentSlot}`];
+        const myCurrentCharacter = getCharacterById(myCurrentSlot.number);
+        currentCharacter.src = myCurrentSlot ? myCurrentCharacter.video : "/skins/skin-a.png";
 
     }
 
@@ -559,7 +568,7 @@ onMounted(async () => {
                 gachaOrb.className = 'gacha-orb'; // Resetear clases
                 overlay.classList.remove('active');
                 itemDisplay.className = 'item-display'; // Quitar animación de pulsación
-                currentCharacter.src = character.image;
+                currentCharacter.src = character.video;
                 currentCharacter.style.opacity = "1";
                 currentCharacter.classList.add('pull-animation');
                 statusDisplay.textContent = `¡${character.name} - ${character.rarity}!`;
@@ -725,6 +734,8 @@ onMounted(async () => {
 
         pullButton.disabled = false;
         pullButton.textContent = "TIRAR";
+
+        await setSlotNumber(`slot${currentSlot}`,character.id)
     });
 
     // Dropdown de rareza
