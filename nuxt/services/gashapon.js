@@ -8,16 +8,14 @@ export function useGashapon() {
     const route = useRoute();
 
     const config = useRuntimeConfig();
-    const BASE_URL = config.public.mongoUrl;
+    const BASE_URL = config.public.mongoUrl + '/skins';
 
     const getMySlots = async () => {
         try {
-            return await $fetch(`${BASE_URL}/active-slot-number`, {
+            console.log(`${BASE_URL}/user`);
+            return await $fetch(`${BASE_URL}/user/${store.user.email}`, {
                 method: "GET",
                 "Authorization": `Bearer ${store.token}`,
-                body: {
-                    email: store.user.email
-                }
             });
         } catch (error) {
             console.error("Error al obtener los slots:", error);
