@@ -8,7 +8,7 @@ export function useGashapon() {
     const route = useRoute();
 
     const config = useRuntimeConfig();
-    const BASE_URL = config.public.apiUrl;
+    const BASE_URL = config.public.mongoUrl;
 
     const getMySlots = async () => {
         try {
