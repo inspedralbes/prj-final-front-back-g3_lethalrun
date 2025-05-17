@@ -26,7 +26,7 @@ export function useAuth() {
     const forgotPassword = async (email) => {
         try {
             console.log("Enviando solicitud de restablecimiento de contraseña...");
-            return await $fetch(`${BASE_URL}/send-password-reset-email`, {
+            return await $fetch(`${BASE_URL}/auth/send-password-reset-email`, {
                 method: "POST",
                 body: { email },
             });
