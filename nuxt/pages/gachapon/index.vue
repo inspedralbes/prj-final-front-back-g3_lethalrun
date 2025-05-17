@@ -147,11 +147,16 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useAppStore } from '@/stores/app';
 import { useGashapon } from '@/services/gashapon';
 
 const config = useRuntimeConfig();
+const store = useAppStore();
+
 const { getMySlots, setSlotNumber } = useGashapon();
 const mySlots = ref(null);
+
+const isLogged = store.isAuthenticated;
 
 const profileOptions = [
   { to: '/profile/my-info', label: 'El meu perfil' }
