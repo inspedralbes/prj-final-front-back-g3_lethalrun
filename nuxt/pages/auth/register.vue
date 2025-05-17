@@ -10,64 +10,76 @@
       :isLogged="false"
     />
 
-    <div class="flex-1 flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-      <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg w-96">
-        <h2 class="text-2xl font-bold text-center text-gray-700 dark:text-white mb-6">Registro</h2>
-        
-        <!-- Mensajes de error o éxito -->
-        <div v-if="message" :class="{
-          'bg-red-500 text-white': messageType === 'error',
-          'bg-green-500 text-white': messageType === 'success'
-        }" class="p-3 rounded-md text-center mb-4">
-          {{ message }}
+    <div class="flex-1 flex items-center justify-center" style="background-image: linear-gradient(to bottom, #1a0a0a 0%, #12122a 100%);">
+    <div class="shadow-lg rounded-lg p-8 max-w-md w-96" style="background: rgba(30, 20, 20, 0.95);">
+      <h1 class="text-2xl font-bold text-center mb-6" style="color: #fff;">Registro</h1>
+
+      <!-- Mensajes de error o éxito -->
+      <div v-if="message" :class="{
+        'bg-red-500 text-white': messageType === 'error',
+        'bg-green-500 text-white': messageType === 'success'
+      }" class="p-3 rounded-md text-center mb-4 transition-all duration-300">
+        {{ message }}
+      </div>
+
+      <form @submit.prevent="handleRegister" class="space-y-4">
+        <!-- Nombre de usuario -->
+        <div>
+          <label class="block text-sm font-medium" style="color: #fff;">Nombre de usuario</label>
+          <input v-model="username" type="text"
+            class="mt-1 w-full px-4 py-2 rounded-lg shadow-sm focus:ring-yellow-400 focus:border-yellow-400"
+            style="background: rgba(255, 255, 255, 0.08); border: 1px solid #ffb300; color: #fff;" />
         </div>
-        
-        <form @submit.prevent="handleRegister" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre de usuario</label>
-            <input v-model="username" type="text"
-              class="mt-1 w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Correo Electrónico</label>
-            <input v-model="email" type="email"
-              class="mt-1 w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Contraseña</label>
-            <div class="relative">
-              <input :type="showPassword ? 'text' : 'password'" v-model="password"
-                class="mt-1 w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
-              <button type="button" @click="togglePassword"
-                class="absolute inset-y-0 right-3 flex items-center text-gray-500 dark:text-gray-300 p-2 cursor-pointer">
-                <span v-if="showPassword">🔓</span>
-                <span v-else>🔒</span>
-              </button>
-            </div>
-          </div>
-          <button type="submit"
-            class="w-full bg-blue-600 text-white font-medium py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            :disabled="isLoading">
-            <span v-if="!isLoading">Registrarse</span>
-            <div v-else class="flex items-center justify-center">
-              <svg class="animate-spin h-5 w-5 mr-3 text-gray-800 dark:text-white" xmlns="http://www.w3.org/2000/svg"
-                fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                </path>
-              </svg>
-              <span>Cargando...</span>
-            </div>
-          </button>
-        </form>
-        <div class="mt-4 text-center">
-          <p class="text-sm text-gray-600 dark:text-gray-300">¿Ya tienes una cuenta?
-            <NuxtLink to="/auth/login" class="text-blue-500 hover:underline">Inicia sesión</NuxtLink>
-          </p>
+
+        <!-- Correo Electrónico -->
+        <div>
+          <label class="block text-sm font-medium" style="color: #fff;">Correo Electrónico</label>
+          <input v-model="email" type="email"
+            class="mt-1 w-full px-4 py-2 rounded-lg shadow-sm focus:ring-yellow-400 focus:border-yellow-400"
+            style="background: rgba(255, 255, 255, 0.08); border: 1px solid #ffb300; color: #fff;" />
         </div>
+
+        <!-- Contraseña -->
+        <div class="mb-0">
+          <label class="block text-sm font-medium" style="color: #fff;">Contraseña</label>
+          <div class="relative">
+            <input :type="showPassword ? 'text' : 'password'" v-model="password"
+              class="mt-1 w-full px-4 py-2 rounded-lg shadow-sm focus:ring-yellow-400 focus:border-yellow-400"
+              style="background: rgba(255, 255, 255, 0.08); border: 1px solid #ff7043; color: #fff;"/>
+            <button type="button" @click="togglePassword"
+              class="absolute inset-y-0 right-2 flex items-center text-gray-500 dark:text-gray-300 p-2 cursor-pointer focus:outline-none">
+              <span v-if="showPassword">🔓</span>
+              <span v-else>🔒</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Botón de registro -->
+        <button type="submit"
+          class="cursor-pointer w-full font-medium mt-8 py-2 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2"
+          :disabled="isLoading"
+          style="background: linear-gradient(90deg, #ff1744 0%, #ff9100 60%, #fff176 100%); color: #fff;">
+          <span v-if="!isLoading">Registrarse</span>
+          <div v-else class="flex items-center justify-center">
+            <svg class="animate-spin h-5 w-5 mr-3 text-white" xmlns="http://www.w3.org/2000/svg"
+              fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+              </path>
+            </svg>
+            <span>Cargando...</span>
+          </div>
+        </button>
+      </form>
+
+      <div class="mt-4 text-center">
+        <p class="text-sm" style="color: #fff;">¿Ya tienes una cuenta?
+          <NuxtLink to="/auth/login" class="text-yellow-300 hover:underline">Inicia sesión</NuxtLink>
+        </p>
       </div>
     </div>
+  </div>
   </div>
 </template>
 
