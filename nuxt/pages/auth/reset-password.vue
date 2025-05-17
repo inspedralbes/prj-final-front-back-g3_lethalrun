@@ -1,34 +1,42 @@
 <template>
-    <div class="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-        <h1 class="text-2xl font-semibold mb-4">Cambio de contraseña</h1>
+    <div class="flex flex-col items-center justify-center min-h-screen px-4 py-8" style="background-image: linear-gradient(to bottom, #1a0a0a 0%, #12122a 100%);">
+        <h1 class="text-3xl font-bold mb-6 text-orange-400 text-center">Cambio de contraseña</h1>
 
-        <!-- Error message -->
-        <div v-if="error" class="text-red-500 bg-red-100 border border-red-400 p-4 rounded-md mb-4">
+        <div v-if="error" class="bg-red-800 border border-red-600 text-red-300 p-4 rounded-md mb-6 w-full max-w-md text-center shadow-lg">
             <p>{{ error }}</p>
         </div>
 
-        <!-- Success message -->
-        <div v-if="success" class="text-green-500 bg-green-100 border border-green-400 p-4 rounded-md mb-4">
-            <p class="text-center">Cambio de contraseña completado con éxito!</p>
-            <p class="text-center">Puedes cerrar esta pestaña</p>
+        <div v-if="success" class="bg-yellow-800 bg-opacity-90 border border-yellow-600 text-yellow-200 p-6 rounded-md mb-6 w-full max-w-md shadow-lg">
+            <p class="text-center text-lg font-semibold">¡Cambio de contraseña completado con éxito!</p>
+            <p class="text-center mt-2">Puedes cerrar esta pestaña.</p>
         </div>
 
-        <!-- Password reset form -->
-        <form v-if="!success" @submit.prevent="handleResetPassword" class="w-80 bg-white p-6 rounded-md shadow-md">
-            <input v-model="newPassword" type="password" placeholder="Escribe tu nueva contraseña"
-                class="w-full px-4 py-2 border rounded-md mb-4" required />
-            <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">
-                Restablecer Contraseña
+        <form v-if="!success && !initialLoading" @submit.prevent="handleResetPassword" class="w-full max-w-sm bg-red-900 p-6 sm:p-8 rounded-lg shadow-xl">
+            <div class="mb-6">
+                <label for="newPassword" class="block text-sm font-medium text-orange-200 mb-1">Nueva Contraseña</label>
+                <input id="newPassword" v-model="newPassword" type="password" placeholder="Escribe tu nueva contraseña"
+                       class="w-full px-4 py-2.5 border border-orange-600 bg-gray-700 text-white rounded-md focus:ring-yellow-500 focus:border-yellow-500 placeholder-gray-400" required />
+            </div>
+            <button type="submit" :disabled="loading"
+                    class="w-full bg-red-600 text-white font-medium py-2.5 px-4 rounded-md shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-red-900 disabled:opacity-50 disabled:cursor-not-allowed">
+                <span v-if="!loading">Restablecer Contraseña</span>
+                <span v-else class="flex items-center justify-center">
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                    Procesando...
+                </span>
             </button>
         </form>
 
-        <!-- Loading spinner while waiting -->
-        <div v-if="loading" class="flex items-center justify-center space-x-2 mt-4">
-            <svg class="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none"
-                viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        <div v-if="initialLoading && !error" class="flex flex-col items-center justify-center space-y-3 mt-6">
+            <svg class="animate-spin h-10 w-10 text-yellow-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <span class="text-lg text-blue-500">Verificando...</span>
+            <span class="text-xl text-yellow-400">Verificando enlace...</span>
         </div>
     </div>
 </template>
