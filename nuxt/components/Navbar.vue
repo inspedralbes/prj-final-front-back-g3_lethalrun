@@ -97,10 +97,13 @@ const route = useRoute();
 const store = useAppStore();
 
 const menuItems = [
-  { to: '/dashboard', label: 'Inici', active: true },
-  { to: '/graffiti/settings', label: 'Graffiti', active: false },
-  { to: '/gachapon', label: 'Gachapon', active: false },
-];
+    { to: '/dashboard', label: 'Inici' },
+    { to: '/graffiti/settings', label: 'Graffiti' },
+    { to: '/gachapon', label: 'Gachapon' },
+].map(item => ({
+    ...item,
+    active: route.path.startsWith(item.to)
+}));
 
 const props = defineProps({
     logoSrc: { type: String, required: true },
