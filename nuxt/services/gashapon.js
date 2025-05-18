@@ -46,5 +46,44 @@ export function useGashapon() {
         }
     };
 
-    return { getMySlots, setSlotNumber };
+    const setActiveSkinSlot = async (slotName) => {
+        try {
+            return await $fetch(`${BASE_URL}/activate`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${store.token}`
+                },
+                body: {
+                    email: store.user.email,
+                    slotName: slotName
+                }
+            });
+        }
+        catch (error) {
+            console.error("Error al activar los slot:", error);
+            throw error;
+        }
+    }
+
+    const unlockSlot = async (slotName) => {
+        try {
+            return await $fetch(`${BASE_URL}/unlock`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${store.token}`
+                },
+                body: {
+                    email: store.user.email,
+                    slotName: slotName
+                }
+            });
+        }
+        catch (error) {
+            console.error("Error al desbloquear los slots:", error);
+            throw error;
+        }
+    }
+
+
+    return { getMySlots, setSlotNumber, setActiveSkinSlot, unlockSlot };
 }
