@@ -1,12 +1,12 @@
 <template>
     <div class="boby overflow-hidden">
+        <Navbar class="h-min" :logoSrc="'/LethalRun_logo-removebg-preview.png'" :logoLink="'/'" :menuItems="menuItems"
+            :profileImg="'/profile-icon.jpg'" :profileOptions="profileOptions" :logoutLink="logoutLink"
+            :isLogged="isLogged" />
         <div id="stars"></div>
         <div id="stars2"></div>
         <div id="stars3"></div>
         <div id="stars4"></div>
-        <Navbar class="h-min" :logoSrc="'/LethalRun_logo-removebg-preview.png'" :logoLink="'/'" :menuItems="menuItems"
-            :profileImg="'/profile-icon.jpg'" :profileOptions="profileOptions" :logoutLink="logoutLink"
-            :isLogged="isLogged" />
 
         <div class="container">
             
@@ -153,7 +153,7 @@ import { useGashapon } from '@/services/gashapon';
 const config = useRuntimeConfig();
 const store = useAppStore();
 
-const { getMySlots, setSlotNumber } = useGashapon();
+const { getMySlots, setSlotNumber, setActiveSkinSlot, unlockSlot } = useGashapon();
 const mySlots = ref(null);
 
 const isLogged = store.isAuthenticated;
@@ -166,6 +166,69 @@ const logoutLink = `${config.public.authUrl}/auth/logout`;
 onMounted(async () => {
     mySlots.value = await getMySlots();
     mySlots.value = mySlots.value.slots;
+
+    Object.entries(mySlots.value).forEach(([key, slot], index) => {
+        if (!slot.isUnlocked) {
+            const slotNum = index + 1;
+            const slotElement = document.querySelector(`.slot[data-slot="${slotNum}"]`);
+
+            // Asegurar posición relativa
+            if (getComputedStyle(slotElement).position === 'static') {
+                slotElement.style.position = 'relative';
+            }
+
+            // Ocultar botón “Equipar”
+            const equipButton = slotElement.querySelector('.equip-button');
+            equipButton.style.display = 'none';
+
+            // Crear overlay que cubre todo
+            const overlay = document.createElement('div');
+            overlay.className = 'slot-overlay';
+
+            Object.assign(overlay.style, {
+                position: 'absolute',
+                top: '0',
+                left: '0',
+                width: '100%',
+                height: '100%',
+                backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'flex-end',
+                alignItems: 'center',
+                paddingBottom: '10px',
+                borderRadius: '10px',
+                zIndex: '10'
+            });
+
+            // Crear botón “Desbloquear”
+            const unlockButton = document.createElement('button');
+            unlockButton.textContent = 'Desbloquear';
+            unlockButton.className = 'equip-button';
+
+            // Añadir botón al overlay
+            overlay.appendChild(unlockButton);
+            slotElement.appendChild(overlay);
+
+            // Evento al hacer clic en “Desbloquear”
+            unlockButton.addEventListener('click', async () => {
+                // Eliminar clase de bloqueo
+                slotElement.classList.remove('slot-blocked');
+
+                // Eliminar overlay
+                slotElement.removeChild(overlay);
+
+                // Mostrar botón "Equipar"
+                equipButton.style.display = '';
+
+                await unlockSlot(`slot${slotNum}`);
+
+                // Actualizar el slot
+                mySlots.value[`slot${slotNum}`].isUnlocked = true;
+            });
+        }
+    });
+
 
     // Elementos del DOM
     const pullButton = document.getElementById('pull-button');
@@ -277,9 +340,21 @@ onMounted(async () => {
 
         const equipButtons = document.querySelectorAll('.equip-button');
         equipButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
+            button.addEventListener('click', async (e) => {
                 e.stopPropagation();
                 const slotNumber = parseInt(button.dataset.slot);
+
+                if(!slotNumber) return;
+
+                if (!mySlots.value[`slot${slotNumber}`].isUnlocked) {
+                    showNotification("¡Este slot está bloqueado!");
+                    return;
+                }
+                await setActiveSkinSlot(`slot${slotNumber}`);
+
+                mySlots.value[`slot${slotNumber}`].isActive = true;
+                mySlots.value[`slot${equippedSlot}`].isActive = false;
+
                 if (slots[slotNumber]) {
                     equipSlot(slotNumber);
                 } else {
@@ -312,9 +387,15 @@ onMounted(async () => {
     }
 
     // Establecer slot activo
-    function setActiveSlot(slotNumber) {
+    async function setActiveSlot(slotNumber) {
         currentSlot = slotNumber;
         const myCurrentSlot = mySlots.value[`slot${currentSlot}`];
+
+        if (mySlots.value[`slot${currentSlot}`].isUnlocked === false) {
+            showNotification("¡Este slot está bloqueado!");
+            return;
+        }
+
         const myCurrentCharacter = getCharacterById(myCurrentSlot.number);
 
         // Actualizar UI de slots
@@ -338,7 +419,11 @@ onMounted(async () => {
             itemGlow.style.opacity = "0";
         }
 
-        currentCharacter.src = myCurrentSlot ? getCharacterById(myCurrentSlot.number).video : "/skins/skin-a.png";
+        const charr = getCharacterById(myCurrentSlot.number);
+
+        await setSlotNumber(`slot${currentSlot}`,charr.id);
+
+        currentCharacter.src = myCurrentSlot ? charr.video : "/skins/skin-a.png";
 
     }
 
@@ -1017,6 +1102,25 @@ onMounted(async () => {
     font-size: 1em;
     color: var(--text);
     margin-bottom: 5px;
+}
+
+.unlock-button {
+    width: 80px;
+    height: 30px;
+    background: linear-gradient(135deg, #ffee008e 0%, #ffbb0083 100%);
+    border: none;
+    border-radius: 15px;
+    color: white;
+    font-size: 0.8em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 5px rgba(255, 54, 54, 0.5);
+}
+
+.unlock-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(255, 54, 54, 0.8);
 }
 
 .equip-button {
