@@ -12,8 +12,6 @@ export function useGashapon() {
 
     const getMySlots = async () => {
         try {
-            console.log(`${BASE_URL}/user`);
-            console.log(store.token);
             return await $fetch(`${BASE_URL}/user/${store.user.email}`, {
                 method: "GET",
                 headers: {
