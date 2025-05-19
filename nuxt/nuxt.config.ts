@@ -16,8 +16,6 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       authUrl: process.env.AUTH_URL || '',
-      googleClientId: process.env.GOOGLE_CLIENT_ID || '',
-      googleRedirectUri: process.env.GOOGLE_REDIRECT_URI || '',
       socketUrl: process.env.SOCKET_URL || '',
       mongoUrl: process.env.MONGO_URL || '',
       imagesUrl: process.env.IMAGES_URL || '',

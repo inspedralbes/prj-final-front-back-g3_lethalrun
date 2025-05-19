@@ -93,9 +93,22 @@
 import { ref } from 'vue';
 import { useAppStore } from '@/stores/app';
 
+/**
+ * Current route object from Nuxt.
+ * @type {import('vue-router').RouteLocationNormalizedLoaded}
+ */
 const route = useRoute();
+
+/**
+ * Application store instance.
+ * @type {ReturnType<typeof useAppStore>}
+ */
 const store = useAppStore();
 
+/**
+ * Navigation menu items for the navbar.
+ * @type {Array<{to: string, label: string, active: boolean}>}
+ */
 const menuItems = [
     { to: '/dashboard', label: 'Inici' },
     { to: '/graffiti/settings', label: 'Graffiti' },
@@ -105,6 +118,16 @@ const menuItems = [
     active: route.path.startsWith(item.to)
 }));
 
+/**
+ * Props for the Navbar component.
+ * @typedef {Object} NavbarProps
+ * @property {string} logoSrc - Source URL for the logo image.
+ * @property {string} [logoLink='/'] - Link for the logo.
+ * @property {string} profileImg - Source URL for the profile image.
+ * @property {Array} profileOptions - List of profile menu options.
+ * @property {string} logoutLink - URL for logout action.
+ * @property {boolean} isLogged - Whether the user is logged in.
+ */
 const props = defineProps({
     logoSrc: { type: String, required: true },
     logoLink: { type: String, default: '/' },
@@ -114,7 +137,16 @@ const props = defineProps({
     isLogged: { type: Boolean, required: true }
 });
 
+/**
+ * State for mobile menu open/close.
+ * @type {import('vue').Ref<boolean>}
+ */
 const navbarMobileMenuIsOpen = ref(false);
+
+/**
+ * State for profile options dropdown open/close.
+ * @type {import('vue').Ref<boolean>}
+ */
 const profileOptionsIsOpen = ref(false);
 </script>
 

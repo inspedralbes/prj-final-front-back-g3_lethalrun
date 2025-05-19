@@ -141,24 +141,36 @@ import { useAppStore } from '@/stores/app';
 const store = useAppStore();
 const config = useRuntimeConfig();
 
-const user = store.user;
-
+/**
+ * Array of menu items for navigation in the application.
+ * Each item includes its path, label, and active status.
+ * @type {Array<{ to: string, label: string, active: boolean }>}
+ */
 const menuItems = [
   { to: '/dashboard', label: 'Inicio', active: true },
   { to: '/graffiti/settings', label: 'Graffiti', active: false },
 ];
 
+/**
+ * Navigation options for the user profile.
+ * @type {Array<{ to: string, label: string }>}
+ */
 const profileOptions = [
   { to: '/profile/my-info', label: 'El meu perfil' }
 ];
 
+/**
+ * URL for logging out the user.
+ * @type {string}
+ */
 const logoutlink = `${config.public.authUrl}/auth/logout`;
 
+/**
+ * Reactive property to determine if the user is authenticated.
+ * @type {boolean}
+ */
 const isLogged = store.getIsAuthenticated;
 
-const logout = () => {
-    window.location.href = `${config.public.authUrl}/auth/logout`;
-};
 </script>
 
 <style scoped>

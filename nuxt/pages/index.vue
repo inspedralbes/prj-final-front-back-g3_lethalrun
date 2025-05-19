@@ -2,12 +2,18 @@
 import { useAppStore } from '@/stores/app';
 
 const store = useAppStore();
-const config = useRuntimeConfig();
-const route = useRoute();
+
+/**
+ * Navigation options for the user profile.
+ * @type {Array<{ to: string, label: string }>}
+ */
 const profileOptions = [{ to: '/profile/my-info', label: 'El meu perfil' }];
 
+/**
+ * Reactive property representing the current user.
+ * @type {Object}
+ */
 const user = store.user;
-
 
 </script>
 

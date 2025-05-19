@@ -30,9 +30,28 @@ const { verifyEmailToken } = useAuth();
 const route = useRoute();
 const router = useRouter();
 
+/**
+ * Reactive property to indicate success message.
+ * @type {import('vue').Ref<string | null>}
+ */
 const success = ref(null);
+
+/**
+ * Reactive property to indicate error message.
+ * @type {import('vue').Ref<string | null>}
+ */
 const error = ref(null);
 
+/**
+ * Hook that triggers when the component is mounted.
+ * It attempts to verify the email token from the query parameters.
+ * If successful, it redirects to the login page after a short delay.
+ * If it fails, an error message is displayed.
+ *
+ * @async
+ * @function onMounted
+ * @returns {Promise<void>} Resolves when the verification process is complete.
+ */
 onMounted(async () => {
     const token = route.query.token;
 
@@ -45,15 +64,16 @@ onMounted(async () => {
         const response = await verifyEmailToken(token);
         success.value = response;
 
-        // Si la validación es exitosa, redirigimos a /auth/login
+        // If verification is successful, redirect to /auth/login after a short delay.
         setTimeout(() => {
             router.push("/auth/login");
-        }, 2000); // Agrega un pequeño retraso antes de redirigir
+        }, 2000);
     } catch (err) {
-        console.log(err);
+        // Handle error and display an appropriate message.
         error.value = err.data ? err.data : "S'ha produït un error";
     }
 });
+
 </script>
 
 <style scoped>

@@ -4,11 +4,35 @@ import { useAuth } from "@/services/auth";
 
 const { forgotPassword } = useAuth();
 
+/**
+ * User email input for password reset.
+ * @type {import('vue').Ref<string>}
+ */
 const email = ref('');
+
+/**
+ * Success message to display after sending reset link.
+ * @type {import('vue').Ref<string>}
+ */
 const message = ref('');
+
+/**
+ * Error message to display if sending reset link fails.
+ * @type {import('vue').Ref<string>}
+ */
 const errorMessage = ref('');
+
+/**
+ * Loading state for the reset link request.
+ * @type {import('vue').Ref<boolean>}
+ */
 const isLoading = ref(false);
 
+/**
+ * Sends a password reset link to the user's email.
+ * Handles loading, success, and error states.
+ * @returns {Promise<void>}
+ */
 const sendResetLink = async () => {
   message.value = '';
   errorMessage.value = '';
@@ -18,14 +42,12 @@ const sendResetLink = async () => {
     const response = await forgotPassword(email.value);
 
     if (response?.message) {
-      message.value = response.message; // Mensaje del backend si existe
+      message.value = response.message;
     } else {
       message.value = 'Si el correo está registrado, recibirás un enlace para restablecer tu contraseña.';
     }
   } catch (error) {
-    console.error("Error en la solicitud:", error);
-
-    // Intentar obtener el mensaje de error del backend
+    // Attempt to get error message from backend
     if (error?.data?.message) {
       errorMessage.value = error.data.message;
     } else if (error?.message) {

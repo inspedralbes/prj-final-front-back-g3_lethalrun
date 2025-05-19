@@ -49,11 +49,38 @@ import { useAuth } from "@/services/auth";
 const route = useRoute();
 const { resetPassword } = useAuth();
 
+/**
+ * Reactive property to hold the new password input.
+ * @type {import('vue').Ref<string>}
+ */
 const newPassword = ref('');
+
+/**
+ * Reactive property to indicate success message.
+ * @type {import('vue').Ref<string | null>}
+ */
 const success = ref(null);
+
+/**
+ * Reactive property to indicate error message.
+ * @type {import('vue').Ref<string | null>}
+ */
 const error = ref(null);
+
+/**
+ * Reactive property to indicate loading state.
+ * @type {import('vue').Ref<boolean>}
+ */
 const loading = ref(false);
 
+/**
+ * Handles the password reset process.  
+ * Retrieves the token from the query params, sends the request to reset the password, and manages loading and error states.
+ * 
+ * @async
+ * @function handleResetPassword
+ * @returns {Promise<void>} Resolves when the password is successfully reset or an error occurs.
+ */
 const handleResetPassword = async () => {
     const token = route.query.token;
     if (!token) {
@@ -75,6 +102,7 @@ const handleResetPassword = async () => {
         loading.value = false;
     }
 };
+
 </script>
 
 <style scoped></style>

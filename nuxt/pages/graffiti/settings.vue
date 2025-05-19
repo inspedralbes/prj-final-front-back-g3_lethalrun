@@ -189,7 +189,7 @@
 
 <script setup>
 import { useNuxtApp } from '#app';
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useAppStore } from '@/stores/app';
 import { useGraffitis } from '@/services/graffitis';
 import VueCropper from 'vue-cropperjs';
@@ -203,53 +203,106 @@ const config = useRuntimeConfig();
 const user = store.user;
 const isLogged = store.isAuthenticated;
 
+/**
+ * Profile options for the user menu.
+ * @type {Array<Object>}
+ */
 const profileOptions = [
   { to: '/profile/my-info', label: 'El meu perfil' }
 ];
 
+/**
+ * Logout URL with redirection to the authentication service.
+ * @type {string}
+ */
 const logoutLink = `${config.public.authUrl}/auth/logout`;
 
+/**
+ * Reactive list of graffitis.
+ * @type {import('vue').Ref<Array>}
+ */
 let graffitis = ref([]);
-let isModalOpen = ref(false); // Estat pel modal
 
+/**
+ * Reactive property to control the modal visibility.
+ * @type {import('vue').Ref<boolean>}
+ */
+let isModalOpen = ref(false);
+
+/**
+ * Fetches the list of graffitis from the API.
+ * @async
+ * @function fetchGraffitis
+ * @returns {Promise<void>}
+ */
 const fetchGraffitis = async () => {
   try {
     const data = await getGraffitis();
     graffitis.value = data;
-
   } catch (error) {
-    console.error('Error carregant els graffitis:', error);
+    throw new Error('Error carregant els graffitis');
   }
 };
 
+/**
+ * Returns the complete image path for a user's graffiti.
+ * @function getPath
+ * @param {string} path - The relative path of the graffiti.
+ * @returns {string} The full URL of the image.
+ */
 const getPath = (path) => {
   return `${config.public.imagesUrl}/images/users/${user.id}/${path}`;
 };
 
-
-// Funcions per controlar la visibilitat del modal
+/**
+ * Opens the modal.
+ * @function openModal
+ */
 const openModal = () => {
   isModalOpen.value = true;
 };
 
-// CROPPER
+/**
+ * File input reference.
+ * @type {import('vue').Ref<HTMLInputElement | null>}
+ */
 const fileInput = ref(null);
+
+/**
+ * Reactive property for the image source.
+ * @type {import('vue').Ref<string | null>}
+ */
 const imageSrc = ref(null);
+
+/**
+ * Reactive property for the cropped image.
+ * @type {import('vue').Ref<string | null>}
+ */
 const croppedImage = ref(null);
+
+/**
+ * Cropper instance reference.
+ * @type {import('vue').Ref<VueCropper | null>}
+ */
 const cropper = ref(null);
 
-// Obrir el selector d'arxius
+/**
+ * Opens the file chooser dialog.
+ * @function showFileChooser
+ */
 const showFileChooser = () => {
   fileInput.value?.click();
 };
 
-// Gestionar el canvi d'arxiu
+/**
+ * Handles file input change event.
+ * @function onFileChange
+ * @param {Event} event - The change event from the file input.
+ */
 const onFileChange = (event) => {
   const file = event.target.files[0];
   if (file) {
     const reader = new FileReader();
-
-    // Forçar actualització de imageSrc
     imageSrc.value = null;
 
     reader.onload = () => {
@@ -257,32 +310,40 @@ const onFileChange = (event) => {
     };
 
     reader.readAsDataURL(file);
-
-    // Reset del input per permetre pujar la mateixa imatge de nou
     event.target.value = "";
   }
 };
 
-// Retallar la imatge
+/**
+ * Crops the image and stores the result.
+ * @function cropImage
+ */
 const cropImage = () => {
   croppedImage.value = cropper.value.getCroppedCanvas().toDataURL();
 };
 
-// Tancar el modal
+/**
+ * Closes the modal and resets image data.
+ * @function closeModal
+ */
 const closeModal = () => {
   isModalOpen.value = false;
   imageSrc.value = null;
   croppedImage.value = null;
 };
 
+/**
+ * Uploads the cropped image as graffiti.
+ * @async
+ * @function uploadImage
+ * @returns {Promise<void>}
+ */
 const uploadImage = async () => {
   if (!croppedImage.value) return;
-
 
   const canvas = cropper.value.getCroppedCanvas();
   const imageBlob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg'));
 
-  // Crear el formulari amb el fitxer d'imatge
   const formData = new FormData();
   formData.append("file", imageBlob, 'image.jpg');
   formData.append("userId", user.id);
@@ -291,37 +352,52 @@ const uploadImage = async () => {
   try {
     await uploadGraffiti(formData);
     closeModal();
-    croppedImage.value = null; // Netejar el input després de pujar
+    croppedImage.value = null;
   } catch (error) {
-    console.error("Error pujant el graffiti:", error);
-    return; // Si hi ha error, no seguim
+    throw new Error("Error pujant el graffiti");
   }
 };
 
-// Funció per eliminar graffiti
+/**
+ * Deletes a graffiti.
+ * @async
+ * @function deleteGraffitiHandler
+ * @param {string} id - The ID of the graffiti.
+ * @param {string} path - The path of the graffiti image.
+ * @returns {Promise<void>}
+ */
 const deleteGraffitiHandler = async (id, path) => {
   try {
     await deleteGraffiti(id, $socket.id, path);
   } catch (error) {
-    console.error('Error esborrant el graffiti:', error);
+    throw new Error('Error esborrant el graffiti');
   }
 };
 
+/**
+ * Sets a graffiti as the active one.
+ * @async
+ * @function setActiveGraffitiHandler
+ * @param {string} id - The ID of the graffiti.
+ * @returns {Promise<void>}
+ */
 const setActiveGraffitiHandler = async (id) => {
   try {
     await setActiveGraffiti(id, $socket.id);
   } catch (error) {
-    console.error('Error activant el graffiti:', error);
+    throw new Error('Error activant el graffiti');
   }
 };
 
-// Transicions del modal
+/**
+ * Animation hooks for modal transitions.
+ */
 const beforeEnter = (el) => {
   el.style.opacity = 0;
 };
 
 const enter = (el, done) => {
-  el.offsetHeight; // Forçar reflow
+  el.offsetHeight;
   el.style.transition = 'opacity 0.5s ease';
   el.style.opacity = 1;
   done();
@@ -333,31 +409,55 @@ const leave = (el, done) => {
   done();
 };
 
-// Variables per la paginació
+/**
+ * Reactive property for the current page in pagination.
+ * @type {import('vue').Ref<number>}
+ */
 const currentPage = ref(1);
-const pageSize = 6; // Nombre d'elements per pàgina
 
-// Paginació dels graffitis
+/**
+ * Number of items per page for pagination.
+ * @type {number}
+ */
+const pageSize = 6;
+
+/**
+ * Computed property for paginated list of graffitis.
+ * @type {import('vue').ComputedRef<Array>}
+ */
 const paginatedGraffitis = computed(() => {
   const start = (currentPage.value - 1) * pageSize;
   const end = currentPage.value * pageSize;
   return graffitis.value.slice(start, end);
 });
 
-// Total de pàgines
+/**
+ * Computed property for the total number of pages.
+ * @type {import('vue').ComputedRef<number>}
+ */
 const totalPages = computed(() => Math.ceil(graffitis.value.length / pageSize));
 
+/**
+ * Socket listener to update the list of graffitis in real-time.
+ */
 onMounted(() => {
   $socket.on('update-pictures', (data) => {
     graffitis.value = data.message;
   });
 });
 
+/**
+ * Removes the socket listener when the component is unmounted.
+ */
 onUnmounted(() => {
   $socket.off('update-pictures');
 });
 
+/**
+ * Fetch the initial list of graffitis.
+ */
 fetchGraffitis();
+
 </script>
 
 <style scoped>

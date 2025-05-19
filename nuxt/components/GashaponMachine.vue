@@ -57,29 +57,56 @@
 <script setup>
 import { ref, watch, computed } from 'vue';
 
+/**
+ * Props definition for GashaponMachine component.
+ * @property {Object|null} rolledPrize - The prize determined by the parent for this spin.
+ * @property {number} currentAttempts - The current number of attempts, managed by the parent.
+ * @property {boolean} showAttemptsCounter - Whether to show the attempts counter.
+ */
 const props = defineProps({
-  rolledPrize: { // El premio que la página padre ha determinado para esta tirada
+  rolledPrize: {
     type: Object,
     default: null
   },
-  currentAttempts: { // Los intentos actuales, gestionados por el padre
+  currentAttempts: {
     type: Number,
     default: 0
   },
-  showAttemptsCounter: { // Mostrar o no el contador de intentos en la máquina
+  showAttemptsCounter: {
     type: Boolean,
     default: true
   }
 });
 
+/**
+ * Emits definition for GashaponMachine component.
+ * @emits request-roll - Emitted when the user requests a spin.
+ * @emits animation-finished - Emitted when the prize animation finishes.
+ */
 const emit = defineEmits(['request-roll', 'animation-finished']);
 
-// Estados internos de la máquina: 'idle', 'spinning', 'dispensing', 'revealed', 'error'
+/**
+ * Internal state of the machine.
+ * @type {import('vue').Ref<'idle'|'spinning'|'dispensing'|'revealed'|'error'>}
+ */
 const status = ref('idle');
-const prizeToDisplay = ref(null); // El premio que se está mostrando actualmente
 
+/**
+ * The prize currently being displayed.
+ * @type {import('vue').Ref<Object|null>}
+ */
+const prizeToDisplay = ref(null);
+
+/**
+ * Whether the machine is currently operating (spinning or dispensing).
+ * @type {import('vue').ComputedRef<boolean>}
+ */
 const isOperating = computed(() => status.value === 'spinning' || status.value === 'dispensing');
 
+/**
+ * The text to display on the spin button.
+ * @type {import('vue').ComputedRef<string>}
+ */
 const buttonText = computed(() => {
   if (props.currentAttempts <= 0 && status.value === 'idle') return 'Sin intentos';
   if (status.value === 'spinning') return 'Girando...';
@@ -87,53 +114,59 @@ const buttonText = computed(() => {
   return 'Girar!';
 });
 
+/**
+ * Handles the user request to spin the machine.
+ */
 const handleSpinRequest = () => {
   if (isOperating.value || props.currentAttempts <= 0) {
     return;
   }
   status.value = 'spinning';
-  prizeToDisplay.value = null; // Limpiar premio anterior del visor
+  prizeToDisplay.value = null;
   emit('request-roll');
 };
 
+/**
+ * Watches for changes in the rolledPrize prop and updates the machine state accordingly.
+ */
 watch(() => props.rolledPrize, (newPrize, oldPrize) => {
-  if (!newPrize) { // Si el padre anula el premio (ej. al resetear para la siguiente tirada)
-    if (status.value === 'revealed' || status.value === 'error') { // Solo resetear si ya mostró algo o error
+  if (!newPrize) {
+    if (status.value === 'revealed' || status.value === 'error') {
       status.value = 'idle';
       prizeToDisplay.value = null;
     }
     return;
   }
 
-  // Solo procesar si es un nuevo objeto de premio y la máquina estaba 'spinning'
   if (newPrize && newPrize !== oldPrize && status.value === 'spinning') {
-    if (newPrize.error) { // Si el padre indica un error (ej. no hay intentos)
+    if (newPrize.error) {
       prizeToDisplay.value = { message: newPrize.message || "Error" };
       status.value = 'error';
-      // No emitir animation-finished aquí, o emitir con error
-      setTimeout(() => { // Dar tiempo a ver el mensaje de error
-        if (status.value === 'error') status.value = 'idle'; // Volver a idle
+      setTimeout(() => {
+        if (status.value === 'error') status.value = 'idle';
       }, 2000);
       return;
     }
 
-    // Simular tiempo de giro antes de la "dispensa"
     setTimeout(() => {
-      if (status.value !== 'spinning') return; // Si el estado cambió (ej. por un reset), no continuar
+      if (status.value !== 'spinning') return;
       status.value = 'dispensing';
 
-      // Simular salida de cápsula y revelación del premio
       setTimeout(() => {
         if (status.value !== 'dispensing') return;
         prizeToDisplay.value = { ...newPrize };
         status.value = 'revealed';
-        emit('animation-finished', { ...newPrize }); // Notificar al padre que la animación terminó y con qué premio
-      }, 1200); // Duración de la animación de la cápsula saliendo (B)
-    }, 1000); // Duración del giro (A) - Total A+B para animación completa
+        emit('animation-finished', { ...newPrize });
+      }, 1200);
+    }, 1000);
   }
 });
 
-
+/**
+ * Returns CSS classes for the rarity badge based on the rarity value.
+ * @param {string} rarity - The rarity of the prize.
+ * @returns {string} CSS classes for the badge.
+ */
 const getRarityClass = (rarity) => {
   const baseClasses = 'text-xs font-semibold px-2 py-0.5';
   switch (rarity) {

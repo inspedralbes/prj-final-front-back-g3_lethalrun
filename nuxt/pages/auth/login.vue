@@ -16,11 +16,14 @@ const isLoadingGoogle = ref(false);
 const email = ref('');
 const password = ref('');
 
-// Función para iniciar sesión con email y contraseña
+/**
+ * Inicia sesión usando email y contraseña.
+ * Actualiza el estado de carga, guarda usuario y token en el store,
+ * y redirige a la página principal si el login es exitoso.
+ * @returns {Promise<void>}
+ */
 const handleLogin = async () => {
   isLoading.value = true;
-  console.log({ email: email.value, password: password.value });
-
   try {
     const response = await login(email.value, password.value);
     store.setUser(response.user);
@@ -28,12 +31,17 @@ const handleLogin = async () => {
     store.setIsAuthenticated(true);
     router.push("/");
   } catch (error) {
+    // Manejo de error en el login
     console.error("Error a l'inici de sessió:", error);
   } finally {
     isLoading.value = false;
   }
 };
 
+/**
+ * Redirige al usuario al login de Google.
+ * Cambia el estado de carga y navega a la URL de autenticación de Google.
+ */
 const handleGoogleLogin = () => {
   isLoadingGoogle.value = true;
   window.location.href = `${config.public.authUrl}/auth/google`;

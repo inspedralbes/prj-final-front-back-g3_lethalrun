@@ -22,48 +22,36 @@
 </template>
 
 <script setup>
-import { ref, watchEffect } from 'vue';
 import { useAppStore } from '@/stores/app';
-import { useUser } from '@/services/user';
 
-const { updateUsername } = useUser();
 const store = useAppStore();
 const config = useRuntimeConfig();
+
+/**
+ * Reactive property representing the current user.
+ * @type {Object}
+ */
 const user = store.user;
-const newUsername = ref(user.username);
-const isLoadingNewUsername = ref(false);
-const errorMessage = ref('');
-const successMessage = ref('');
 
-const resetUsername = () => {
-  newUsername.value = user.username;
-};
-
-const handleChangeUsername = async () => {
-  if (newUsername.value.trim() === '' || newUsername.value === user.username) return;
-
-  errorMessage.value = ''; // Limpiar errores anteriores
-  successMessage.value = ''; // Limpiar mensajes anteriores
-  try {
-    isLoadingNewUsername.value = true;
-    const response = await updateUsername(newUsername.value);
-    store.setNewUsername(newUsername.value);
-    successMessage.value = response?.data?.message || 'Nombre de usuario actualizado exitosamente';
-  } catch (err) {
-    console.error(err);
-    errorMessage.value = err.response?.data?.message || 'Error al actualizar el nombre de usuario';
-  } finally {
-    isLoadingNewUsername.value = false;
-  }
-};
-
+/**
+ * Navigation options for the user profile.
+ * @type {Array<Object>}
+ */
 const profileOptions = [{ to: '/profile/my-info', label: 'El meu perfil' }];
+
+/**
+ * URL for logging out the user.
+ * @type {string}
+ */
 const logoutlink = `${config.public.authUrl}/auth/logout`;
+
+/**
+ * Reactive property to determine if the user is authenticated.
+ * @type {boolean}
+ */
 const isLogged = store.getIsAuthenticated;
 
-watchEffect(() => {
-  newUsername.value = user.username;
-});
+
 </script>
 
 

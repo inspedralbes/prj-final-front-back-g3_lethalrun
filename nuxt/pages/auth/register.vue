@@ -87,32 +87,50 @@
 import { ref } from 'vue';
 import { useAuth } from "@/services/auth";
 
+/**
+ * Provides the register function for user registration.
+ */
 const { register } = useAuth();
 
+/** Indicates if the registration request is loading. */
 const isLoading = ref(false);
+/** Message to display to the user (success or error). */
 const message = ref(null);
+/** Type of the message ('success' or 'error'). */
 const messageType = ref(null);
 
+/** Username input model. */
 const username = ref('');
+/** Email input model. */
 const email = ref('');
+/** Password input model. */
 const password = ref('');
+/** Controls whether the password is visible. */
 const showPassword = ref(false);
 
+/**
+ * Toggles the visibility of the password input.
+ */
 const togglePassword = () => {
   showPassword.value = !showPassword.value;
 };
 
+/**
+ * Handles the registration form submission.
+ * Calls the register API and manages UI state and messages.
+ * @returns {Promise<void>}
+ */
 const handleRegister = async () => {
   isLoading.value = true;
   message.value = null;
   messageType.value = null;
   
   try {
-    const response = await register(username.value, email.value, password.value);
+    await register(username.value, email.value, password.value);
     messageType.value = "success";
     message.value = "Sol·licitud de registre enviada amb èxit. Revisa el teu correu per completar el registre.";
 
-    // Netejar els camps
+    // Clear input fields
     username.value = '';
     email.value = '';
     password.value = '';
