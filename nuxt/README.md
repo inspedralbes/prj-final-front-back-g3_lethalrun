@@ -1,84 +1,115 @@
-# Visió general de l'estructura del projecte 📂
+Markdown
 
-Aquest document proporciona una visió general de l'estructura de directoris del projecte, basada en la sortida de les comandes `ls`. Esbossa els components principals i la seva organització dins del projecte `nuxt`.
+# 🚀 Frontend - Lethal Run
 
-## Estructura del directori
+Este repositorio contiene la implementación del frontend para el juego **Lethal Run**, desarrollado con Nuxt.js. Proporciona la interfaz de usuario y la lógica del lado del cliente para interactuar con los microservicios del backend.
 
-Aquí teniu un resum dels directoris i fitxers:
+---
 
-### Directori arrel (`./`)
+## 🏗️ Arquitectura General
 
-* **`components/`**: Conté components de Vue.js. ⚛️
-    * [Veure detalls](#components)
-* **`middleware/`**: Conté fitxers de middleware. ⚙️
-    * [Veure detalls](#middleware)
-* **`pages/`**: Conté pàgines de Vue.js (rutes). 📄
-    * [Veure detalls](#pages)
-* **`plugins/`**: Conté complements de Nuxt.js. 🔌
-    * [Veure detalls](#plugins)
-* **`services/`**: Conté mòduls de servei de JavaScript. 🛠️
-    * [Veure detalls](#services)
-* **`stores/`**: Conté la gestió de l'estat de l'aplicació. 🗄️
-    * [Veure detalls](#stores)
+El frontend está estructurado en componentes reutilizables, páginas con rutas definidas, plugins para funcionalidades específicas, servicios para la comunicación con la API y un store global para el manejo del estado.
 
-## Detalls dels directoris
+- ⚡ **Nuxt.js:** Framework intuitivo y potente para el desarrollo de aplicaciones Vue.js.
+- 🎨 **Componentes:** Modularización de la interfaz de usuario para reutilización.
+- 🔄 **Pinia:** Gestión de estado eficiente y sencilla.
 
-### `components/` <a name="components"></a>
+---
 
-* `GachaponSlot.vue`: Relacionat amb la funció Gachapon.
-* `GashaponMachine.vue`: Relacionat amb la funció Gashapon.
-* `Loader.vue`: Un component indicador de càrrega.
-* `Navbar.vue`: El component de la barra de navegació.
+## 📁 Estructura del Proyecto
 
-### `middleware/` <a name="middleware"></a>
+nuxt/
+- ├── components/     # Componentes Vue reutilizables
+- ├── middleware/     # Middlewares para la navegación
+- ├── pages/          # Páginas y rutas de la aplicación
+- ├── plugins/        # Plugins de Vue para funcionalidad global
+- ├── services/       # Lógica para interactuar con los servicios del backend
+- └── stores/         # Stores de Pinia para la gestión del estado global
 
-* `redirect.global.js`: Un middleware de ruta global, probablement per gestionar redireccions.
 
-### `pages/` <a name="pages"></a>
+---
 
-* `auth/`: Conté pàgines relacionades amb l'autenticació.
-* `dashboard.vue`: La pàgina principal del tauler de control.
-* `gachapon/`: Conté pàgines relacionades amb la funció Gachapon.
-* `graffiti/`: Conté pàgines relacionades amb la funció graffiti.
-* `index.vue`: La pàgina d'aterratge principal.
-* `profile/`: Conté pàgines relacionades amb els perfils d'usuari.
+## 🧩 Directorios Principales
 
-### `pages/auth/`
+### 📦 [components/](components/)
 
-* `callback.vue`: Gestiona els retorns de trucada d'autenticació (per exemple, d'un proveïdor d'OAuth).
-* `forgot-password.vue`: Gestiona la funcionalitat d'haver oblidat la contrasenya.
-* `login.vue`: La pàgina d'inici de sessió.
-* `register.vue`: La pàgina de registre.
-* `reset-password.vue`: Gestiona el restabliment de la contrasenya de l'usuari.
-* `verify-register.vue`: Gestiona la verificació del correu electrònic després del registre.
+Contiene los componentes Vue reutilizables de la aplicación. Aquí encontrarás elementos de UI como `GachaponSlot.vue`, `GashaponMachine.vue`, `Loader.vue` y `Navbar.vue`.
 
-### `pages/gachapon/`
+---
 
-* `index.vue`: Pàgina principal de la funció Gachapon.
+### 🌐 [middleware/](middleware/)
 
-### `pages/graffiti/`
+Define los middlewares de la aplicación. Actualmente, solo se encuentra `redirect.global.js`, que probablemente maneja redirecciones a nivel global antes de cargar una ruta.
 
-* `settings.vue`: Pàgina de configuració de la funció graffiti.
+---
 
-### `pages/profile/`
+### 📄 [pages/](pages/)
 
-* `my-info.vue`: Pàgina per mostrar la informació personal de l'usuari.
+Aquí se organizan todas las páginas de la aplicación, que a su vez definen las rutas.
 
-### `plugins/` <a name="plugins"></a>
+- **[auth/](pages/auth/)**: Páginas relacionadas con la autenticación, como `login.vue`, `register.vue`, `forgot-password.vue`, `reset-password.vue`, `verify-register.vue` y `callback.vue` (posiblemente para autenticación OAuth).
+- **[gachapon/](pages/gachapon/)**: Contiene la página principal del sistema de gachapon, `index.vue`.
+- **[graffiti/](pages/graffiti/)**: Incluye la página de configuración de grafitis, `settings.vue`.
+- **[profile/](pages/profile/)**: Contiene las páginas relacionadas con el perfil del usuario, como `my-info.vue`.
+- **`dashboard.vue`**: La página principal del panel de control.
+- **`index.vue`**: La página de inicio de la aplicación.
 
-* `socket.client.ts`: Un complement de Nuxt.js per a la integració del costat del client de Socket.IO.
-* `vue-cropper.js`: Un complement de Nuxt.js per a la biblioteca Vue Cropper (retall d'imatge).
+---
 
-### `services/` <a name="services"></a>
+### 🔌 [plugins/](plugins/)
 
-* `auth.js`: Gestiona la lògica relacionada amb l'autenticació.
-* `gashapon.js`: Gestiona la lògica de la funció gashapon.
-* `graffitis.js`: Gestiona la lògica de la funció graffiti.
+Alberga los plugins de Vue que extienden las funcionalidades de la aplicación globalmente.
+- **`socket.client.ts`**: Probablemente maneja la conexión y lógica de WebSockets del lado del cliente.
+- **`vue-cropper.js`**: Un plugin para recortar imágenes.
 
-### `stores/` <a name="stores"></a>
+---
 
-* `app.js`: Un magatzem Pinia (o similar) per gestionar l'estat de l'aplicació.
+### 📞 [services/](services/)
 
-## Resum
+Contiene la lógica para la comunicación con los diferentes microservicios del backend.
+- **`auth.js`**: Servicio para las llamadas a la API de autenticación.
+- **`gashapon.js`**: Servicio para interactuar con la API del gachapon.
+- **`graffitis.js`**: Servicio para gestionar las operaciones relacionadas con los grafitis.
 
-Aquest projecte és una aplicació web construïda amb Nuxt.js, que inclou autenticació d'usuari, un tauler de control, un sistema "Gachapon" i una secció de "Graffiti". També inclou gestió de perfils d'usuari, comunicació en temps real (Socket.IO) i funcionalitat de retall d'imatge. S'utilitza Pinia per a la gestió de l'estat.
+---
+
+### 💾 [stores/](stores/)
+
+Define los stores de Pinia para la gestión del estado global de la aplicación.
+- **`app.js`**: El store principal de la aplicación, que probablemente contiene el estado global y las acciones que afectan a toda la aplicación.
+
+---
+
+## 🧰 Requisitos del Sistema
+
+- 🟢 Node.js (v14 o superior)
+- 📦 npm o yarn
+
+---
+
+## ⚙️ Instalación y Configuración
+
+1.  **Clona el repositorio:**
+    ```bash
+    git clone <URL_DEL_REPOSITORIO>
+    cd nuxt
+    ```
+2.  **Instala las dependencias:**
+    ```bash
+    npm install
+    # o
+    yarn install
+    ```
+3.  **Configura las variables de entorno:**
+    Crea un archivo `.env` en la raíz del proyecto y configura las variables necesarias, como la URL del backend.
+    ```
+    NUXT_PUBLIC_API_BASE=http://localhost:3000/api
+    ```
+    *(Asegúrate de que esta URL apunte a tu backend en funcionamiento)*
+4.  **Inicia el servidor de desarrollo:**
+    ```bash
+    npm run dev
+    # o
+    yarn dev
+    ```
+    La aplicación estará disponible en `http://localhost:3000` (o el puerto que Nuxt.js asigne).
