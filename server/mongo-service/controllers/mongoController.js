@@ -91,26 +91,36 @@ export class SlotController {
    * @throws {Error} Si el slot no existe, está bloqueado o el usuario no se encuentra
    */
   async activateSlot(email, slotName) {
-    if (!['slot1', 'slot2', 'slot3'].includes(slotName)) {
-      throw new Error('Slot inválido');
-    }
+  if (!['slot1', 'slot2', 'slot3'].includes(slotName)) {
+    throw new Error('Slot inválido');
+  }
 
-    const user = await UserModel.findOne({ email });
-    if (!user) throw new Error('Usuario no encontrado');
+  const user = await UserModel.findOne({ email });
+  if (!user) throw new Error('Usuario no encontrado');
 
-    const slot = user.slots[slotName];
-    if (!slot.isUnlocked) {
-      throw new Error('No puedes activar un slot bloqueado');
-    }
+  // Validar que el slot existe y es un objeto
+  const slot = user.slots[slotName];
+  if (!slot || typeof slot !== 'object') {
+    throw new Error(`El slot ${slotName} no es un objeto válido`);
+  }
 
-    for (const key in user.slots) {
+  // Verificar si el slot está desbloqueado
+  if (!slot.isUnlocked) {
+    throw new Error('No puedes activar un slot bloqueado');
+  }
+
+  // Desactivar todos los slots
+  Object.keys(user.slots).forEach(key => {
+    if (typeof user.slots[key] === 'object') {
       user.slots[key].isActive = false;
     }
+  });
 
-    user.slots[slotName].isActive = true;
+  // Activar el slot deseado
+  user.slots[slotName].isActive = true;
 
-    return await user.save();
-  }
+  return await user.save();
+}
 
   /**
    * Desbloquea un slot específico para un usuario.

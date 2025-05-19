@@ -76,3 +76,51 @@ Las imágenes se almacenan físicamente en el servidor, y la información de las
 ## 📨 Notificaciones en tiempo real
 
 - Cada cambio en imágenes (subida, eliminación, cambio activo) genera una notificación vía socket para que los clientes puedan actualizarse dinámicamente.
+
+---
+
+## ⚙️ Explicación del archivo `.env.example` para el Microservicio de Gestión de Imágenes de Usuario
+
+Este apartado describe cada variable de entorno necesaria para el correcto funcionamiento del microservicio de imágenes, su propósito y cómo configurarlas según tu entorno.
+
+---
+
+### 🗂️ Variables del archivo `.env.example`
+
+| Variable         | Descripción                                                                                   |
+|------------------|-----------------------------------------------------------------------------------------------|
+| `API_SQL_URL`    | URL del microservicio SQL externo encargado de almacenar y gestionar la información de imágenes (por ejemplo, rutas, nombres, estado activo, etc.). Debe apuntar al endpoint REST del servicio SQL. Ejemplo: `http://sql-service:5000` |
+| `SOCKET_API_URL` | URL del servidor de sockets (por ejemplo, usando **socket.io**) para enviar notificaciones en tiempo real a otros servicios o clientes cuando hay cambios en las imágenes. Ejemplo: `http://localhost:6000` |
+| `AUTH_API_URL`   | URL del microservicio de autenticación encargado de validar los tokens JWT de los usuarios. Este endpoint se usa para proteger las rutas sensibles del microservicio de imágenes. Ejemplo: `http://auth-service:3000` |
+| `PORT`           | Puerto en el que se ejecutará este microservicio de imágenes. Ejemplo: `7000`                 |
+
+---
+
+### 📝 ¿Cómo configurar cada variable?
+
+- **API_SQL_URL**:  
+  Debe ser la URL base del microservicio SQL que gestiona la base de datos de imágenes. Si ejecutas todo en local con Docker, probablemente sea algo como `http://sql-service:5000`. Si usas servicios en la nube, pon la URL pública o privada correspondiente.
+
+- **SOCKET_API_URL**:  
+  Es la URL del servidor de sockets (websockets/socket.io) que permite la comunicación en tiempo real. El microservicio de imágenes lo usará para emitir eventos cuando un usuario sube, elimina o cambia su imagen activa, permitiendo que otras partes del sistema (por ejemplo, el frontend) se actualicen automáticamente.
+
+- **AUTH_API_URL**:  
+  Es la URL del microservicio de autenticación. Todas las rutas protegidas (subida, eliminación, consulta de imágenes) validarán el JWT del usuario haciendo una petición a este servicio. Así, solo los usuarios autenticados pueden modificar imágenes.
+
+- **PORT**:  
+  Puerto en el que se levantará el microservicio de imágenes. Si no tienes conflictos, puedes usar el valor por defecto (por ejemplo, `7000`), o cambiarlo según tus necesidades.
+
+---
+
+### 🔒 Recomendaciones de seguridad y buenas prácticas
+
+- **No expongas el microservicio de imágenes directamente a Internet**. Usa un API Gateway o proxy para controlar el acceso.
+- **Protege las rutas sensibles** usando JWT y validando siempre con el microservicio de autenticación.
+- **Mantén las URLs actualizadas** si cambias puertos, dominios o despliegas en producción.
+- **No almacenes archivos confidenciales en el mismo directorio de imágenes**; separa el almacenamiento de imágenes de otros recursos sensibles.
+
+---
+
+### 💡 Ejemplo de un archivo `.env` configurado
+
+

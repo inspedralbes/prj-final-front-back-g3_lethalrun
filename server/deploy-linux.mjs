@@ -6,52 +6,65 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// Configuración mejorada para Linux
+// Configuración
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
 const childProcesses = new Map();
-const DELAY_MS = 3000;  // Tiempo entre despliegues reducido
-const LOG_DIR = '/var/log/microservices';  // Directorio estándar para logs
+const DELAY_MS = 3000;
+const LOG_DIR = '/var/log/microservices';
 
 // Crear directorio de logs si no existe
 if (!fs.existsSync(LOG_DIR)) {
     fs.mkdirSync(LOG_DIR, { recursive: true });
 }
 
-// Detección de microservicios con validación adicional
+// Detección de microservicios
 const detectServices = () => {
     try {
         return fs.readdirSync(__dirname, { withFileTypes: true })
             .filter(dirent => dirent.isDirectory())
             .map(dirent => dirent.name)
-            .filter(name => 
-                !/^(node_modules|\.|_)/.test(name) &&  // Excluir directorios ocultos
-                fs.existsSync(path.join(__dirname, name, 'app.js'))
-            );
+            .filter(name => {
+                if (/^(node_modules|\.|_)/.test(name)) return false;
+                const servicePath = path.join(__dirname, name);
+                return fs.existsSync(path.join(servicePath, 'app.js')) || 
+                       fs.existsSync(path.join(servicePath, 'index.js'));
+            });
     } catch (error) {
         console.error('❌ Error detecting services:', error);
-        process.exit(1);
+        return [];
     }
 };
 
-// Gestión de procesos con logging
+// Iniciar servicio (manteniendo su puerto configurado)
 const startService = async (serviceName) => {
     const servicePath = path.join(__dirname, serviceName);
     const logFile = path.join(LOG_DIR, `${serviceName}.log`);
     
     try {
+        // Determinar archivo principal
+        let mainFile = 'app.js';
+        if (!fs.existsSync(path.join(servicePath, mainFile))) {
+            mainFile = 'index.js';
+            if (!fs.existsSync(path.join(servicePath, mainFile))) {
+                throw new Error(`No se encontró app.js ni index.js en ${serviceName}`);
+            }
+        }
+
         const logStream = fs.createWriteStream(logFile, { flags: 'a' });
         const timestamp = new Date().toISOString();
         
-        const child = spawn('node', ['app.js'], {
+        // El servicio usará el puerto definido en su propia configuración
+        const child = spawn('node', [mainFile], {
             cwd: servicePath,
             stdio: ['ignore', 'pipe', 'pipe'],
-            shell: false,  // Mejor seguridad sin shell
+            shell: false,
             env: {
                 ...process.env,
                 NODE_ENV: 'production',
                 SERVICE_NAME: serviceName
+                // NO asignamos puerto aquí, el servicio usa el suyo propio
             }
         });
 
@@ -65,14 +78,19 @@ const startService = async (serviceName) => {
             logStream.write(`[${timestamp}] ERROR: ${error.message}\n`);
         });
 
-        child.on('exit', code => {
-            console.log(`⏹️  ${serviceName} stopped (code ${code})`);
-            logStream.write(`[${timestamp}] EXIT: Code ${code}\n`);
-            logStream.end();
+        child.on('exit', (code, signal) => {
+            const message = signal ? `signal ${signal}` : `code ${code}`;
+            console.log(`⏹️  ${serviceName} stopped (${message})`);
+            logStream.write(`[${timestamp}] EXIT: ${message}\n`);
+            childProcesses.delete(serviceName);
         });
 
         console.log(`✅ ${serviceName} deployed! PID: ${child.pid}`);
         logStream.write(`[${timestamp}] START: PID ${child.pid}\n`);
+
+        return new Promise((resolve) => {
+            child.on('spawn', resolve);
+        });
 
     } catch (error) {
         console.error(`⚠️  Critical error in ${serviceName}:`, error);
@@ -80,12 +98,16 @@ const startService = async (serviceName) => {
     }
 };
 
-// Secuencia de despliegue optimizada
+// Secuencia de despliegue
 const deployServices = async (services) => {
-    for (const service of services) {
+    for (const [index, service] of services.entries()) {
         try {
+            console.log(`🚀 Deploying ${service} (${index + 1}/${services.length})`);
             await startService(service);
-            await new Promise(resolve => setTimeout(resolve, DELAY_MS));
+            
+            if (index < services.length - 1) {
+                await new Promise(resolve => setTimeout(resolve, DELAY_MS));
+            }
         } catch (error) {
             console.error('🛑 Deployment halted due to critical error');
             process.exit(1);
@@ -93,32 +115,43 @@ const deployServices = async (services) => {
     }
 };
 
-// Gestión de señales del sistema
-const shutdown = (signal) => {
+// Gestión de señales
+const shutdown = async (signal) => {
     console.log(`\n🔽  Received ${signal}, shutting down...`);
+    
+    const promises = [];
     childProcesses.forEach((child, service) => {
         if (!child.killed) {
             console.log(`⏳ Stopping ${service} (PID: ${child.pid})`);
-            child.kill('SIGTERM');
+            promises.push(new Promise(resolve => {
+                child.once('exit', resolve);
+                child.kill('SIGTERM');
+            }));
         }
     });
     
-    setTimeout(() => {
-        console.log('🛑  All services stopped');
-        process.exit(0);
-    }, 5000);
+    await Promise.race([
+        Promise.all(promises),
+        new Promise(resolve => setTimeout(resolve, 5000))
+    ]);
+    
+    console.log('🛑  All services stopped');
+    process.exit(0);
 };
 
 process.on('SIGINT', () => shutdown('SIGINT'));
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 
-// Inicio del sistema
+// Inicio
 app.listen(1000, async () => {
     console.log('🎛️  Orchestrator running on port 1000');
     const services = detectServices();
     
     if (services.length === 0) {
-        console.log('⚠️  No services detected!');
+        console.log('⚠️  No services detected! Verifica que:');
+        console.log('1. Cada microservicio está en su propio directorio');
+        console.log('2. Cada directorio contiene app.js o index.js');
+        console.log('3. No son directorios ocultos (que empiezan con .)');
         process.exit(1);
     }
 

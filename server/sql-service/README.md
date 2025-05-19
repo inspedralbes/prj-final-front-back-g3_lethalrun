@@ -61,4 +61,80 @@ Incluye funcionalidades para crear, actualizar, eliminar y obtener usuarios, as�
 
 ---
 
+## ⚙️ Explicación del archivo `.env.example` para el Microservicio SQL de Gestión de Usuarios e Imágenes
+
+Este apartado describe el propósito de cada variable de entorno necesaria para la correcta configuración y funcionamiento del microservicio SQL, así como recomendaciones de uso seguro con Sequelize y MySQL.
+
+---
+
+### 🗂️ Variables del archivo `.env.example`
+
+| Variable         | Descripción                                                                                                   |
+|------------------|---------------------------------------------------------------------------------------------------------------|
+| `DB_NAME`        | Nombre de la base de datos MySQL que usará Sequelize. Ejemplo: `usersdb`                                      |
+| `DB_USER`        | Usuario de la base de datos MySQL con permisos para crear, leer y modificar tablas y registros.               |
+| `DB_PASSWORD`    | Contraseña del usuario de la base de datos.                                                                   |
+| `DB_HOST`        | Host o dirección donde corre el servidor MySQL (por ejemplo, `localhost` o la IP del servidor de base de datos). |
+| `DB_PORT`        | Puerto en el que escucha MySQL, normalmente `3306`.                                                           |
+| `DB_DIALECT`     | Dialecto de la base de datos, debe ser `mysql` para este microservicio.                                       |
+| `PORT`           | Puerto en el que se ejecuta el microservicio SQL. Ejemplo: `5000`                                             |
+| `IMAGES_API_URL` | URL del microservicio de imágenes para gestionar rutas y metadatos asociados a imágenes de usuario.           |
+| `SLOTS_API_URL`  | URL del microservicio de skins/slots (Mongo Service) para integración y consultas cruzadas.                   |
+
+---
+
+### 📝 ¿Cómo configurar cada variable?
+
+- **DB_NAME**:  
+  Especifica el nombre de la base de datos MySQL que el microservicio gestionará. Debes crear esta base de datos en tu servidor MySQL antes de iniciar el servicio, o bien permitir que Sequelize la cree automáticamente si tienes los permisos necesarios.
+
+- **DB_USER** y **DB_PASSWORD**:  
+  Credenciales del usuario de MySQL con permisos para operar sobre la base de datos definida. Es recomendable usar un usuario dedicado para este microservicio y no el usuario root.
+
+- **DB_HOST** y **DB_PORT**:  
+  Dirección y puerto donde está desplegado MySQL. En desarrollo suele ser `localhost:3306`, pero en producción puede ser la IP o dominio de un servidor externo o gestionado.
+
+- **DB_DIALECT**:  
+  Define el tipo de base de datos. Para MySQL, debe ser `mysql`. Sequelize utiliza este valor para adaptar las consultas al dialecto correspondiente.
+
+- **PORT**:  
+  Puerto en el que el microservicio SQL escuchará peticiones HTTP REST. Puedes elegir el que mejor se adapte a tu entorno, por ejemplo, `5000`.
+
+- **IMAGES_API_URL**:  
+  URL del microservicio de imágenes. El servicio SQL lo utiliza para coordinar operaciones relacionadas con imágenes de usuario, como rutas o metadatos.
+
+- **SLOTS_API_URL**:  
+  URL del microservicio de slots/skins (Mongo Service), permitiendo la integración y consulta de información adicional de usuario desde otros servicios.
+
+---
+
+### 🔒 Recomendaciones de seguridad y buenas prácticas
+
+- **Nunca subas tu archivo `.env` con credenciales reales a repositorios públicos**. Usa archivos `.env.example` para compartir la estructura de configuración, pero mantén los valores sensibles fuera del control de versiones.
+- **Utiliza variables de entorno** para separar la configuración del código fuente, facilitando el despliegue en distintos entornos (desarrollo, test, producción).
+- **Concede permisos mínimos** al usuario de base de datos utilizado por el microservicio.
+- **Revisa y actualiza las URLs** de los servicios externos si cambias puertos, dominios o despliegas en producción.
+- **Gestiona las migraciones y sincronización** de tablas con Sequelize para mantener la integridad del esquema de la base de datos.
+
+---
+
+### 💡 Ejemplo de un archivo `.env` configurado
+```bash
+DB_NAME=usersdb
+DB_USER=usuario
+DB_PASSWORD=contraseña
+DB_HOST=localhost
+DB_PORT=3306
+DB_DIALECT=mysql
+
+PORT=5000
+IMAGES_API_URL=http://localhost:7000
+SLOTS_API_URL=http://localhost:8000
+```
+
+---
+
+Con estas variables correctamente configuradas, el microservicio podrá gestionar usuarios e imágenes de forma segura y eficiente, integrándose con el resto de la arquitectura basada en microservicios y siguiendo las mejores prácticas de Node.js y Sequelize[2][5][6][8].
+
+
 

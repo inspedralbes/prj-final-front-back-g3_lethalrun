@@ -81,3 +81,64 @@ Ejemplo de documento de usuario con slots:
     }
   }
 }
+```
+
+---
+
+## ⚙️ Explicación del archivo `.env.example` para el Microservicio de Gestión de Slots de Usuario
+
+Este apartado describe el propósito de cada variable de entorno que utiliza el microservicio de slots y cómo debes configurarlas para un despliegue seguro y funcional.
+
+---
+
+### 🗂️ Variables del archivo `.env.example`
+
+| Variable       | Descripción                                                                                                              |
+|----------------|--------------------------------------------------------------------------------------------------------------------------|
+| `PORT`         | Puerto en el que se ejecuta el microservicio de slots. Ejemplo: `8000`                                                   |
+| `MONGODB_URI`  | URI de conexión a la base de datos MongoDB Atlas donde se almacenan los datos de los usuarios y sus slots.               |
+| `AUTH_API_URL` | URL del microservicio de autenticación encargado de validar los tokens JWT de los usuarios. Ejemplo: `http://auth:3000`  |
+
+---
+
+### 📝 ¿Cómo configurar cada variable?
+
+- **PORT**:  
+  Define el puerto en el que el servicio escuchará peticiones HTTP. Si no hay conflicto, puedes usar el valor por defecto (`8000`) o cualquier otro según tu entorno.
+
+- **MONGODB_URI**:  
+  Es la URI de conexión a tu instancia de MongoDB Atlas. Debe incluir el usuario, contraseña, dirección del clúster y el nombre de la base de datos. Ejemplo de formato:
+```bash
+mongodb+srv://usuario:contraseña@cluster0.ejemplo.mongodb.net/nombreBaseDatos?retryWrites=true&w=majority
+```
+
+Asegúrate de no exponer esta URI en repositorios públicos, ya que contiene credenciales sensibles.
+
+- **AUTH_API_URL**:  
+Es la URL del microservicio de autenticación. Todas las rutas protegidas validarán el JWT del usuario haciendo una petición a este servicio. Así, solo usuarios autenticados pueden consultar o modificar slots.
+
+---
+
+### 🔒 Recomendaciones de seguridad y buenas prácticas
+
+- **Nunca subas tu archivo `.env` con credenciales reales a repositorios públicos**. Usa archivos `.env.example` sin datos sensibles para compartir la estructura de configuración[5].
+- **Utiliza variables de entorno para separar la lógica del código de la configuración**. Esto facilita el despliegue en diferentes entornos y protege información crítica[5].
+- **Revisa y actualiza las URLs** si cambias puertos, dominios o despliegas en producción.
+- **Asegura tu base de datos MongoDB Atlas** restringiendo el acceso solo a IPs autorizadas y usando usuarios con permisos mínimos necesarios.
+
+---
+
+### 💡 Ejemplo de un archivo `.env` configurado
+```bash
+PORT=8000
+MONGODB_URI=mongodb+srv://usuario:contraseña@cluster0.xxxxx.mongodb.net/slotsDB?retryWrites=true&w=majority
+AUTH_API_URL=http://localhost:3000
+```
+
+
+---
+
+Con estas variables correctamente configuradas, el microservicio podrá gestionar los slots de usuario de forma segura, escalable y desacoplada del resto de la arquitectura, siguiendo las mejores prácticas de microservicios.
+
+
+

@@ -63,3 +63,55 @@ Content-Type: application/json
 {
   "message": "Actualización de imágenes disponible"
 }
+```
+
+---
+
+## ⚙️ Explicación del archivo `.env.example` para el Microservicio de Comunicación en Tiempo Real con Socket.IO
+
+Este apartado describe el propósito de cada variable de entorno utilizada por el microservicio de sockets y cómo debes configurarlas para asegurar una integración segura y funcional con el resto de tu arquitectura.
+
+---
+
+### 🗂️ Variables del archivo `.env.example`
+
+| Variable       | Descripción                                                                                                    |
+|----------------|----------------------------------------------------------------------------------------------------------------|
+| `PORT`         | Puerto en el que se ejecuta el microservicio de sockets. Ejemplo: `4000`                                       |
+| `AUTH_API_URL` | URL del microservicio de autenticación encargado de validar los tokens JWT de los usuarios. Ejemplo: `http://auth-service:3000` |
+
+---
+
+### 📝 ¿Cómo configurar cada variable?
+
+- **PORT**:  
+  Define el puerto en el que el servicio escuchará conexiones HTTP y de Socket.IO. Puedes usar el valor por defecto (`4000`) o cualquier otro según tu entorno y disponibilidad de puertos.
+
+- **AUTH_API_URL**:  
+  Es la URL del microservicio de autenticación que se usará para validar los tokens JWT de los usuarios que intenten emitir mensajes privados o acceder a funcionalidades protegidas. Este endpoint se consulta desde los middlewares de autenticación en el microservicio de sockets para comprobar la validez y el rol del usuario antes de permitir ciertas acciones.
+
+---
+
+### 🔒 Recomendaciones de seguridad y buenas prácticas
+
+- **Protege las rutas privadas** usando JWT y valida siempre el token con el microservicio de autenticación antes de permitir la emisión de mensajes privados o sensibles[1][2][5].
+- **No expongas el microservicio directamente a Internet** sin un proxy o firewall, especialmente en producción.
+- **Mantén las URLs actualizadas** si cambias puertos, dominios o despliegas en producción.
+- **Configura correctamente CORS** en Socket.IO para limitar los orígenes permitidos según tus necesidades de seguridad.
+
+---
+
+### 💡 Ejemplo de un archivo `.env` configurado
+
+```bash
+PORT=4000
+AUTH_API_URL=http://localhost:3000
+```
+
+
+---
+
+Con estas variables correctamente configuradas, el microservicio podrá gestionar la comunicación en tiempo real de forma segura, permitiendo la integración con sistemas de autenticación externos y asegurando que sólo usuarios autorizados puedan acceder a las funcionalidades protegidas.
+
+
+
