@@ -113,3 +113,9 @@ Define los stores de Pinia para la gestión del estado global de la aplicación.
     yarn dev
     ```
     La aplicación estará disponible en `http://localhost:3000` (o el puerto que Nuxt.js asigne).
+
+---
+
+## ⚙️ Instalación y Configuración
+
+Consulta la guía completa de instalación en 📄 [MANUAL_INSTALACIÓN.md](./MANUAL_INSTALACIÓN.md)
