@@ -89,33 +89,4 @@ Define los stores de Pinia para la gestión del estado global de la aplicación.
 
 ## ⚙️ Instalación y Configuración
 
-1.  **Clona el repositorio:**
-    ```bash
-    git clone <URL_DEL_REPOSITORIO>
-    cd nuxt
-    ```
-2.  **Instala las dependencias:**
-    ```bash
-    npm install
-    # o
-    yarn install
-    ```
-3.  **Configura las variables de entorno:**
-    Crea un archivo `.env` en la raíz del proyecto y configura las variables necesarias, como la URL del backend.
-    ```
-    NUXT_PUBLIC_API_BASE=http://localhost:3000/api
-    ```
-    *(Asegúrate de que esta URL apunte a tu backend en funcionamiento)*
-4.  **Inicia el servidor de desarrollo:**
-    ```bash
-    npm run dev
-    # o
-    yarn dev
-    ```
-    La aplicación estará disponible en `http://localhost:3000` (o el puerto que Nuxt.js asigne).
-
----
-
-## ⚙️ Instalación y Configuración
-
 Consulta la guía completa de instalación en 📄 [MANUAL_INSTALACIÓN.md](./MANUAL_INSTALACIÓN.md)
