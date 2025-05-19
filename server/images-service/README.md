@@ -119,8 +119,3 @@ Este apartado describe cada variable de entorno necesaria para el correcto funci
 - **Mantén las URLs actualizadas** si cambias puertos, dominios o despliegas en producción.
 - **No almacenes archivos confidenciales en el mismo directorio de imágenes**; separa el almacenamiento de imágenes de otros recursos sensibles.
 
----
-
-### 💡 Ejemplo de un archivo `.env` configurado
-
-
