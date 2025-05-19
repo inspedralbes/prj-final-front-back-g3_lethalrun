@@ -15,9 +15,11 @@ export default defineNuxtConfig({
   ],
   runtimeConfig: {
     public: {
-      apiUrl: process.env.API_URL || '',
-      googleClientId: process.env.GOOGLE_CLIENT_ID || '',
-      googleRedirectUri: process.env.GOOGLE_REDIRECT_URI || '',
+      authUrl: process.env.AUTH_URL || '',
+      socketUrl: process.env.SOCKET_URL || '',
+      mongoUrl: process.env.MONGO_URL || '',
+      imagesUrl: process.env.IMAGES_URL || '',
+
     },
   },
   pinia: {

@@ -4,8 +4,16 @@ node_modules
 # Ignora los archivos relacionados a API keys
 images-service/.env
 sql-service/.env
+<<<<<<< HEAD
 .env
 
+=======
+auth-service/.env
+socket-service/.env
+mongo-service/.env
+
+# Ignora la carpeta de imagenes de los usuarios
+>>>>>>> origin/dev
 images-service/images/users
 
 # Ignora archivos de configuración de editores

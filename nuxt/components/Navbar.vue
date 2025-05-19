@@ -1,9 +1,11 @@
 <template>
-    <nav class="bg-gray-800">
-        <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+    <nav class="bg-[url('/images/navbar/background-navbar.png')] bg-repeat-x bg-bottom bg-[length:100px]">
+        <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 bg-[url('/images/navbar/background-navbar.png')] bg-repeat-x bg-bottom bg-[length:100px]">
             <div class="relative flex h-16 items-center justify-between">
-                <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
-                    <button @click="navbarMobileMenuIsOpen = !navbarMobileMenuIsOpen" type="button" class="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:ring-2 focus:ring-white focus:outline-none focus:ring-inset" aria-controls="mobile-menu" aria-expanded="false">
+                <div v-if="store.isAuthenticated" class="absolute inset-y-0 left-0 flex items-center sm:hidden">
+                    <button @click="navbarMobileMenuIsOpen = !navbarMobileMenuIsOpen" type="button" 
+                        class="relative inline-flex items-center justify-center rounded-md p-2 text-gray-300 hover:bg-white/10 hover:text-yellow-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" 
+                        aria-controls="mobile-menu" :aria-expanded="navbarMobileMenuIsOpen.toString()">
                         <span class="absolute -inset-0.5"></span>
                         <span class="sr-only">Open main menu</span>
                         <svg v-if="!navbarMobileMenuIsOpen" class="block size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
@@ -19,32 +21,69 @@
                         <img class="h-8 w-auto" :src="logoSrc" alt="Logo">
                     </NuxtLink>
                     <div class="hidden sm:ml-6 sm:block">
-                        <div v-if="menuItems.length > 0" class="flex space-x-4">
-                            <NuxtLink v-for="item in menuItems" :key="item.to" :to="item.to" class="rounded-md px-3 py-2 text-sm font-medium" :class="item.active ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'">{{ item.label }}</NuxtLink>
+                        <div v-if="menuItems.length > 0 && store.isAuthenticated" class="flex space-x-4">
+                            <NuxtLink v-for="item in menuItems" :key="item.to" :to="item.to" 
+                                class="rounded-md px-3 py-2 text-sm font-medium transition-colors duration-150 ease-in-out" 
+                                :class="!item.active 
+                                    ? 'text-gray-300 hover:bg-white/10 hover:text-yellow-400'
+                                    : 'text-white'"
+                                :style="item.active 
+                                    ? { background: 'linear-gradient(90deg, #ff1744 0%, #ff9100 60%, #fff176 100%)' }
+                                    : {}">
+                                {{ item.label }}
+                            </NuxtLink>
                         </div>
                     </div>
                 </div>
                 <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                     <div v-if="isLogged" class="relative ml-3">
-                        <button @click="profileOptionsIsOpen = !profileOptionsIsOpen" type="button" class="relative flex rounded-full bg-gray-800 text-sm focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-none">
+                        <button @click="profileOptionsIsOpen = !profileOptionsIsOpen" type="button" 
+                            class="relative flex rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 focus:ring-offset-[#1a0a0a]">
                             <span class="sr-only">Open user menu</span>
-                            <img class="size-8 rounded-full cursor-pointer" :src="profileImg" alt="Profile">
+                            <img class="size-8 rounded-full cursor-pointer hover:opacity-90 transition-opacity duration-150" :src="profileImg" alt="Profile">
                         </button>
-                        <div v-if="profileOptionsIsOpen" class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 ring-1 shadow-lg ring-black/5">
-                            <NuxtLink v-if="profileOptions.length > 0" v-for="option in profileOptions" :key="option.to" :to="option.to" class="block px-4 py-2 text-sm text-gray-700">{{ option.label }}</NuxtLink>
-                            <a :href="logoutLink" class="block px-4 py-2 text-sm text-gray-700">Tancar sessió</a>
+
+                        <div v-if="profileOptionsIsOpen" 
+                            class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md py-1 shadow-xl ring-1 ring-white/10 focus:outline-none"
+                            style="background: rgba(35, 25, 25, 0.98);">
+                            <NuxtLink v-if="profileOptions.length > 0" v-for="option in profileOptions" :key="option.to" :to="option.to" 
+                                @click="profileOptionsIsOpen = false"
+                                class="block px-4 py-2 text-sm text-gray-300 rounded-md hover:bg-white/10 hover:text-yellow-400 transition-colors duration-150">
+                                {{ option.label }}
+                            </NuxtLink>
+                            <a :href="logoutLink" @click="profileOptionsIsOpen = false"
+                                class="block px-4 py-2 text-sm text-gray-300 rounded-md hover:bg-white/10 hover:text-yellow-400 transition-colors duration-150">
+                                Tancar sessió
+                            </a>
                         </div>
                     </div>
-                    <div v-else class="">
-                        <NuxtLink v-if="route.path !== '/auth/login'" to="/auth/login" class="text-gray-300 bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 rounded-md text-sm font-medium">Login</NuxtLink>
-                        <NuxtLink v-if="route.path !== '/auth/register'" to="/auth/register" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Register</NuxtLink>
+
+                    <div v-else class="flex items-center space-x-3">
+                        <NuxtLink v-if="route.path !== '/auth/login'" to="/auth/login"
+                            class="px-3 py-2 rounded-md text-sm font-medium text-white shadow-md focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 focus:ring-offset-[#1a0a0a] hover:shadow-lg hover:brightness-110 transition-all duration-150 ease-in-out"
+                            style="background: linear-gradient(90deg, #ff1744 0%, #ff9100 60%, #fff176 100%);">
+                            Login
+                        </NuxtLink>
+                        <NuxtLink v-if="route.path !== '/auth/register'" to="/auth/register"
+                            class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-yellow-400 hover:bg-white/5 transition-colors duration-150 ease-in-out">
+                            Register
+                        </NuxtLink>
                     </div>
                 </div>
             </div>
         </div>
-        <div v-if="navbarMobileMenuIsOpen" class="sm:hidden" id="mobile-menu">
+        <div v-if="navbarMobileMenuIsOpen" class="sm:hidden navbarrr" id="mobile-menu" style="background: rgba(30, 20, 20, 0.95);">
             <div class="space-y-1 px-2 pt-2 pb-3">
-                <NuxtLink v-for="item in menuItems" :key="item.to" :to="item.to" class="block rounded-md px-3 py-2 text-base font-medium" :class="item.active ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'">{{ item.label }}</NuxtLink>
+                <NuxtLink v-for="item in menuItems" :key="item.to" :to="item.to" 
+                    class="block rounded-md px-3 py-2 text-base font-medium transition-colors duration-150 ease-in-out" 
+                    :class="!item.active 
+                        ? 'text-gray-300 hover:bg-white/10 hover:text-yellow-400'  
+                        : 'text-white'"                                          
+                    :style="item.active 
+                        ? { background: 'linear-gradient(90deg, #ff1744 0%, #ff9100 60%, #fff176 100%)' }
+                        : {}">
+                    {{ item.label }}
+                </NuxtLink>
             </div>
         </div>
     </nav>
@@ -52,14 +91,43 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useAppStore } from '@/stores/app';
 
+/**
+ * Current route object from Nuxt.
+ * @type {import('vue-router').RouteLocationNormalizedLoaded}
+ */
 const route = useRoute();
 
-const menuItems = [
-  { to: '/dashboard', label: 'Inici', active: true },
-  { to: '/graffiti/settings', label: 'Graffiti', active: false },
-];
+/**
+ * Application store instance.
+ * @type {ReturnType<typeof useAppStore>}
+ */
+const store = useAppStore();
 
+/**
+ * Navigation menu items for the navbar.
+ * @type {Array<{to: string, label: string, active: boolean}>}
+ */
+const menuItems = [
+    { to: '/dashboard', label: 'Inici' },
+    { to: '/graffiti/settings', label: 'Graffiti' },
+    { to: '/gachapon', label: 'Gachapon' },
+].map(item => ({
+    ...item,
+    active: route.path.startsWith(item.to)
+}));
+
+/**
+ * Props for the Navbar component.
+ * @typedef {Object} NavbarProps
+ * @property {string} logoSrc - Source URL for the logo image.
+ * @property {string} [logoLink='/'] - Link for the logo.
+ * @property {string} profileImg - Source URL for the profile image.
+ * @property {Array} profileOptions - List of profile menu options.
+ * @property {string} logoutLink - URL for logout action.
+ * @property {boolean} isLogged - Whether the user is logged in.
+ */
 const props = defineProps({
     logoSrc: { type: String, required: true },
     logoLink: { type: String, default: '/' },
@@ -69,6 +137,23 @@ const props = defineProps({
     isLogged: { type: Boolean, required: true }
 });
 
+/**
+ * State for mobile menu open/close.
+ * @type {import('vue').Ref<boolean>}
+ */
 const navbarMobileMenuIsOpen = ref(false);
+
+/**
+ * State for profile options dropdown open/close.
+ * @type {import('vue').Ref<boolean>}
+ */
 const profileOptionsIsOpen = ref(false);
 </script>
+
+<style scoped>
+.navbarrr {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+</style>

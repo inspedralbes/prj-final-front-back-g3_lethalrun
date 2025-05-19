@@ -1,8 +1,13 @@
 import { io } from "socket.io-client";
+
+const config = useRuntimeConfig();
+
+const BASE_URL = config.public.socketUrl;
+
 export default defineNuxtPlugin(() => {
     console.log("Conectando al servidor de sockets...");
 
-    const socket = io("http://localhost:3000"); // Cambia la URL según tu backend
+    const socket = io(BASE_URL);
 
     return {
         provide: {
