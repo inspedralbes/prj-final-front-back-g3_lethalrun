@@ -42,31 +42,23 @@ El `dashboard.vue` sirve como el **panel de control principal** una vez que el u
 
 El directorio `pages/` se organiza en subcarpetas para agrupar las páginas relacionadas con funcionalidades específicas, lo que mejora la modularidad y la claridad del proyecto.
 
-### 🔐 `pages/auth/` (Autenticación)
+### 🔐 `auth/` (Autenticación)
 
-Contiene todas las páginas relacionadas con el proceso de autenticación del usuario:
+Este subdirectorio contiene todas las páginas y componentes relacionados con el **proceso de autenticación de usuarios**, incluyendo:
 
-* **`login.vue`**: La página para que los usuarios inicien sesión en sus cuentas.
-* **`register.vue`**: La página para que los nuevos usuarios se registren en la aplicación.
-* **`forgot-password.vue`**: Permite a los usuarios solicitar un restablecimiento de contraseña si la han olvidado.
-* **`reset-password.vue`**: La página donde los usuarios pueden establecer una nueva contraseña después de un restablecimiento.
-* **`verify-register.vue`**: Probablemente una página para verificar el correo electrónico después del registro.
-* **`callback.vue`**: Posiblemente utilizada para manejar redirecciones de autenticación de terceros (OAuth).
+* **Inicio de sesión**: Formularios y lógica para que los usuarios accedan a sus cuentas.
+* **Registro**: Interfaces para la creación de nuevas cuentas de usuario.
+* **Recuperación de contraseña**: Flujos para restablecer contraseñas olvidadas.
+* **Verificación de correo electrónico**: Páginas para confirmar la dirección de correo electrónico del usuario.
 
-### 🎰 `pages/gachapon/` (Sistema de Gachapon)
+### 🎰 `gachapon/` (Sistema de Gachapon)
 
-Agrupa las páginas dedicadas a la funcionalidad del sistema de gachapon:
+Este subdirectorio alberga las páginas dedicadas a la **funcionalidad del sistema de gachapon**. Aquí, los usuarios pueden interactuar con la máquina de gachapon para intentar obtener diferentes skins o coleccionables dentro del juego.
 
-* **`index.vue`**: La página principal donde los usuarios pueden interactuar con la máquina de gachapon para obtener skins u otros objetos.
+### 🎨 `graffiti/` (Graffitis)
 
-### 🎨 `pages/graffiti/` (Graffitis)
+Contiene las páginas para la **gestión y personalización de graffitis** por parte del usuario. Permite a los jugadores subir sus propias imágenes, previsualizarlas y activarlas para usarlas como graffitis dentro del juego, ofreciendo una capa de personalización única.
 
-Contiene las páginas para la gestión y personalización de graffitis:
+### 👤 `profile/` (Perfil de Usuario)
 
-* **`settings.vue`**: La página donde los usuarios pueden subir, gestionar y activar sus graffitis personalizados para usar en el juego.
-
-### 👤 `pages/profile/` (Perfil de Usuario)
-
-Alberga las páginas relacionadas con la información y configuración del perfil del usuario:
-
-* **`my-info.vue`**: Muestra la información personal del usuario, como su nombre de usuario, correo electrónico, tiempo de juego y experiencia.
+Este subdirectorio agrupa las páginas relacionadas con la **información y configuración del perfil del usuario**. Los usuarios pueden ver sus estadísticas, información personal, tiempo de juego, experiencia y posiblemente gestionar otras configuraciones de su cuenta.
