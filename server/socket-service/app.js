@@ -1,59 +1,48 @@
 /**
  * @file Punto de entrada principal del servicio de sockets
- * @description Configura servidor Express y Socket.IO, inicializa rutas y controladores para eventos en tiempo real.
+ * @description Configuración mínima para enviar mensajes a sockets específicos
  * @module app
  */
 
 import express from 'express';
 import http from 'http';
-import { initSocket } from './controllers/socketController.js'; // Inicializador de Socket.IO
-import socketRoutes from './routes/socketRoutes.js'; // Rutas para eventos de Socket.IO
-import dotenv from 'dotenv';
+import { initSocket } from './controllers/socketController.js';
+import socketRoutes from './routes/socketRoutes.js';
 
-dotenv.config(); // Cargar variables de entorno desde .env
-
-/**
- * Instancia de la aplicación Express
- * @type {express.Application}
- */
 const app = express();
-
-/**
- * Servidor HTTP para integrar con Socket.IO
- * @type {http.Server}
- */
 const server = http.createServer(app);
 
-/**
- * Instancia de Socket.IO inicializada
- * @type {import('socket.io').Server}
- */
-const io = initSocket(server);
+// Configuración esencial de Socket.IO
+const io = initSocket(server, {
+  path: '/socket.io',           // WebSocket servido en esta ruta (NGINX debe hacer proxy correctamente)
+  transports: ['websocket'],    // Solo WebSocket
+  cors: {
+    origin: "*",                // Acepta cualquier origen. ⚠️ Cambia esto en producción
+    methods: ["GET", "POST"]
+  }
+});
 
-/**
- * @middleware Procesamiento de solicitudes JSON
- */
+// Middleware para JSON
 app.use(express.json());
 
-/**
- * @namespace Rutas de eventos de Socket.IO
- * @description Endpoints para manejar eventos y lógica en tiempo real
- */
+// Manejo de conexiones WebSocket
+io.on('connection', (socket) => {
+  socket.on('disconnect', () => {
+  });
+});
+
+// Rutas HTTP para emitir eventos
 app.use('/socket', socketRoutes(io));
 
-/**
- * Puerto del servidor (configurable por entorno)
- * @type {number|string}
- */
-const PORT = process.env.PORT || 4000;
+// Puerto fijo (debe coincidir con el puerto usado en NGINX reverse proxy)
+const PORT = 3002;
 
-/**
- * Inicia el servidor de sockets
- * @listens PORT
- */
 server.listen(PORT, () => {
-  console.log('\n\n');
-  console.log('[SOCKET SERVICE]');
-  console.log(`🚀 Servidor de sockets activo en http://localhost:${PORT}`);
-  console.log('\n');
+  console.log('\n==================================');
+  console.log('🚀 Socket Service iniciado correctamente');
+  console.log(`📡 Puerto: ${PORT}`);
+  console.log('🔌 Endpoints disponibles:');
+  console.log('- WebSocket: /socket.io');
+  console.log('- HTTP API:  /socket/private/:socketId');
+  console.log('==================================\n');
 });
