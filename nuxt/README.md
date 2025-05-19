@@ -1,75 +1,76 @@
-# Nuxt Minimal Starter
+# Project Structure Overview
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+This document provides an overview of the project's directory structure, based on the output of `ls` commands. It outlines the main components and their organization within the `nuxt` project.
 
-## Setup
+## Directory Structure
 
-Make sure to install dependencies:
+Here's a breakdown of the directories and files:
 
-```bash
-# npm
-npm install
+### Root Directory (`./`)
 
-# pnpm
-pnpm install
+* **`components/`**: Contains Vue.js components.
+* **`middleware/`**: Contains middleware files.
+* **`pages/`**: Contains Vue.js pages (routing).
+* **`plugins/`**: Contains Nuxt.js plugins.
+* **`services/`**: Contains JavaScript service modules.
+* **`stores/`**: Contains the application's state management.
 
-# yarn
-yarn install
+### `components/`
 
-# bun
-bun install
-```
+* `GachaponSlot.vue`:  Related to the Gachapon feature.
+* `GashaponMachine.vue`: Related to the Gashapon feature.
+* `Loader.vue`:  A loading indicator component.
+* `Navbar.vue`:  The navigation bar component.
 
-## Development Server
+### `middleware/`
 
-Start the development server on `http://localhost:3000`:
+* `redirect.global.js`: A global route middleware, likely for handling redirects.
 
-```bash
-# npm
-npm run dev
+### `pages/`
 
-# pnpm
-pnpm dev
+* `auth/`: Contains authentication-related pages.
+* `dashboard.vue`: The main dashboard page.
+* `gachapon/`: Contains pages related to the Gachapon feature.
+* `graffiti/`: Contains pages related to the graffiti feature.
+* `index.vue`: The main landing page.
+* `profile/`: Contains pages related to user profiles.
 
-# yarn
-yarn dev
+### `pages/auth/`
 
-# bun
-bun run dev
-```
+* `callback.vue`:  Handles authentication callbacks (e.g., from an OAuth provider).
+* `forgot-password.vue`:  Handles the forgot password functionality.
+* `login.vue`:  The login page.
+* `register.vue`:  The registration page.
+* `reset-password.vue`: Handles resetting the user's password.
+* `verify-register.vue`: Handles the email verification after registration.
 
-## Production
+### `pages/gachapon/`
 
-Build the application for production:
+* `index.vue`: Main page for the Gachapon feature.
 
-```bash
-# npm
-npm run build
+### `pages/graffiti/`
 
-# pnpm
-pnpm build
+* `settings.vue`: Settings page for the graffiti feature.
 
-# yarn
-yarn build
+### `pages/profile/`
 
-# bun
-bun run build
-```
+* `my-info.vue`: Page to display user's personal information.
 
-Locally preview production build:
+### `plugins/`
 
-```bash
-# npm
-npm run preview
+* `socket.client.ts`:  A Nuxt.js plugin for Socket.IO client-side integration.
+* `vue-cropper.js`: A Nuxt.js plugin for the Vue Cropper library (image cropping).
 
-# pnpm
-pnpm preview
+### `services/`
 
-# yarn
-yarn preview
+* `auth.js`:  Handles authentication-related logic.
+* `gashapon.js`: Handles gashapon feature logic.
+* `graffitis.js`: Handles graffiti feature logic.
 
-# bun
-bun run preview
-```
+### `stores/`
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+* `app.js`:  A Vuex store (or similar) for managing application-wide state.
+
+## Summary
+
+This project appears to be a web application built with Nuxt.js, featuring user authentication, a dashboard, a "Gachapon" system, and a "Graffiti" section.  It also includes user profile management, real-time communication (Socket.IO), and image cropping functionality.
