@@ -1,76 +1,84 @@
-# Project Structure Overview
+# Visió general de l'estructura del projecte 📂
 
-This document provides an overview of the project's directory structure, based on the output of `ls` commands. It outlines the main components and their organization within the `nuxt` project.
+Aquest document proporciona una visió general de l'estructura de directoris del projecte, basada en la sortida de les comandes `ls`. Esbossa els components principals i la seva organització dins del projecte `nuxt`.
 
-## Directory Structure
+## Estructura del directori
 
-Here's a breakdown of the directories and files:
+Aquí teniu un resum dels directoris i fitxers:
 
-### Root Directory (`./`)
+### Directori arrel (`./`)
 
-* **`components/`**: Contains Vue.js components.
-* **`middleware/`**: Contains middleware files.
-* **`pages/`**: Contains Vue.js pages (routing).
-* **`plugins/`**: Contains Nuxt.js plugins.
-* **`services/`**: Contains JavaScript service modules.
-* **`stores/`**: Contains the application's state management.
+* **`components/`**: Conté components de Vue.js. ⚛️
+    * [Veure detalls](#components)
+* **`middleware/`**: Conté fitxers de middleware. ⚙️
+    * [Veure detalls](#middleware)
+* **`pages/`**: Conté pàgines de Vue.js (rutes). 📄
+    * [Veure detalls](#pages)
+* **`plugins/`**: Conté complements de Nuxt.js. 🔌
+    * [Veure detalls](#plugins)
+* **`services/`**: Conté mòduls de servei de JavaScript. 🛠️
+    * [Veure detalls](#services)
+* **`stores/`**: Conté la gestió de l'estat de l'aplicació. 🗄️
+    * [Veure detalls](#stores)
 
-### `components/`
+## Detalls dels directoris
 
-* `GachaponSlot.vue`:  Related to the Gachapon feature.
-* `GashaponMachine.vue`: Related to the Gashapon feature.
-* `Loader.vue`:  A loading indicator component.
-* `Navbar.vue`:  The navigation bar component.
+### `components/` <a name="components"></a>
 
-### `middleware/`
+* `GachaponSlot.vue`: Relacionat amb la funció Gachapon.
+* `GashaponMachine.vue`: Relacionat amb la funció Gashapon.
+* `Loader.vue`: Un component indicador de càrrega.
+* `Navbar.vue`: El component de la barra de navegació.
 
-* `redirect.global.js`: A global route middleware, likely for handling redirects.
+### `middleware/` <a name="middleware"></a>
 
-### `pages/`
+* `redirect.global.js`: Un middleware de ruta global, probablement per gestionar redireccions.
 
-* `auth/`: Contains authentication-related pages.
-* `dashboard.vue`: The main dashboard page.
-* `gachapon/`: Contains pages related to the Gachapon feature.
-* `graffiti/`: Contains pages related to the graffiti feature.
-* `index.vue`: The main landing page.
-* `profile/`: Contains pages related to user profiles.
+### `pages/` <a name="pages"></a>
+
+* `auth/`: Conté pàgines relacionades amb l'autenticació.
+* `dashboard.vue`: La pàgina principal del tauler de control.
+* `gachapon/`: Conté pàgines relacionades amb la funció Gachapon.
+* `graffiti/`: Conté pàgines relacionades amb la funció graffiti.
+* `index.vue`: La pàgina d'aterratge principal.
+* `profile/`: Conté pàgines relacionades amb els perfils d'usuari.
 
 ### `pages/auth/`
 
-* `callback.vue`:  Handles authentication callbacks (e.g., from an OAuth provider).
-* `forgot-password.vue`:  Handles the forgot password functionality.
-* `login.vue`:  The login page.
-* `register.vue`:  The registration page.
-* `reset-password.vue`: Handles resetting the user's password.
-* `verify-register.vue`: Handles the email verification after registration.
+* `callback.vue`: Gestiona els retorns de trucada d'autenticació (per exemple, d'un proveïdor d'OAuth).
+* `forgot-password.vue`: Gestiona la funcionalitat d'haver oblidat la contrasenya.
+* `login.vue`: La pàgina d'inici de sessió.
+* `register.vue`: La pàgina de registre.
+* `reset-password.vue`: Gestiona el restabliment de la contrasenya de l'usuari.
+* `verify-register.vue`: Gestiona la verificació del correu electrònic després del registre.
 
 ### `pages/gachapon/`
 
-* `index.vue`: Main page for the Gachapon feature.
+* `index.vue`: Pàgina principal de la funció Gachapon.
 
 ### `pages/graffiti/`
 
-* `settings.vue`: Settings page for the graffiti feature.
+* `settings.vue`: Pàgina de configuració de la funció graffiti.
 
 ### `pages/profile/`
 
-* `my-info.vue`: Page to display user's personal information.
+* `my-info.vue`: Pàgina per mostrar la informació personal de l'usuari.
 
-### `plugins/`
+### `plugins/` <a name="plugins"></a>
 
-* `socket.client.ts`:  A Nuxt.js plugin for Socket.IO client-side integration.
-* `vue-cropper.js`: A Nuxt.js plugin for the Vue Cropper library (image cropping).
+* `socket.client.ts`: Un complement de Nuxt.js per a la integració del costat del client de Socket.IO.
+* `vue-cropper.js`: Un complement de Nuxt.js per a la biblioteca Vue Cropper (retall d'imatge).
 
-### `services/`
+### `services/` <a name="services"></a>
 
-* `auth.js`:  Handles authentication-related logic.
-* `gashapon.js`: Handles gashapon feature logic.
-* `graffitis.js`: Handles graffiti feature logic.
+* `auth.js`: Gestiona la lògica relacionada amb l'autenticació.
+* `gashapon.js`: Gestiona la lògica de la funció gashapon.
+* `graffitis.js`: Gestiona la lògica de la funció graffiti.
 
-### `stores/`
+### `stores/` <a name="stores"></a>
 
-* `app.js`:  A Vuex store (or similar) for managing application-wide state.
+* `app.js`: Un magatzem Pinia (o similar) per gestionar l'estat de l'aplicació.
 
-## Summary
+## Resum
 
-This project appears to be a web application built with Nuxt.js, featuring user authentication, a dashboard, a "Gachapon" system, and a "Graffiti" section.  It also includes user profile management, real-time communication (Socket.IO), and image cropping functionality.
+Aquest projecte és una aplicació web construïda amb Nuxt.js, que inclou autenticació d'usuari, un tauler de control, un sistema "Gachapon" i una secció de "Graffiti". També inclou gestió de perfils d'usuari, comunicació en temps real (Socket.IO) i funcionalitat de retall d'imatge. S'utilitza Pinia per a la gestió de l'estat.
