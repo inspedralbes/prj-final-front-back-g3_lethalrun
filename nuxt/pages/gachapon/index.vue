@@ -16,14 +16,14 @@
 
             <div class="gacha-machine">
                 <div class="machine-top">
-                    <div class="machine-display" id="status-display">¡Listo para tirar!</div>
+                    <div class="machine-display" id="status-display">Preparat per tirar!</div>
                 </div>
 
                 <div class="machine-body">
                     <div class="item-display">
                         <div class="glow-effect" id="item-glow"></div>
                         <div class="gacha-orb" id="gacha-orb"></div>
-                        <img src="/skins/gifs/megumin.gif" alt="Personaje" class="character-image"
+                        <img src="/skins/gifs/megumin.gif" alt="Personatge" class="character-image"
                             id="current-character">
                     </div>
                 </div>
@@ -39,7 +39,7 @@
                     <div class="slot-preview">
                         <img src="/skins/skin-a.png" alt="Slot 1" id="slot-preview-1">
                     </div>
-                    <div class="equipped">EQUIPADO</div>
+                    <div class="equipped">EQUIPAT</div>
                     <button class="equip-button" data-slot="1">Equipar</button>
                 </div>
 
@@ -48,7 +48,7 @@
                     <div class="slot-preview">
                         <img src="/skins/skin-a.png" alt="Slot 2" id="slot-preview-2">
                     </div>
-                    <div class="equipped">EQUIPADO</div>
+                    <div class="equipped">EQUIPAT</div>
                     <button class="equip-button" data-slot="2">Equipar</button>
                 </div>
 
@@ -57,50 +57,50 @@
                     <div class="slot-preview">
                         <img src="/skins/skin-a.png" alt="Slot 3" id="slot-preview-3">
                     </div>
-                    <div class="equipped">EQUIPADO</div>
+                    <div class="equipped">EQUIPAT</div>
                     <button class="equip-button" data-slot="3">Equipar</button>
                 </div>
             </div>
 
             <div class="rarity-dropdown z-index-999" id="rarity-dropdown">
                 <div class="rarity-dropdown-header" id="rarity-dropdown-header">
-                    <div class="rarity-dropdown-title">Rarezas y Probabilidades</div>
+                    <div class="rarity-dropdown-title">Rareses i Probabilitats</div>
                     <div class="rarity-dropdown-arrow">▼</div>
                 </div>
                 <div class="rarity-dropdown-content">
                     <table class="rarity-table">
                         <thead>
                             <tr>
-                                <th>Rareza</th>
-                                <th>Probabilidad</th>
-                                <th>Descripción</th>
+                                <th>Raresa</th>
+                                <th>Probabilitat</th>
+                                <th>Descripció</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="rarity-common">Común</td>
+                                <td class="rarity-common">Comú</td>
                                 <td>50%</td>
-                                <td>Default y Negra con flow </td>
+                                <td>Default i Negra amb flow</td>
                             </tr>
                             <tr>
-                                <td class="rarity-rare">Raro</td>
+                                <td class="rarity-rare">Rar</td>
                                 <td>30%</td>
-                                <td>Kirito y Asuna</td>
+                                <td>Kirito i Asuna</td>
                             </tr>
                             <tr>
-                                <td class="rarity-epic">Épico</td>
+                                <td class="rarity-epic">Èpic</td>
                                 <td>15%</td>
                                 <td>Megumin</td>
                             </tr>
                             <tr>
-                                <td class="rarity-legendary">Legendario</td>
+                                <td class="rarity-legendary">Llegendari</td>
                                 <td>4%</td>
                                 <td>Spiderman</td>
                             </tr>
                             <tr>
-                                <td class="rarity-mythical">Mítico</td>
+                                <td class="rarity-mythical">Mític</td>
                                 <td>1%</td>
-                                <td>Luffy e Igris</td>
+                                <td>Luffy i Igris</td>
                             </tr>
                         </tbody>
                     </table>
@@ -114,31 +114,31 @@
             </div>
         </div>
 
-        <!-- Overlay para oscurecer el fondo durante la animación -->
+        <!-- Overlay per enfosquir el fons durant l'animació -->
         <div class="overlay" id="overlay"></div>
 
-        <!-- Popup de personaje -->
+        <!-- Popup de personatge -->
         <div class="character-popup" id="character-popup">
             <div class="popup-header">
-                <h2 class="popup-title" id="popup-title">Nombre del Personaje</h2>
-                <p class="popup-rarity" id="popup-rarity">Rareza</p>
+                <h2 class="popup-title" id="popup-title">Nom del Personatge</h2>
+                <p class="popup-rarity" id="popup-rarity">Raresa</p>
                 <div class="popup-close" id="popup-close">✕</div>
             </div>
             <div class="popup-content">
                 <div class="popup-image-container">
                     <div class="popup-image-glow" id="popup-image-glow"></div>
-                    <img src="/skins/skin-a.png" alt="Personaje" class="popup-image" id="popup-image">
+                    <img src="/skins/skin-a.png" alt="Personatge" class="popup-image" id="popup-image">
                 </div>
                 <div class="popup-details">
                     <div class="popup-description" id="popup-description">
-                        Descripción del personaje y sus habilidades.
+                        Descripció del personatge i les seves habilitats.
                     </div>
 
                 </div>
             </div>
             <div class="popup-buttons">
                 <button class="popup-button" id="equip-button">Equipar</button>
-                <button class="popup-button" id="close-button">Cerrar</button>
+                <button class="popup-button" id="close-button">Tancar</button>
             </div>
         </div>
     </div>
@@ -201,16 +201,16 @@ onMounted(async () => {
                 zIndex: '10'
             });
 
-            // Crear botón “Desbloquear”
+            // Crear botón “Desbloquejar”
             const unlockButton = document.createElement('button');
-            unlockButton.textContent = 'Desbloquear';
+            unlockButton.textContent = 'Desbloqueja';
             unlockButton.className = 'equip-button';
 
             // Añadir botón al overlay
             overlay.appendChild(unlockButton);
             slotElement.appendChild(overlay);
 
-            // Evento al hacer clic en “Desbloquear”
+            // Evento al hacer clic en “Desbloquejar”
             unlockButton.addEventListener('click', async () => {
                 // Eliminar clase de bloqueo
                 slotElement.classList.remove('slot-blocked');
@@ -246,71 +246,71 @@ onMounted(async () => {
     const closeButton = document.getElementById('close-button');
     const equipButton = document.getElementById('equip-button');
 
-    // Personajes del gacha de Solo Leveling
+    // Personatges del gacha de Solo Leveling
     const characters = [
       {
         id: 0,
         name: "Default",
-        rarity: "Común",
+        rarity: "Comú",
         image: "/skins/default.png",
         video: "/skins/gifs/default.gif",
-        description: "Un personaje genérico, sin habilidades especiales pero con gran potencial para evolucionar."
+        description: "Un personatge genèric, sense habilitats especials però amb gran potencial per evolucionar."
       },
       {
         id: 1,
-        name: "Negra con Flow",
-        rarity: "Común",
+        name: "Negra amb Flow",
+        rarity: "Comú",
         image: "/skins/negra.png",
         video: "/skins/gifs/negra.gif",
-        description: "Con estilo y confianza, domina cualquier escenario con una presencia única y habilidades sorprendentes."
+        description: "Amb estil i confiança, domina qualsevol escenari amb una presència única i habilitats sorprenents."
       },
       {
         id: 2,
         name: "Kirito",
-        rarity: "Raro",
+        rarity: "Rar",
         image: "/skins/kirito.png",
         video: "/skins/gifs/kirito.gif",
-        description: "El espadachín negro, un maestro en el manejo de la espada dual y conocido por su valentía en mundos virtuales."
+        description: "L'espadatxí negre, un mestre en el maneig de l'espasa dual i conegut pel seu coratge en mons virtuals."
       },
       {
         id: 3,
         name: "Megumin",
-        rarity: "Épico",
+        rarity: "Èpic",
         image: "/skins/megumin.png",
         video: "/skins/gifs/megumin.gif",
-        description: "La Archimaga obsesionada con la magia de explosión. Solo puede lanzar un hechizo por día, pero es devastador."
+        description: "L'Archimaga obsessionada amb la màgia d'explosió. Només pot llançar un encanteri al dia, però és devastador."
       },
       {
         id: 4,
         name: "Luffy",
-        rarity: "Mítico",
+        rarity: "Mític",
         image: "/skins/luffy.png",
         video: "/skins/gifs/luffy.gif",
-        description: "El capitán de los Sombrero de Paja, con habilidades de goma gracias a la fruta Gomu Gomu no Mi."
+        description: "El capità dels Barret de Palla, amb habilitats de goma gràcies a la fruita Gomu Gomu no Mi."
       },
       {
         id: 5,
         name: "Asuna",
-        rarity: "Raro",
+        rarity: "Rar",
         image: "/skins/asuna.png",
         video: "/skins/gifs/asuna.gif",
-        description: "La relampagueante espadachina de Sword Art Online, reconocida por su velocidad y habilidades de combate."
+        description: "L'espadatxina fulgurant de Sword Art Online, reconeguda per la seva velocitat i habilitats de combat."
       },
       {
         id: 6,
         name: "Spiderman",
-        rarity: "Legendario",
+        rarity: "Llegendari",
         image: "/skins/spiderman.png",
         video: "/skins/gifs/spiderman.gif",
-        description: "El amistoso vecino que protege Nueva York con sus habilidades arácnidas y su agudo sentido del peligro."
+        description: "El veí amistós que protegeix Nova York amb les seves habilitats aràcnides i el seu agut sentit del perill."
       },
       {
         id: 7,
         name: "Igris",
-        rarity: "Mítico",
+        rarity: "Mític",
         image: "/skins/igris.png",
         video: "/skins/gifs/igris.gif",
-        description: "Un caballero de sombras que sirve fielmente a su monarca. Conocido por su impresionante habilidad con la espada."
+        description: "Un cavaller d'ombres que serveix fidelment el seu monarca. Conegut per la seva impressionant habilitat amb l'espasa."
       },
     ];
 
@@ -318,7 +318,7 @@ onMounted(async () => {
         return characters.find(character => character.id === id);
     }
 
-    // Variables de estado
+    // Variables d'estat
     let currentSlot = 1;
     let slots = {
         1: null,
@@ -327,7 +327,7 @@ onMounted(async () => {
     };
     let equippedSlot = 1;
 
-    // Inicializar slots
+    // Inicialitzar slots
     function initSlots() {
         const slotElements = document.querySelectorAll('.slot');
         slotElements.forEach(slot => {
@@ -347,7 +347,7 @@ onMounted(async () => {
                 if(!slotNumber) return;
 
                 if (!mySlots.value[`slot${slotNumber}`].isUnlocked) {
-                    showNotification("¡Este slot está bloqueado!");
+                    showNotification("Aquest slot està bloquejat!");
                     return;
                 }
                 await setActiveSkinSlot(`slot${slotNumber}`);
@@ -358,12 +358,12 @@ onMounted(async () => {
                 if (slots[slotNumber]) {
                     equipSlot(slotNumber);
                 } else {
-                    showNotification("¡No hay nada para equipar en este slot!");
+                    showNotification("No hi ha res per equipar en aquest slot!");
                 }
             });
         });
 
-        // add image to slots
+        // afegir imatge als slots
         Object.entries(mySlots.value).forEach(([key, slot], index) => {
             const slotPreview = document.getElementById(`slot-preview-${index + 1}`);
             if (slotPreview) {
@@ -371,7 +371,7 @@ onMounted(async () => {
                 slotPreview.src = character.image;
 
                 if(slot.isActive){
-                    // we add class equipped-slot to the one who has data-slot=${index + 1}
+                    // afegim la classe equipped-slot al que té data-slot=${index + 1}
                     const slotElement = document.querySelector(`.slot[data-slot="${index + 1}"]`);
                     slotElement.classList.add('equipped-slot');
                     slotElement.querySelector('.equipped').style.display = 'block';
@@ -386,19 +386,19 @@ onMounted(async () => {
 
     }
 
-    // Establecer slot activo
+    // Establir slot actiu
     async function setActiveSlot(slotNumber) {
         currentSlot = slotNumber;
         const myCurrentSlot = mySlots.value[`slot${currentSlot}`];
 
         if (mySlots.value[`slot${currentSlot}`].isUnlocked === false) {
-            showNotification("¡Este slot está bloqueado!");
+            showNotification("Aquest slot està bloquejat!");
             return;
         }
 
         const myCurrentCharacter = getCharacterById(myCurrentSlot.number);
 
-        // Actualizar UI de slots
+        // Actualitzar UI dels slots
         const slotElements = document.querySelectorAll('.slot');
         slotElements.forEach(slot => {
             if (parseInt(slot.dataset.slot) === slotNumber) {
@@ -408,14 +408,14 @@ onMounted(async () => {
             }
         });
 
-        // Mostrar personaje en slot activo si existe
+        // Mostrar personatge en slot actiu si existeix
         if (slots[currentSlot]) {
             currentCharacter.src = slots[currentSlot].image;
             statusDisplay.textContent = `${myCurrentCharacter.name} - ${myCurrentCharacter.rarity}`;
             setGlowColor(slots[currentSlot].rarity);
         } else {
             currentCharacter.src = "/skins/skin-a.png";
-            statusDisplay.textContent = "¡Listo para tirar!";
+            statusDisplay.textContent = "Preparat per tirar!";
             itemGlow.style.opacity = "0";
         }
 
@@ -433,7 +433,7 @@ onMounted(async () => {
 
         equippedSlot = slotNumber;
 
-        // Actualizar UI para mostrar equipado
+        // Actualitzar UI per mostrar equipat
         const slotElements = document.querySelectorAll('.slot');
         slotElements.forEach(slot => {
             if (parseInt(slot.dataset.slot) === slotNumber) {
@@ -446,27 +446,27 @@ onMounted(async () => {
         const myCurrentSlot = mySlots.value[`slot${currentSlot}`];
         const char = getCharacterById(myCurrentSlot.number);
 
-        showNotification(`¡${char.name} equipado!`);
+        showNotification(`Has equipat ${char.name}!`);
     }
 
-    // Obtener personaje aleatorio basado en rareza
+    // Obtenir personatge aleatori segons raresa
     function getRandomCharacter() {
         const randomValue = Math.random() * 100;
         let rarityPool;
 
         if (randomValue <= 1) {
-            rarityPool = characters.filter(char => char.rarity === "Mítico");
+            rarityPool = characters.filter(char => char.rarity === "Mític");
         } else if (randomValue <= 5) {
-            rarityPool = characters.filter(char => char.rarity === "Legendario");
+            rarityPool = characters.filter(char => char.rarity === "Llegendari");
         } else if (randomValue <= 20) {
-            rarityPool = characters.filter(char => char.rarity === "Épico");
+            rarityPool = characters.filter(char => char.rarity === "Èpic");
         } else if (randomValue <= 50) {
-            rarityPool = characters.filter(char => char.rarity === "Raro");
+            rarityPool = characters.filter(char => char.rarity === "Rar");
         } else {
-            rarityPool = characters.filter(char => char.rarity === "Común");
+            rarityPool = characters.filter(char => char.rarity === "Comú");
         }
 
-        // Si no hay personajes de esa rareza, usar cualquiera
+        // Si no hi ha personatges d'aquesta raresa, usar qualsevol
         if (rarityPool.length === 0) {
             rarityPool = characters;
         }
@@ -474,7 +474,7 @@ onMounted(async () => {
         return rarityPool[Math.floor(Math.random() * rarityPool.length)];
     }
 
-    // Mostrar notificación
+    // Mostrar notificació
     function showNotification(message) {
         notification.textContent = message;
         notification.style.opacity = "1";
@@ -484,25 +484,25 @@ onMounted(async () => {
         }, 3000);
     }
 
-    // Configurar efecto de brillo basado en rareza
+    // Configurar efecte de resplendor segons raresa
     function setGlowColor(rarity) {
         let color;
         let opacity;
 
         switch (rarity) {
-            case "Mítico":
+            case "Mític":
                 color = "var(--mythical)";
                 opacity = "0.7";
                 break;
-            case "Legendario":
+            case "Llegendari":
                 color = "var(--legendary)";
                 opacity = "0.6";
                 break;
-            case "Épico":
+            case "Èpic":
                 color = "var(--epic)";
                 opacity = "0.5";
                 break;
-            case "Raro":
+            case "Rar":
                 color = "var(--rare)";
                 opacity = "0.4";
                 break;
@@ -517,23 +517,23 @@ onMounted(async () => {
         return color;
     }
 
-    // Crear fuegos artificiales para rarezas épicas o superiores
+    // Crear focs artificials per raresa èpica o superior
     function createFireworks(rarity) {
-        if (rarity === "Común" || rarity === "Raro") return;
+        if (rarity === "Comú" || rarity === "Rar") return;
 
         let count;
         let color;
 
         switch (rarity) {
-            case "Mítico":
+            case "Mític":
                 count = 30;
                 color = "var(--mythical)";
                 break;
-            case "Legendario":
+            case "Llegendari":
                 count = 20;
                 color = "var(--legendary)";
                 break;
-            default: // Épico
+            default: // Èpic
                 count = 10;
                 color = "var(--epic)";
         }
@@ -545,7 +545,7 @@ onMounted(async () => {
                 firework.style.backgroundColor = color;
                 firework.style.boxShadow = `0 0 10px ${color}`;
 
-                // Posición aleatoria alrededor de la pantalla
+                // Posició aleatòria a la pantalla
                 const top = Math.random() * window.innerHeight;
                 const left = Math.random() * window.innerWidth;
 
@@ -555,7 +555,7 @@ onMounted(async () => {
 
                 document.body.appendChild(firework);
 
-                // Eliminar el elemento después de la animación
+                // Eliminar l'element després de l'animació
                 setTimeout(() => {
                     document.body.removeChild(firework);
                 }, 2000);
@@ -565,55 +565,55 @@ onMounted(async () => {
 
     function pullAnimation(character) {
         return new Promise((resolve) => {
-            // Activar orbe y overlay
+            // Activar orbe i overlay
             overlay.classList.add('active');
             gachaOrb.classList.add('active');
 
-            // Añadir clase según rareza
+            // Afegir classe segons raresa
             gachaOrb.className = 'gacha-orb active';
 
             let rarityClass;
             switch (character.rarity) {
-                case "Mítico":
+                case "Mític":
                     rarityClass = "mythical";
-                    statusDisplay.textContent = "¡Aura increíblemente poderosa detectada!";
+                    statusDisplay.textContent = "S'ha detectat una aura increïblement poderosa!";
                     break;
-                case "Legendario":
+                case "Llegendari":
                     rarityClass = "legendary";
-                    statusDisplay.textContent = "¡Se detecta un aura muy poderosa!";
+                    statusDisplay.textContent = "S'ha detectat una aura molt poderosa!";
                     break;
-                case "Épico":
+                case "Èpic":
                     rarityClass = "epic";
-                    statusDisplay.textContent = "¡Se detecta un aura poderosa!";
+                    statusDisplay.textContent = "S'ha detectat una aura poderosa!";
                     break;
-                case "Raro":
+                case "Rar":
                     rarityClass = "rare";
-                    statusDisplay.textContent = "¡Se detecta un aura interesante!";
+                    statusDisplay.textContent = "S'ha detectat una aura interessant!";
                     break;
                 default:
                     rarityClass = "common";
-                    statusDisplay.textContent = "Se detecta un aura...";
+                    statusDisplay.textContent = "S'ha detectat una aura...";
             }
 
             gachaOrb.classList.add(rarityClass);
             currentCharacter.style.opacity = "0";
 
-            // Añadir clase de pulsación a item-display
+            // Afegir classe de pulsació a item-display
             const itemDisplay = document.querySelector('.item-display');
             itemDisplay.className = `item-display pulse-${rarityClass}`;
 
-            // Crear chispas alrededor del orbe
+            // Crear espurnes al voltant de l'orbe
             for (let i = 0; i < 15; i++) {
                 setTimeout(() => {
                     const spark = document.createElement('div');
                     spark.className = 'gacha-spark';
 
-                    // Tamaño aleatorio
+                    // Mida aleatòria
                     const size = 3 + Math.random() * 7;
                     spark.style.width = `${size}px`;
                     spark.style.height = `${size}px`;
 
-                    // Posición aleatoria alrededor del orbe
+                    // Posició aleatòria al voltant de l'orbe
                     const angle = Math.random() * Math.PI * 2;
                     const distance = 70 + Math.random() * 30;
                     const top = Math.sin(angle) * distance + 150;
@@ -622,19 +622,19 @@ onMounted(async () => {
                     spark.style.top = `${top}px`;
                     spark.style.left = `${left}px`;
 
-                    // Color basado en rareza
+                    // Color segons raresa
                     let sparkColor;
                     switch (character.rarity) {
-                        case "Mítico":
+                        case "Mític":
                             sparkColor = "var(--mythical)";
                             break;
-                        case "Legendario":
+                        case "Llegendari":
                             sparkColor = "var(--legendary)";
                             break;
-                        case "Épico":
+                        case "Èpic":
                             sparkColor = "var(--epic)";
                             break;
-                        case "Raro":
+                        case "Rar":
                             sparkColor = "var(--rare)";
                             break;
                         default:
@@ -646,27 +646,27 @@ onMounted(async () => {
 
                     gachaOrb.appendChild(spark);
 
-                    // Eliminar chispa después de la animación
+                    // Eliminar espurna després de l'animació
                     setTimeout(() => {
                         gachaOrb.removeChild(spark);
                     }, 1500);
                 }, i * 100);
             }
 
-            // Mostrar resultado después de la animación
+            // Mostrar resultat després de l'animació
             setTimeout(() => {
-                gachaOrb.className = 'gacha-orb'; // Resetear clases
+                gachaOrb.className = 'gacha-orb'; // Reset classes
                 overlay.classList.remove('active');
-                itemDisplay.className = 'item-display'; // Quitar animación de pulsación
+                itemDisplay.className = 'item-display'; // Treure animació de pulsació
                 currentCharacter.src = character.video;
                 currentCharacter.style.opacity = "1";
                 currentCharacter.classList.add('pull-animation');
-                statusDisplay.textContent = `¡${character.name} - ${character.rarity}!`;
+                statusDisplay.textContent = `Has obtingut ${character.name} - ${character.rarity}!`;
 
-                // Establecer brillo según rareza
+                // Establir resplendor segons raresa
                 setGlowColor(character.rarity);
 
-                // Remover clase de animación
+                // Treure classe d'animació
                 setTimeout(() => {
                     currentCharacter.classList.remove('pull-animation');
                     resolve();
@@ -675,7 +675,7 @@ onMounted(async () => {
         });
     }
 
-    // Mostrar popup de personaje
+    // Mostrar popup de personatge
     function showCharacterPopup(character) {
         const popupTitle = document.getElementById('popup-title');
         const popupRarity = document.getElementById('popup-rarity');
@@ -684,7 +684,7 @@ onMounted(async () => {
         const popupDescription = document.getElementById('popup-description');
 
 
-        // Configurar datos del personaje
+        // Configurar dades del personatge
         popupTitle.textContent = character.name;
         popupRarity.textContent = character.rarity;
         popupImage.src = character.image;
@@ -692,22 +692,22 @@ onMounted(async () => {
 
 
 
-        // Configurar color según rareza
+        // Configurar color segons raresa
         let color;
         switch (character.rarity) {
-            case "Mítico":
+            case "Mític":
                 color = "var(--mythical)";
                 popupRarity.className = "popup-rarity rarity-mythical";
                 break;
-            case "Legendario":
+            case "Llegendari":
                 color = "var(--legendary)";
                 popupRarity.className = "popup-rarity rarity-legendary";
                 break;
-            case "Épico":
+            case "Èpic":
                 color = "var(--epic)";
                 popupRarity.className = "popup-rarity rarity-epic";
                 break;
-            case "Raro":
+            case "Rar":
                 color = "var(--rare)";
                 popupRarity.className = "popup-rarity rarity-rare";
                 break;
@@ -725,7 +725,7 @@ onMounted(async () => {
     }
 
     function createPopupParticles(character) {
-        // Eliminar partículas existentes
+        // Eliminar partícules existents
         const existingParticles = document.querySelectorAll('.popup-particle');
         existingParticles.forEach(particle => particle.remove());
 
@@ -734,19 +734,19 @@ onMounted(async () => {
         let particleCount;
 
         switch (character.rarity) {
-            case "Mítico":
+            case "Mític":
                 particleColor = "var(--mythical)";
                 particleCount = 25;
                 break;
-            case "Legendario":
+            case "Llegendari":
                 particleColor = "var(--legendary)";
                 particleCount = 20;
                 break;
-            case "Épico":
+            case "Èpic":
                 particleColor = "var(--epic)";
                 particleCount = 15;
                 break;
-            case "Raro":
+            case "Rar":
                 particleColor = "var(--rare)";
                 particleCount = 10;
                 break;
@@ -759,65 +759,65 @@ onMounted(async () => {
             const particle = document.createElement('div');
             particle.className = 'popup-particle';
 
-            // Tamaño aleatorio
+            // Mida aleatòria
             const size = 2 + Math.random() * 5;
             particle.style.width = `${size}px`;
             particle.style.height = `${size}px`;
 
-            // Posición aleatoria
+            // Posició aleatòria
             const top = Math.random() * 100;
             const left = Math.random() * 100;
             particle.style.top = `${top}%`;
             particle.style.left = `${left}%`;
 
-            // Color y sombra
+            // Color i ombra
             particle.style.backgroundColor = particleColor;
             particle.style.boxShadow = `0 0 5px ${particleColor}`;
 
-            // Duración de animación variable
+            // Durada d'animació variable
             const duration = 2 + Math.random() * 3;
             particle.style.animationDuration = `${duration}s`;
 
-            // Retraso aleatorio
+            // Retard aleatori
             particle.style.animationDelay = `${Math.random() * 2}s`;
 
             popupContent.appendChild(particle);
         }
     }
 
-    // Evento de click para tirar gacha
+    // Event de click per tirar gacha
     pullButton.addEventListener('click', async () => {
         pullButton.disabled = true;
-        pullButton.textContent = "TIRANDO...";
+        pullButton.textContent = "TIRANT...";
 
         const character = getRandomCharacter();
 
-        // Realizar animación
+        // Fer animació
         await pullAnimation(character);
 
-        // Guardar personaje en slot actual
+        // Guardar personatge en slot actual
         slots[currentSlot] = character;
 
-        // Actualizar vista previa del slot
+        // Actualitzar vista prèvia del slot
         const slotPreview = document.getElementById(`slot-preview-${currentSlot}`);
         if (slotPreview) {
             slotPreview.src = character.image;
         }
 
-        // Añadir insignia de rareza al slot
+        // Afegir insígnia de raresa al slot
         const slot = document.querySelector(`.slot[data-slot="${currentSlot}"]`);
         const existingBadge = slot.querySelector('.rarity-badge');
         if (existingBadge) {
             slot.removeChild(existingBadge);
         }
 
-        // Crear fuegos artificiales para rarezas altas
+        // Crear focs artificials per rareses altes
         createFireworks(character.rarity);
 
-        // Mostrar notificación
-        showNotification(`¡Has obtenido a ${character.name} (${character.rarity})!`);
+        // Mostrar notificació
+        showNotification(`Has obtingut ${character.name} (${character.rarity})!`);
 
-        // Mostrar popup del personaje
+        // Mostrar popup del personatge
         setTimeout(() => {
             showCharacterPopup(character);
         }, 1000);
@@ -828,12 +828,12 @@ onMounted(async () => {
         await setSlotNumber(`slot${currentSlot}`,character.id)
     });
 
-    // Dropdown de rareza
+    // Dropdown de raresa
     rarityDropdownHeader.addEventListener('click', () => {
         rarityDropdown.classList.toggle('open');
     });
 
-    // Cerrar popup
+    // Tancar popup
     popupClose.addEventListener('click', () => {
         characterPopup.classList.remove('active');
         overlay.classList.remove('active');
@@ -844,17 +844,17 @@ onMounted(async () => {
         overlay.classList.remove('active');
     });
 
-    // Equipar desde popup
+    // Equipar des del popup
     equipButton.addEventListener('click', () => {
         equipSlot(currentSlot);
         characterPopup.classList.remove('active');
         overlay.classList.remove('active');
     });
 
-    // Inicializar
+    // Inicialitzar
     initSlots();
 
-    // Todo el código de eventos, animaciones, slots, etc., lo pegas aquí.
+    // Tot el codi d'esdeveniments, animacions, slots, etc., va aquí.
 });
 </script>
 

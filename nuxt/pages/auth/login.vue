@@ -23,14 +23,12 @@ const handleLogin = async () => {
 
   try {
     const response = await login(email.value, password.value);
-    console.log("Inicio de sesión exitoso:", response);
     store.setUser(response.user);
     store.setToken(response.token);
     store.setIsAuthenticated(true);
-    console.log("Usuario autenticado:", store.user);
     router.push("/");
   } catch (error) {
-    console.error("Error en el inicio de sesión:", error);
+    console.error("Error a l'inici de sessió:", error);
   } finally {
     isLoading.value = false;
   }
@@ -57,13 +55,13 @@ const handleGoogleLogin = () => {
     />
   <div class="flex-1 flex items-center justify-center" style="background-image: linear-gradient(to bottom, #1a0a0a 0%, #12122a 100%);">
     <div class="shadow-lg rounded-lg p-8 max-w-md w-96" style="background: rgba(30, 20, 20, 0.95);">
-      <h1 class="text-2xl font-bold text-center mb-6" style="color: #fff;">Iniciar Sesión</h1>
+      <h1 class="text-2xl font-bold text-center mb-6" style="color: #fff;">Inicia Sessió</h1>
 
       <!-- Login Form -->
       <form @submit.prevent="handleLogin" class="space-y-4">
         <!-- Email Input -->
         <div>
-          <label for="email" class="block text-sm font-medium" style="color: #fff;">Correo Electrónico</label>
+          <label for="email" class="block text-sm font-medium" style="color: #fff;">Correu electrònic</label>
           <input type="email" id="email" v-model="email" required
             class="mt-1 w-full px-4 py-2 rounded-lg shadow-sm focus:ring-yellow-400 focus:border-yellow-400"
             style="background: rgba(255, 255, 255, 0.08); border: 1px solid #ffb300; color: #fff;" />
@@ -71,14 +69,14 @@ const handleGoogleLogin = () => {
 
         <!-- Password Input -->
         <div class="mb-0">
-          <label for="password" class="block text-sm font-medium" style="color: #fff;">Contraseña</label>
+          <label for="password" class="block text-sm font-medium" style="color: #fff;">Contrasenya</label>
           <input type="password" id="password" v-model="password" required
             class="mt-1 w-full px-4 py-2 rounded-lg shadow-sm focus:ring-yellow-400 focus:border-yellow-400"
             style="background: rgba(255, 255, 255, 0.08); border: 1px solid #ff7043; color: #fff;" />
         </div>
         <!-- Forgot Password Link -->
         <div class="text-right">
-          <NuxtLink to="/auth/forgot-password" class="text-yellow-300 text-sm hover:underline">¿Olvidaste tu contraseña?</NuxtLink>
+          <NuxtLink to="/auth/forgot-password" class="text-yellow-300 text-sm hover:underline">Has oblidat la contrasenya?</NuxtLink>
         </div>
 
         <!-- Submit Button -->
@@ -86,7 +84,7 @@ const handleGoogleLogin = () => {
           class="cursor-pointer w-full font-medium py-2 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2"
           :disabled="isLoading"
           style="background: linear-gradient(90deg, #ff1744 0%, #ff9100 60%, #fff176 100%); color: #fff;">
-          <span v-if="!isLoading">Iniciar Sesión</span>
+          <span v-if="!isLoading">Inicia Sessió</span>
           <div v-else class="flex items-center justify-center">
             <svg class="animate-spin h-5 w-5 mr-3 text-white" xmlns="http://www.w3.org/2000/svg"
               fill="none" viewBox="0 0 24 24">
@@ -95,7 +93,7 @@ const handleGoogleLogin = () => {
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
               </path>
             </svg>
-            <span>Cargando...</span>
+            <span>Carregant...</span>
           </div>
         </button>
       </form>
@@ -133,7 +131,7 @@ const handleGoogleLogin = () => {
             </g>
           </g>
         </svg>
-        <span v-if="!isLoadingGoogle">Continuar con Google</span>
+        <span v-if="!isLoadingGoogle">Continua amb Google</span>
         <div v-else class="flex items-center">
           <svg class="animate-spin h-5 w-5 mr-3 text-white" xmlns="http://www.w3.org/2000/svg"
             fill="none" viewBox="0 0 24 24">
@@ -142,13 +140,13 @@ const handleGoogleLogin = () => {
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
             </path>
           </svg>
-          <span>Cargando...</span>
+          <span>Carregant...</span>
         </div>
       </button>
 
       <div class="mt-4 text-center">
-        <p class="text-sm" style="color: #fff;">¿No tienes cuenta?
-          <NuxtLink to="/auth/register" class="text-yellow-300 hover:underline">Registrate</NuxtLink>
+        <p class="text-sm" style="color: #fff;">No tens compte?
+          <NuxtLink to="/auth/register" class="text-yellow-300 hover:underline">Registra't</NuxtLink>
         </p>
       </div>
     </div>

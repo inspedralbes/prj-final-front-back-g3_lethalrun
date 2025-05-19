@@ -17,7 +17,7 @@
             <h2 class="text-2xl font-bold text-white truncate">Els teus Graffitis</h2>
 
             <div class="flex justify-center items-center gap-4">
-              <!-- Botón Anterior -->
+              <!-- Botó Anterior -->
               <button
                 @click="currentPage > 1 && (currentPage -= 1)"
                 :disabled="currentPage === 1"
@@ -30,12 +30,12 @@
                 &lt;
               </button>
 
-              <!-- Paginación -->
+              <!-- Paginació -->
               <span class="text-gray-300 font-semibold select-none">
                 Pàgina {{ currentPage }} de {{ totalPages }}
               </span>
 
-              <!-- Botón Siguiente -->
+              <!-- Botó Següent -->
               <button
                 @click="currentPage < totalPages && (currentPage += 1)"
                 :disabled="currentPage === totalPages"
@@ -55,7 +55,7 @@
                     focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2
                     hover:shadow-[0_4px_20px_rgba(255,23,68,0.5),0_6px_30px_rgba(255,145,0,0.4),0_8px_40px_rgba(255,241,118,0.3)] hover:scale-105"
               style="background: linear-gradient(90deg, #ff1744 0%, #ff9100 60%, #fff176 100%);">
-              Afegir Graffiti
+              Afegeix Graffiti
             </button>
 
           </div>
@@ -66,7 +66,7 @@
               <div v-for="graffiti in paginatedGraffitis" :key="graffiti.id"
                 class="relative p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out"
                 style="background: linear-gradient(90deg, #ff1744, #ff9100, #fff176);">
-                <img :src="getPath(graffiti.path)" alt="Graffiti Image"
+                <img :src="getPath(graffiti.path)" alt="Imatge del graffiti"
                   class="w-full h-auto rounded-xl mb-4 border-4 border-transparent hover:border-white transition-all duration-300 ease-in-out" />
 
                 <div class="w-full container-buttons flex justify-between items-center">
@@ -74,7 +74,7 @@
                       class="cursor-pointer truncate text-white p-2 px-3 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-1 font-medium transition-all duration-300
                             hover:brightness-110 hover:shadow-lg hover:scale-105"
                       style="background: linear-gradient(90deg, #059669 0%, #10b981 60%, #34d399 100%);">
-                      Activar imatge
+                      Activa la imatge
                   </button>
 
 
@@ -89,10 +89,10 @@
                     :style="graffiti.is_active
                       ? 'background: #555; color: #aaa; cursor: not-allowed;'
                       : 'background-color: #dc2626; color: white; cursor: pointer;'"
-                    :title="graffiti.is_active ? 'No se puede eliminar porque está activo' : 'Borrar graffiti'"
+                    :title="graffiti.is_active ? 'No es pot eliminar perquè està activa' : 'Esborra graffiti'"
                     class="truncate text-white p-2 px-3 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-red-400 hover:bg-red-500 disabled:opacity-50 font-medium transition-all duration-300
                             hover:brightness-110 hover:shadow-lg hover:scale-105">
-                    Borrar
+                    Esborra
                   </button>
                 </div>
               </div>
@@ -101,11 +101,11 @@
         </div>
          <div v-else class="text-center py-20">
             <h2 class="text-3xl font-semibold text-gray-400 mb-4">Encara no tens cap graffiti.</h2>
-            <p class="text-gray-500 mb-8">Comença per afegir el teu primer!</p>
+            <p class="text-gray-500 mb-8">Comença afegint el teu primer!</p>
             <button @click="openModal"
               class="cursor-pointer text-white py-3 px-6 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 font-medium"
               style="background: linear-gradient(90deg, #ff1744 0%, #ff9100 60%, #fff176 100%);">
-              Afegir el Meu Primer Graffiti
+              Afegeix el meu primer graffiti
             </button>
         </div>
       </div>
@@ -117,7 +117,7 @@
         <div class="rounded-xl shadow-2xl w-4xl max-w-full relative flex flex-col max-h-[90vh]" style="background: rgba(30, 20, 20, 0.98); border: 1px solid rgba(255,255,255,0.1);">
 
           <div class="flex justify-between items-center sticky top-0 z-10 px-6 pt-6 pb-4 border-b" style="background: rgba(30, 20, 20, 0.98); border-color: rgba(255,255,255,0.2);">
-            <h2 class="text-2xl font-bold text-white">Pujar Nou Graffiti</h2>
+            <h2 class="text-2xl font-bold text-white">Puja un nou graffiti</h2>
             <button @click="closeModal"
               class="cursor-pointer text-red-400 transition hover:bg-red-500/20 hover:text-red-300 p-1 rounded-full">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
@@ -158,9 +158,9 @@
               </div>
 
               <div class="flex flex-col justify-start items-center w-full space-y-4">
-                <h3 class="text-lg font-semibold text-white">Previsualizació</h3>
+                <h3 class="text-lg font-semibold text-white">Previsualització</h3>
                 <div class="w-full max-w-[250px] sm:max-w-[300px] aspect-square">
-                  <img v-if="croppedImage" :src="croppedImage" alt="Cropped Image"
+                  <img v-if="croppedImage" :src="croppedImage" alt="Imatge retallada"
                     class="w-full h-full object-cover rounded-lg shadow-md border border-gray-700">
                   <div v-else class="w-full h-full rounded-lg flex items-center justify-center text-gray-500" style="background: rgba(255, 255, 255, 0.05); border: 1px dashed #4a5568;">
                     Imatge retallada aquí
@@ -174,11 +174,11 @@
           <div class="mt-auto flex justify-end gap-3 sticky bottom-0 z-10 px-6 pb-6 pt-4 border-t" style="background: rgba(30, 20, 20, 0.98); border-color: rgba(255,255,255,0.2);">
             <button @click="closeModal"
               class="cursor-pointer py-2 px-4 rounded-lg transition font-medium hover:opacity-80"
-              style="background-color: #4b5563; color: #fff;"> Cancelar
+              style="background-color: #4b5563; color: #fff;"> Cancel·la
             </button>
             <button v-if="croppedImage" @click="uploadImage"
               class="cursor-pointer text-white py-2 px-4 rounded-lg transition font-medium hover:opacity-90"
-              style="background: linear-gradient(90deg, #15803d 0%, #16a34a 60%, #4ade80 100%);"> Pujar Graffiti
+              style="background: linear-gradient(90deg, #15803d 0%, #16a34a 60%, #4ade80 100%);"> Puja graffiti
             </button>
           </div>
         </div>
@@ -210,16 +210,15 @@ const profileOptions = [
 const logoutLink = `${config.public.authUrl}/auth/logout`;
 
 let graffitis = ref([]);
-let isModalOpen = ref(false); // Estado para el modal
+let isModalOpen = ref(false); // Estat pel modal
 
 const fetchGraffitis = async () => {
   try {
     const data = await getGraffitis();
     graffitis.value = data;
-    console.log('Graffitis:', data);
 
   } catch (error) {
-    console.error('Error fetching graffitis:', error);
+    console.error('Error carregant els graffitis:', error);
   }
 };
 
@@ -228,7 +227,7 @@ const getPath = (path) => {
 };
 
 
-// Funciones para controlar la visibilidad del modal
+// Funcions per controlar la visibilitat del modal
 const openModal = () => {
   isModalOpen.value = true;
 };
@@ -239,18 +238,18 @@ const imageSrc = ref(null);
 const croppedImage = ref(null);
 const cropper = ref(null);
 
-// Abrir el selector de archivos
+// Obrir el selector d'arxius
 const showFileChooser = () => {
   fileInput.value?.click();
 };
 
-// Manejar el cambio de archivo
+// Gestionar el canvi d'arxiu
 const onFileChange = (event) => {
   const file = event.target.files[0];
   if (file) {
     const reader = new FileReader();
 
-    // Forzar actualización de imageSrc
+    // Forçar actualització de imageSrc
     imageSrc.value = null;
 
     reader.onload = () => {
@@ -259,17 +258,17 @@ const onFileChange = (event) => {
 
     reader.readAsDataURL(file);
 
-    // Resetear el input para permitir subir la misma imagen otra vez
+    // Reset del input per permetre pujar la mateixa imatge de nou
     event.target.value = "";
   }
 };
 
-// Recortar la imagen
+// Retallar la imatge
 const cropImage = () => {
   croppedImage.value = cropper.value.getCroppedCanvas().toDataURL();
 };
 
-// Cerrar el modal
+// Tancar el modal
 const closeModal = () => {
   isModalOpen.value = false;
   imageSrc.value = null;
@@ -283,7 +282,7 @@ const uploadImage = async () => {
   const canvas = cropper.value.getCroppedCanvas();
   const imageBlob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg'));
 
-  // Crear el formulario con el archivo de imagen
+  // Crear el formulari amb el fitxer d'imatge
   const formData = new FormData();
   formData.append("file", imageBlob, 'image.jpg');
   formData.append("userId", user.id);
@@ -292,20 +291,19 @@ const uploadImage = async () => {
   try {
     await uploadGraffiti(formData);
     closeModal();
-    croppedImage.value = null; // Limpiar el input después de subir
+    croppedImage.value = null; // Netejar el input després de pujar
   } catch (error) {
-    console.error("Error uploading graffiti:", error);
-    return; // Si hay error, no seguimos
+    console.error("Error pujant el graffiti:", error);
+    return; // Si hi ha error, no seguim
   }
 };
 
-// Función para eliminar graffiti
+// Funció per eliminar graffiti
 const deleteGraffitiHandler = async (id, path) => {
   try {
-    console.log('Deleting graffiti with ID:', id);
     await deleteGraffiti(id, $socket.id, path);
   } catch (error) {
-    console.error('Error deleting graffiti:', error);
+    console.error('Error esborrant el graffiti:', error);
   }
 };
 
@@ -313,17 +311,17 @@ const setActiveGraffitiHandler = async (id) => {
   try {
     await setActiveGraffiti(id, $socket.id);
   } catch (error) {
-    console.error('Error setting graffiti as active:', error);
+    console.error('Error activant el graffiti:', error);
   }
 };
 
-// Transiciones del modal
+// Transicions del modal
 const beforeEnter = (el) => {
   el.style.opacity = 0;
 };
 
 const enter = (el, done) => {
-  el.offsetHeight; // Forzar reflow
+  el.offsetHeight; // Forçar reflow
   el.style.transition = 'opacity 0.5s ease';
   el.style.opacity = 1;
   done();
@@ -335,23 +333,22 @@ const leave = (el, done) => {
   done();
 };
 
-// Variables para paginación
+// Variables per la paginació
 const currentPage = ref(1);
-const pageSize = 6; // Número de items por página
+const pageSize = 6; // Nombre d'elements per pàgina
 
-// Paginación de los graffitis
+// Paginació dels graffitis
 const paginatedGraffitis = computed(() => {
   const start = (currentPage.value - 1) * pageSize;
   const end = currentPage.value * pageSize;
   return graffitis.value.slice(start, end);
 });
 
-// Total de páginas
+// Total de pàgines
 const totalPages = computed(() => Math.ceil(graffitis.value.length / pageSize));
 
 onMounted(() => {
   $socket.on('update-pictures', (data) => {
-    console.log(data);
     graffitis.value = data.message;
   });
 });

@@ -45,12 +45,11 @@ const sendResetLink = async () => {
       :profileImg="'/profile-icon.jpg'" :profileOptions="[]" :logoutLink="''" :isLogged="false" />
     <div class="flex flex-1 flex-col items-center justify-center px-4 py-8">
       <div class="w-full max-w-md p-6 sm:p-8 bg-red-900 rounded-lg shadow-xl">
-        <h2 class="text-2xl sm:text-3xl font-bold text-center text-orange-400">Recuperar contraseña</h2>
-        <p class="mt-3 text-sm text-orange-200 text-center">Ingresa tu correo electrónico y te enviaremos un enlace para
-          restablecer tu contraseña.</p>
+        <h2 class="text-2xl sm:text-3xl font-bold text-center text-orange-400">Recuperar contrasenya</h2>
+        <p class="mt-3 text-sm text-orange-200 text-center">Introdueix el teu correu electrònic i t'enviarem un enllaç per restablir la teva contrasenya.</p>
         <form @submit.prevent="sendResetLink" class="mt-8">
           <div>
-            <label for="email-forgot" class="block text-sm font-medium text-orange-200 mb-1">Correo electrónico</label>
+            <label for="email-forgot" class="block text-sm font-medium text-orange-200 mb-1">Correu electrònic</label>
             <input id="email-forgot" type="email" v-model="email" required
                    class="mt-1 block w-full px-4 py-2.5 border border-orange-600 bg-gray-700 text-white rounded-md focus:ring-yellow-500 focus:border-yellow-500 placeholder-gray-400 focus:outline-none">
           </div>
@@ -64,9 +63,9 @@ const sendResetLink = async () => {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                 </path>
               </svg>
-              <span>Enviando...</span>
+              <span>Enviant...</span>
             </div>
-            <span v-else>Enviar enlace</span>
+            <span v-else>Enviar enllaç</span>
           </button>
         </form>
 
