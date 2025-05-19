@@ -16,26 +16,32 @@ const isLoadingGoogle = ref(false);
 const email = ref('');
 const password = ref('');
 
-// Función para iniciar sesión con email y contraseña
+/**
+ * Inicia sesión usando email y contraseña.
+ * Actualiza el estado de carga, guarda usuario y token en el store,
+ * y redirige a la página principal si el login es exitoso.
+ * @returns {Promise<void>}
+ */
 const handleLogin = async () => {
   isLoading.value = true;
-  console.log({ email: email.value, password: password.value });
-
   try {
     const response = await login(email.value, password.value);
-    console.log("Inicio de sesión exitoso:", response);
     store.setUser(response.user);
     store.setToken(response.token);
     store.setIsAuthenticated(true);
-    console.log("Usuario autenticado:", store.user);
     router.push("/");
   } catch (error) {
-    console.error("Error en el inicio de sesión:", error);
+    // Manejo de error en el login
+    console.error("Error a l'inici de sessió:", error);
   } finally {
     isLoading.value = false;
   }
 };
 
+/**
+ * Redirige al usuario al login de Google.
+ * Cambia el estado de carga y navega a la URL de autenticación de Google.
+ */
 const handleGoogleLogin = () => {
   isLoadingGoogle.value = true;
   window.location.href = `${config.public.authUrl}/auth/google`;
@@ -55,62 +61,63 @@ const handleGoogleLogin = () => {
       :logoutLink="''"
       :isLogged="false"
     />
-  <div class="flex-1 flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-    
-    <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8 max-w-md w-96">
-      <h1 class="text-2xl font-bold text-center text-gray-700 dark:text-white mb-6">Iniciar Sesión</h1>
+  <div class="flex-1 flex items-center justify-center" style="background-image: linear-gradient(to bottom, #1a0a0a 0%, #12122a 100%);">
+    <div class="shadow-lg rounded-lg p-8 max-w-md w-96" style="background: rgba(30, 20, 20, 0.95);">
+      <h1 class="text-2xl font-bold text-center mb-6" style="color: #fff;">Inicia Sessió</h1>
 
       <!-- Login Form -->
       <form @submit.prevent="handleLogin" class="space-y-4">
         <!-- Email Input -->
         <div>
-          <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Correo
-            Electrónico</label>
+          <label for="email" class="block text-sm font-medium" style="color: #fff;">Correu electrònic</label>
           <input type="email" id="email" v-model="email" required
-            class="mt-1 w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" />
+            class="mt-1 w-full px-4 py-2 rounded-lg shadow-sm focus:ring-yellow-400 focus:border-yellow-400"
+            style="background: rgba(255, 255, 255, 0.08); border: 1px solid #ffb300; color: #fff;" />
         </div>
 
         <!-- Password Input -->
         <div class="mb-0">
-          <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Contraseña</label>
+          <label for="password" class="block text-sm font-medium" style="color: #fff;">Contrasenya</label>
           <input type="password" id="password" v-model="password" required
-            class="mt-1 w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" />
+            class="mt-1 w-full px-4 py-2 rounded-lg shadow-sm focus:ring-yellow-400 focus:border-yellow-400"
+            style="background: rgba(255, 255, 255, 0.08); border: 1px solid #ff7043; color: #fff;" />
         </div>
         <!-- Forgot Password Link -->
         <div class="text-right">
-          <NuxtLink to="/auth/forgot-password" class="text-blue-500 text-sm hover:underline">¿Olvidaste tu contraseña?</NuxtLink>
+          <NuxtLink to="/auth/forgot-password" class="text-yellow-300 text-sm hover:underline">Has oblidat la contrasenya?</NuxtLink>
         </div>
 
         <!-- Submit Button -->
         <button type="submit"
-          class="cursor-pointer w-full bg-blue-600 text-white font-medium py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          :disabled="isLoading">
-          <span v-if="!isLoading">Iniciar Sesión</span>
+          class="cursor-pointer w-full font-medium py-2 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2"
+          :disabled="isLoading"
+          style="background: linear-gradient(90deg, #ff1744 0%, #ff9100 60%, #fff176 100%); color: #fff;">
+          <span v-if="!isLoading">Inicia Sessió</span>
           <div v-else class="flex items-center justify-center">
-            <svg class="animate-spin h-5 w-5 mr-3 text-gray-800 dark:text-white" xmlns="http://www.w3.org/2000/svg"
+            <svg class="animate-spin h-5 w-5 mr-3 text-white" xmlns="http://www.w3.org/2000/svg"
               fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor"
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
               </path>
             </svg>
-            <span>Cargando...</span>
+            <span>Carregant...</span>
           </div>
-
         </button>
       </form>
 
       <!-- Divider -->
       <div class="flex items-center my-6">
-        <div class="border-t border-gray-300 flex-grow"></div>
-        <span class="mx-4 text-sm text-gray-500 dark:text-gray-400">O</span>
-        <div class="border-t border-gray-300 flex-grow"></div>
+        <div class="border-t flex-grow" style="border-color: #ffb300;"></div>
+        <span class="mx-4 text-sm" style="color: #fff176;">O</span>
+        <div class="border-t flex-grow" style="border-color: #ffb300;"></div>
       </div>
 
       <!-- Google Login -->
       <button @click="handleGoogleLogin"
-        class="cursor-pointer flex items-center justify-center bg-white dark:bg-gray-900 border border-gray-300 rounded-lg shadow-md px-6 py-2 text-sm font-medium text-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 w-full"
-        :disabled="isLoadingGoogle">
+        class="cursor-pointer flex items-center justify-center border rounded-lg shadow-md px-6 py-2 text-sm font-medium w-full"
+        :disabled="isLoadingGoogle"
+        style="background: linear-gradient(90deg, #fff176 0%, #ff9100 100%); border-color: #ffb300; color: #fff;">
         <svg v-if="!isLoadingGoogle" class="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="-0.5 0 48 48"
           version="1.1">
           <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -132,26 +139,24 @@ const handleGoogleLogin = () => {
             </g>
           </g>
         </svg>
-        <span v-if="!isLoadingGoogle">Continuar con Google</span>
+        <span v-if="!isLoadingGoogle">Continua amb Google</span>
         <div v-else class="flex items-center">
-          <svg class="animate-spin h-5 w-5 mr-3 text-gray-800 dark:text-white" xmlns="http://www.w3.org/2000/svg"
+          <svg class="animate-spin h-5 w-5 mr-3 text-white" xmlns="http://www.w3.org/2000/svg"
             fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor"
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
             </path>
           </svg>
-          <span>Cargando...</span>
+          <span>Carregant...</span>
         </div>
       </button>
 
-
       <div class="mt-4 text-center">
-        <p class="text-sm text-gray-600 dark:text-gray-300">¿No tienes cuenta?
-          <NuxtLink to="/auth/register" class="text-blue-500 hover:underline">Registrate</NuxtLink>
+        <p class="text-sm" style="color: #fff;">No tens compte?
+          <NuxtLink to="/auth/register" class="text-yellow-300 hover:underline">Registra't</NuxtLink>
         </p>
       </div>
-
     </div>
   </div>
 </div>

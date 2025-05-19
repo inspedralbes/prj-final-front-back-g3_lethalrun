@@ -9,12 +9,21 @@
 </template>
 
 <script setup>
+/**
+ * Props for GachaponSlot component.
+ * @prop {string|null} skin - The URL of the skin image to display. If null, shows "Vacío".
+ */
 defineProps({
   skin: {
     type: String,
     default: null,
   },
 });
+
+/**
+ * Emits when the slot is clicked.
+ * @event click
+ */
 defineEmits(['click']);
 </script>
 
