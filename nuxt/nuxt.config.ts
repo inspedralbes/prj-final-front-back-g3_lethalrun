@@ -14,14 +14,13 @@ export default defineNuxtConfig({
     '@pinia/nuxt', // Asegúrate de que @pinia/nuxt esté incluido
   ],
   runtimeConfig: {
-    public: {
-      authUrl: process.env.AUTH_URL || '',
-      socketUrl: process.env.SOCKET_URL || '',
-      mongoUrl: process.env.MONGO_URL || '',
-      imagesUrl: process.env.IMAGES_URL || '',
-
-    },
-  },
+  public: {
+    authUrl: process.env.NUXT_AUTH_URL || '',
+    socketUrl: process.env.NUXT_SOCKET_URL || '',
+    mongoUrl: process.env.NUXT_MONGO_URL || '',
+    imagesUrl: process.env.NUXT_IMAGES_URL || '',
+  }
+},
   pinia: {
     // Opcional: Puedes configurar el almacenamiento y otros aspectos de Pinia aquí
   },

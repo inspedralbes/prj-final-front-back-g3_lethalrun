@@ -69,7 +69,7 @@ router.get('/callback', passport.authenticate('google', { failureRedirect: '/' }
   const user = req.user;
   const userJson = JSON.stringify(user);
   const token = generateJWT(user);
-  res.redirect(`${process.env.DOMAIN_URL}:${process.env.WEB_PORT}/auth/callback?token=${token}&user=${userJson}`);
+  res.redirect(`${process.env.DOMAIN_URL}/auth/callback?token=${token}&user=${userJson}`);
 });
 
 /**
@@ -81,7 +81,7 @@ router.get('/callback', passport.authenticate('google', { failureRedirect: '/' }
 router.get('/logout', verifyJWTCliente, (req, res) => {
   req.logout((err) => {
     if (err) return res.status(500).send('Error al cerrar sesión');
-    res.redirect(`${process.env.DOMAIN_URL}:${process.env.WEB_PORT}`);
+    res.redirect(`${process.env.DOMAIN_URL}`);
   });
 });
 
@@ -107,7 +107,7 @@ router.post('/send-verification-email', async (req, res) => {
     if (existingUser) return res.status(409).json({ message: 'El usuario ya existe.' });
 
     const token = await tokenController.createToken(email, username, password, rol);
-    const link = `${process.env.DOMAIN_URL}:${process.env.WEB_PORT}/auth/verify-register?token=${token}`;
+    const link = `${process.env.DOMAIN_URL}/auth/verify-register?token=${token}`;
     await sendVerificationEmail(email, link);
 
     res.status(200).json({ message: `Correo de verificación enviado a ${email}` });
@@ -133,7 +133,7 @@ router.post('/send-password-reset-email', async (req, res) => {
     if (!user) return res.status(404).json({ message: 'Usuario no encontrado.' });
 
     const token = await tokenController.createToken(user.email, user.username, null, user.rol);
-    const link = `${process.env.DOMAIN_URL}:${process.env.WEB_PORT}/auth/reset-password?token=${token}`;
+    const link = `${process.env.DOMAIN_URL}/auth/reset-password?token=${token}`;
     await sendPasswordResetEmail(user.email, link);
 
     res.status(200).json({ message: `Correo de restablecimiento enviado a ${email}` });
