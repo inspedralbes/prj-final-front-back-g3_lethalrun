@@ -1,6 +1,4 @@
-<<<<<<< HEAD
-const Picture = (sequelize, DataTypes) => {
-=======
+
 /**
  * Modelo Picture para Sequelize.
  * Representa una imagen asociada a un usuario.
@@ -21,7 +19,7 @@ const Picture = (sequelize, DataTypes) => {
    * - is_active: Booleano para indicar si la imagen está activa.
    * - path: Ruta o nombre del archivo de la imagen.
    */
->>>>>>> origin/dev
+
   const Picture = sequelize.define('Picture', {
     id: {
       type: DataTypes.INTEGER,
@@ -38,13 +36,11 @@ const Picture = (sequelize, DataTypes) => {
     },
   });
 
-<<<<<<< HEAD
-=======
+
   /**
    * Asociación: Cada imagen pertenece a un usuario.
    * @param {Object} models - Modelos de Sequelize.
    */
->>>>>>> origin/dev
   Picture.associate = (models) => {
     Picture.belongsTo(models.User, { foreignKey: 'user_id' });
   };

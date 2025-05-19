@@ -1,29 +1,5 @@
 import express from 'express';
-<<<<<<< HEAD
-import multer from 'multer'; // Suponiendo que uses multer para manejar la carga de archivos
-import { createPictureController } from './pictureController.js';
-
-const router = express.Router();
-
-// Configuración de multer para cargar imágenes
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, './uploads');
-  },
-  filename: (req, file, cb) => {
-    cb(null, file.originalname);
-  }
-});
-
-const upload = multer({ storage: storage });
-
-// Ruta para crear una imagen por defecto cuando se crea un nuevo usuario
-router.post('/create-default-picture', async (req, res) => {
-  try {
-    const { userId } = req.body; // Suponemos que el ID del usuario está en el cuerpo de la solicitud
-    const pictureId = await createPictureController.createDefaultPicture(userId);
-    res.status(201).json({ pictureId });
-=======
+import fetch from 'node-fetch';
 import upload from '../middleware/multer.js';
 import dotenv from 'dotenv';
 import { verifyJWTCliente } from '../middleware/verifyJWT.js';
@@ -75,20 +51,11 @@ router.post('/create-picture', verifyJWTCliente, upload.single('file'), async (r
     const token = req.headers.authorization.split(' ')[1];
     await notifyImageChange(userId, socketId, token);
     res.status(201).json({ message: 'Imagen creada correctamente' });
->>>>>>> origin/dev
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-<<<<<<< HEAD
-// Ruta para crear una nueva imagen asociada a un usuario
-router.post('/create-picture', upload.single('file'), async (req, res) => {
-  try {
-    const userId = req.body.userId;
-    const pictureId = await createPictureController.createPicture(req.file, userId);
-    res.status(201).json({ pictureId });
-=======
 /**
  * @route POST /create-default-picture/:userId
  * @group Imágenes - Gestión de imágenes de usuario
@@ -111,19 +78,12 @@ router.post('/create-default-picture/:userId', async (req, res) => {
   try {
     await createPictureController.createDefaultPicture(userId, customName);
     res.status(201).json({ message: 'Imagen por defecto creada correctamente' });
->>>>>>> origin/dev
+
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-<<<<<<< HEAD
-// Ruta para establecer una imagen como activa para un usuario
-router.put('/set-active-picture/:pictureId/:userId', async (req, res) => {
-  try {
-    const { pictureId, userId } = req.params;
-    await createPictureController.setActivePicture(pictureId, userId);
-=======
 /**
  * @route PUT /set-active-picture/:pictureId/:userId
  * @group Imágenes - Gestión de imágenes de usuario
@@ -141,31 +101,12 @@ router.put('/set-active-picture/:pictureId/:userId', verifyJWTCliente, async (re
     const { socketId } = req.body;
     await createPictureController.setActivePicture(pictureId, userId);
     await notifyImageChange(userId, socketId, token);
->>>>>>> origin/dev
     res.status(200).json({ message: 'Imagen activa establecida correctamente' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-<<<<<<< HEAD
-// Ruta para obtener la imagen activa de un usuario
-router.get('/get-active-picture/:userId', async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const picture = await createPictureController.getActivePicture(userId);
-    res.status(200).json(picture || { message: 'No hay imagen activa' });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Ruta para eliminar una imagen asociada a un usuario
-router.delete('/delete-picture/:id/:userId', async (req, res) => {
-  try {
-    const { id, userId } = req.params;
-    await createPictureController.deletePicture(id, userId);
-=======
 /**
  * @route DELETE /delete-picture/:id/:fileName/:userId
  * @group Imágenes - Gestión de imágenes de usuario
@@ -183,17 +124,13 @@ router.delete('/delete-picture/:id/:fileName/:userId', verifyJWTCliente, async (
     const { socketId } = req.body;
     await createPictureController.deletePicture(id, userId, token, fileName);
     await notifyImageChange(userId, socketId, token);
->>>>>>> origin/dev
+
     res.status(200).json({ message: 'Imagen eliminada correctamente' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-<<<<<<< HEAD
-// Ruta para obtener todas las imágenes de un usuario
-router.get('/get-user-pictures/:userId', async (req, res) => {
-=======
 /**
  * @route GET /get-user-pictures/:userId
  * @group Imágenes - Gestión de imágenes de usuario
@@ -205,7 +142,6 @@ router.get('/get-user-pictures/:userId', async (req, res) => {
  * @returns {Object} 500 - Error interno del servidor
  */
 router.get('/get-user-pictures/:userId', verifyJWTCliente, async (req, res) => {
->>>>>>> origin/dev
   try {
     const { userId } = req.params;
     const pictures = await createPictureController.getUserPictures(userId);
@@ -215,15 +151,6 @@ router.get('/get-user-pictures/:userId', verifyJWTCliente, async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
-// Ruta para actualizar una imagen asociada a un usuario
-router.put('/update-picture/:id', upload.single('file'), async (req, res) => {
-  try {
-    const { id } = req.params;
-    const userId = req.body.userId;
-    const pictureId = await createPictureController.updatePicture(id, req.file, userId);
-    res.status(200).json({ pictureId });
-=======
 /**
  * @route GET /get-active-picture/:userId
  * @group Imágenes - Gestión de imágenes de usuario
@@ -267,7 +194,6 @@ router.delete('/delete-user/:userId', verifyJWTCliente, async (req, res) => {
     await createPictureController.deleteUserFolder(userId);
     await notifyImageChange(userId, socketId, token);
     res.status(200).json({ message: `Carpeta del usuario ${userId} eliminada correctamente.` });
->>>>>>> origin/dev
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
