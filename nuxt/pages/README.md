@@ -42,7 +42,7 @@ El `dashboard.vue` sirve como el **panel de control principal** una vez que el u
 
 El directorio `pages/` se organiza en subcarpetas para agrupar las páginas relacionadas con funcionalidades específicas, lo que mejora la modularidad y la claridad del proyecto.
 
-### 🔐 `auth/` (Autenticación)
+### 🔐 [`auth/`](./auth/README.md) (Autenticación)
 
 Este subdirectorio contiene todas las páginas y componentes relacionados con el **proceso de autenticación de usuarios**, incluyendo:
 
@@ -51,14 +51,14 @@ Este subdirectorio contiene todas las páginas y componentes relacionados con el
 * **Recuperación de contraseña**: Flujos para restablecer contraseñas olvidadas.
 * **Verificación de correo electrónico**: Páginas para confirmar la dirección de correo electrónico del usuario.
 
-### 🎰 `gachapon/` (Sistema de Gachapon)
+### 🎰 [`gachapon/`](./gachapon/README.md) (Sistema de Gachapon)
 
 Este subdirectorio alberga las páginas dedicadas a la **funcionalidad del sistema de gachapon**. Aquí, los usuarios pueden interactuar con la máquina de gachapon para intentar obtener diferentes skins o coleccionables dentro del juego.
 
-### 🎨 `graffiti/` (Graffitis)
+### 🎨 [`graffiti/`](./graffiti/README.md) (Graffitis)
 
 Contiene las páginas para la **gestión y personalización de graffitis** por parte del usuario. Permite a los jugadores subir sus propias imágenes, previsualizarlas y activarlas para usarlas como graffitis dentro del juego, ofreciendo una capa de personalización única.
 
-### 👤 `profile/` (Perfil de Usuario)
+### 👤 [`profile/`](./profile/README.md) (Perfil de Usuario)
 
 Este subdirectorio agrupa las páginas relacionadas con la **información y configuración del perfil del usuario**. Los usuarios pueden ver sus estadísticas, información personal, tiempo de juego, experiencia y posiblemente gestionar otras configuraciones de su cuenta.
