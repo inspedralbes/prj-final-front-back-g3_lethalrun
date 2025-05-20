@@ -6,7 +6,7 @@
 ## 📁 Arxius Principals
 
 ### 1. **Presentació Comercial**  
-[comercial_2425_LethalRun.pdf](doc/documentació/comercial_2425_LethalRun.pdf)  
+[comercial_2425_LethalRun.pdf](doc/doc/comercial_2425_LethalRun.pdf)  
 - **Què és?**: Presentació orientada al negoci.  
 - **Contingut**:  
   - Objectius i abast del projecte.  
@@ -16,7 +16,7 @@
 ---
 
 ### 2. **Documentació Tècnica**  
-[tecnica_2425_LethalRun.pdf](doc/documentació/tecnica_2425_LethalRun.pdf)  
+[tecnica_2425_LethalRun.pdf](doc/doc/tecnica_2425_LethalRun.pdf)  
 - **Què és?**: Detalls tècnics per a desenvolupadors.  
 - **Contingut**:  
   - Evolució dels sprints.  
@@ -44,7 +44,7 @@
 ---
 
 ### 5. **Presentació Resum**  
-[resum_2425_LethalRun.pdf](doc/documentació/resum_2425_LethalRun.pdf)  
+[resum_2425_LethalRun.pdf](doc/doc/resum_2425_LethalRun.pdf)  
 - **Què és?**: Resum visual del projecte.  
 - **Contingut**:  
   - Integrants del equip i logo de l'escola.  
